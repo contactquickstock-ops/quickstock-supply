@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
 import { supabase } from '../../services/supabase'
+import { supabaseAdmin } from '../../services/supabaseAdmin'
 import toast from 'react-hot-toast'
 
 function PasswordInput({ value, onChange, placeholder, show, onToggle, disabled, autoComplete }) {
@@ -92,8 +93,8 @@ export default function RegisterPage() {
       return
     }
 
-    // 2. Insert profile
-    const { error: profileErr } = await supabase.from('profiles').insert({
+    // 2. Insert profile (use admin client to bypass RLS)
+    const { error: profileErr } = await supabaseAdmin.from('profiles').insert({
       id:             data.user.id,
       full_name:      fullName.trim(),
       email:          email.trim(),

@@ -8,7 +8,7 @@ import {
   MdDirectionsCar, MdPeople,
 } from 'react-icons/md'
 import AdminLayout from '../../layouts/AdminLayout'
-import { supabase } from '../../services/supabase'
+import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 

@@ -4,7 +4,7 @@ import {
   MdClose, MdLocationOn, MdNotes, MdImage,
 } from 'react-icons/md'
 import AdminLayout from '../../layouts/AdminLayout'
-import { supabase } from '../../services/supabase'
+import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
 
 // ── Status config ─────────────────────────────────────────────────────────────
 

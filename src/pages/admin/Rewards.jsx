@@ -4,7 +4,7 @@ import {
   MdSearch, MdStar, MdHistory,
 } from 'react-icons/md'
 import AdminLayout from '../../layouts/AdminLayout'
-import { supabase } from '../../services/supabase'
+import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
 
 const EMPTY_FORM = {
   name:           '',

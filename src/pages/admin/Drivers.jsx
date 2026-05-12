@@ -4,8 +4,8 @@ import {
   MdAdd, MdClose, MdVisibility, MdVisibilityOff,
 } from 'react-icons/md'
 import AdminLayout from '../../layouts/AdminLayout'
-import { supabase } from '../../services/supabase'
 import { supabaseAdmin } from '../../services/supabaseAdmin'
+const supabase = supabaseAdmin
 
 const STATUS_BADGE = {
   approved: 'bg-green-100 text-green-700',

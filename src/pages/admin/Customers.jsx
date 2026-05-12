@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { MdSearch, MdCheckCircle, MdBlock, MdPeople } from 'react-icons/md'
 import AdminLayout from '../../layouts/AdminLayout'
-import { supabase } from '../../services/supabase'
+import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
 
 const STATUS_BADGE = {
   approved: 'bg-green-100 text-green-700',

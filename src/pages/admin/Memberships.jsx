@@ -4,7 +4,7 @@ import {
   MdClose, MdOpenInNew,
 } from 'react-icons/md'
 import AdminLayout from '../../layouts/AdminLayout'
-import { supabase } from '../../services/supabase'
+import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
 
 const STATUS_BADGE = {
   pending:  'bg-yellow-100 text-yellow-700',

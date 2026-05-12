@@ -4,7 +4,7 @@ import {
   MdCheckCircle, MdCancel,
 } from 'react-icons/md'
 import AdminLayout from '../../layouts/AdminLayout'
-import { supabase } from '../../services/supabase'
+import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
 
 const UNIT_TYPES = ['kg', 'g', 'L', 'mL', 'piece', 'dozen', 'box', 'pack', 'bottle', 'can', 'bag', 'sack']
 

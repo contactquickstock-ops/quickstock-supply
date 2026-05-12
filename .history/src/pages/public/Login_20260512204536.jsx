@@ -1,18 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../../services/supabase'
 import toast, { Toaster } from 'react-hot-toast'
 
 export default function Login() {
   const navigate = useNavigate()
-
-  // Show any message forwarded from AuthCallback via sessionStorage
-  useEffect(() => {
-    const notice = sessionStorage.getItem('auth_notice')
-    const error  = sessionStorage.getItem('auth_error')
-    if (notice) { toast.success(notice, { duration: 6000 }); sessionStorage.removeItem('auth_notice') }
-    if (error)  { toast.error(error,   { duration: 6000 }); sessionStorage.removeItem('auth_error')  }
-  }, [])
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading]   = useState(false)
@@ -57,7 +49,7 @@ export default function Login() {
       return
     }
 
-    toast.success(`Welcome back, ${profile.full_name?.split(' ')[0] || 'there'}!`)
+    toast.success(`Welcome back, ${profile.fullname?.split(' ')[0] || 'there'}!`)
 
     if (profile.role === 'superadmin') navigate('/admin/dashboard')
     else if (profile.role === 'customer') navigate('/customer/dashboard')
@@ -72,10 +64,7 @@ export default function Login() {
   async function handleGoogleLogin() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        redirectTo: window.location.origin + '/auth/callback',
-        queryParams: { prompt: 'select_account' },
-      },
+      options: { redirectTo: window.location.origin + '/auth/callback' }
     })
     if (error) toast.error(error.message)
   }
@@ -87,12 +76,15 @@ export default function Login() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <img
-            src="/logo.png"
-            alt="QuickStock Supply"
-            className="h-24 mx-auto object-contain"
-          />
-          <p className="text-gray-500 text-sm mt-1">Sign in to your account</p>
+          <div className="inline-flex items-center gap-2 mb-2">
+            <div className="w-9 h-9 bg-green-600 rounded-lg flex items-center justify-center">
+              <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10" />
+              </svg>
+            </div>
+            <span className="text-xl font-bold text-gray-900">QuickStock</span>
+          </div>
+          <p className="text-gray-500 text-sm">Sign in to your account</p>
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">

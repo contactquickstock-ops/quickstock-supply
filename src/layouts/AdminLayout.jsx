@@ -52,19 +52,17 @@ export default function AdminLayout({ children, pageTitle = 'Dashboard' }) {
       {/* ── Sidebar ── */}
       <aside
         className={`
-          fixed top-0 left-0 h-full w-64 bg-[#00B14F] z-30 flex flex-col
+          fixed top-0 left-0 h-full w-64 bg-[#1A2E74] z-30 flex flex-col
           transition-transform duration-300 ease-in-out
           ${open ? 'translate-x-0' : '-translate-x-full'}
           lg:static lg:translate-x-0
         `}
       >
         {/* Brand */}
-        <div className="flex items-center justify-between px-5 py-5 border-b border-green-400/40">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shadow-sm">
-              <span className="text-[#00B14F] font-extrabold text-sm leading-none">Q</span>
-            </div>
-            <span className="text-white font-bold text-base tracking-tight">QuickStock</span>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+          <div className="flex items-center">
+            <img src="/logo.png" alt="QuickStock Supply"
+              className="h-10 object-contain bg-white rounded-xl px-1.5 py-0.5" />
           </div>
           <button
             className="lg:hidden text-white/70 hover:text-white transition-colors"
@@ -88,7 +86,7 @@ export default function AdminLayout({ children, pageTitle = 'Dashboard' }) {
                   flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium
                   transition-all duration-150 select-none
                   ${active
-                    ? 'bg-white text-[#00B14F] shadow-sm'
+                    ? 'bg-white text-[#1A2E74] shadow-sm'
                     : 'text-white/75 hover:bg-white/10 hover:text-white'}
                 `}
               >
@@ -142,7 +140,7 @@ export default function AdminLayout({ children, pageTitle = 'Dashboard' }) {
               </p>
             </div>
             <div
-              className="w-9 h-9 rounded-full bg-[#00B14F] flex items-center justify-center
+              className="w-9 h-9 rounded-full bg-[#1A2E74] flex items-center justify-center
                 text-white font-bold text-sm shadow-sm shrink-0"
             >
               {initials}

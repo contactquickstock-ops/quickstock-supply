@@ -28,8 +28,8 @@ function EmptyCart({ onBrowse }) {
       </div>
       <button
         onClick={onBrowse}
-        className="mt-1 px-6 py-2.5 bg-[#00B14F] text-white rounded-xl
-          font-semibold text-sm hover:bg-[#009940] transition shadow-sm"
+        className="mt-1 px-6 py-2.5 bg-[#1A2E74] text-white rounded-xl
+          font-semibold text-sm hover:bg-[#162060] transition shadow-sm"
       >
         Browse Products
       </button>
@@ -66,7 +66,7 @@ function CartItem({ item, onRemove, onIncrease, onDecrease }) {
         {/* Name + remove */}
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <p className="text-[10px] font-semibold text-[#00B14F] uppercase tracking-wide">
+            <p className="text-[10px] font-semibold text-[#1A2E74] uppercase tracking-wide">
               {product.category ?? '—'}
             </p>
             <h4 className="text-gray-800 font-bold text-sm leading-snug line-clamp-1 mt-0.5">
@@ -148,7 +148,7 @@ function OrderSummary({ subtotal, itemCount, onCheckout, onContinue }) {
           </p>
           <div className="mt-2 h-1.5 bg-yellow-100 rounded-full overflow-hidden">
             <div
-              className="h-full bg-[#00B14F] rounded-full transition-all duration-500"
+              className="h-full bg-[#1A2E74] rounded-full transition-all duration-500"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -192,7 +192,7 @@ function OrderSummary({ subtotal, itemCount, onCheckout, onContinue }) {
       {/* Grand total */}
       <div className="flex items-center justify-between">
         <span className="font-bold text-gray-800">Grand Total</span>
-        <span className="font-bold text-xl text-[#00B14F]">
+        <span className="font-bold text-xl text-[#1A2E74]">
           ₱{grandTotal.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
         </span>
       </div>
@@ -200,8 +200,8 @@ function OrderSummary({ subtotal, itemCount, onCheckout, onContinue }) {
       {/* CTA */}
       <button
         onClick={onCheckout}
-        className="w-full py-3 bg-[#00B14F] text-white font-bold rounded-xl text-sm
-          hover:bg-[#009940] active:scale-[0.98] transition-all shadow-sm"
+        className="w-full py-3 bg-[#1A2E74] text-white font-bold rounded-xl text-sm
+          hover:bg-[#162060] active:scale-[0.98] transition-all shadow-sm"
       >
         Place Order
       </button>
@@ -209,7 +209,7 @@ function OrderSummary({ subtotal, itemCount, onCheckout, onContinue }) {
       <button
         onClick={onContinue}
         className="w-full py-2 text-gray-400 text-sm font-medium
-          hover:text-[#00B14F] transition"
+          hover:text-[#1A2E74] transition"
       >
         ← Continue Shopping
       </button>

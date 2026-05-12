@@ -176,7 +176,7 @@ export default function Memberships() {
                   onClick={() => setFilter(f)}
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition
                     ${filter === f
-                      ? 'bg-[#00B14F] text-white'
+                      ? 'bg-[#1A2E74] text-white'
                       : 'text-gray-500 hover:bg-gray-100'}`}
                 >
                   {f}
@@ -196,7 +196,7 @@ export default function Memberships() {
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className="pl-8 pr-4 py-2 text-sm border border-gray-200 rounded-xl
-                  focus:outline-none focus:ring-2 focus:ring-[#00B14F]/30 focus:border-[#00B14F]
+                  focus:outline-none focus:ring-2 focus:ring-[#1A2E74]/30 focus:border-[#1A2E74]
                   w-56 transition"
               />
             </div>
@@ -245,7 +245,7 @@ export default function Memberships() {
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-3">
                             <div
-                              className="w-8 h-8 rounded-full bg-[#00B14F]/10 text-[#00B14F]
+                              className="w-8 h-8 rounded-full bg-[#1A2E74]/10 text-[#1A2E74]
                                 flex items-center justify-center font-bold text-sm shrink-0"
                             >
                               {initials}
@@ -283,7 +283,7 @@ export default function Memberships() {
                             <button
                               onClick={() => setLightbox(m.payment_proof)}
                               className="w-12 h-12 rounded-xl overflow-hidden border border-gray-100
-                                hover:border-[#00B14F] hover:ring-2 hover:ring-[#00B14F]/20
+                                hover:border-[#1A2E74] hover:ring-2 hover:ring-[#1A2E74]/20
                                 transition block shrink-0"
                               title="View payment proof"
                             >

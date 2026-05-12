@@ -100,7 +100,7 @@ function RewardCard({ reward, canRedeem, redeeming, onRedeem }) {
           disabled={!canRedeem || redeeming}
           className={`w-full py-2 rounded-xl text-sm font-bold transition-all
             ${canRedeem && !redeeming
-              ? 'bg-[#00B14F] text-white hover:bg-[#009940] active:scale-[0.98]'
+              ? 'bg-[#1A2E74] text-white hover:bg-[#162060] active:scale-[0.98]'
               : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
         >
           {redeeming ? 'Redeeming…' : canRedeem ? 'Redeem' : 'Not Enough Points'}
@@ -168,7 +168,7 @@ export default function CustomerRewards() {
           <div style="display:flex;justify-content:space-between;padding-top:8px;
             border-top:1px solid #e5e7eb;font-weight:700;">
             <span style="color:#374151;">Remaining balance</span>
-            <span style="color:#00B14F;">${Number(afterBalance).toLocaleString()} pts</span>
+            <span style="color:#1A2E74;">${Number(afterBalance).toLocaleString()} pts</span>
           </div>
         </div>
         <p style="font-size:11px;color:#9ca3af;margin-top:12px;">
@@ -178,7 +178,7 @@ export default function CustomerRewards() {
       showCancelButton: true,
       confirmButtonText: 'Confirm Redeem',
       cancelButtonText: 'Cancel',
-      confirmButtonColor: '#00B14F',
+      confirmButtonColor: '#1A2E74',
       cancelButtonColor: '#9ca3af',
       reverseButtons: true,
       focusConfirm: false,

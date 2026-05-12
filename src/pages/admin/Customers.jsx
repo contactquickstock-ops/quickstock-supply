@@ -132,7 +132,7 @@ export default function Customers() {
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className="pl-8 pr-4 py-2 text-sm border border-gray-200 rounded-xl
-                  focus:outline-none focus:ring-2 focus:ring-[#00B14F]/30 focus:border-[#00B14F]
+                  focus:outline-none focus:ring-2 focus:ring-[#1A2E74]/30 focus:border-[#1A2E74]
                   w-56 transition"
               />
             </div>
@@ -177,7 +177,7 @@ export default function Customers() {
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-3">
                             <div className="w-9 h-9 rounded-full overflow-hidden shrink-0
-                              bg-[#00B14F]/10 flex items-center justify-center">
+                              bg-[#1A2E74]/10 flex items-center justify-center">
                               {customer.avatar_url ? (
                                 <img
                                   src={customer.avatar_url}
@@ -185,7 +185,7 @@ export default function Customers() {
                                   className="w-full h-full object-cover"
                                 />
                               ) : (
-                                <span className="text-[#00B14F] font-bold text-sm">
+                                <span className="text-[#1A2E74] font-bold text-sm">
                                   {initials}
                                 </span>
                               )}

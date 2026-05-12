@@ -40,7 +40,7 @@ export default function CustomerLayout({ children }) {
             to="/customer/dashboard"
             className="flex items-center gap-2 shrink-0"
           >
-            <div className="w-7 h-7 bg-[#00B14F] rounded-lg flex items-center justify-center shadow-sm">
+            <div className="w-7 h-7 bg-[#1A2E74] rounded-lg flex items-center justify-center shadow-sm">
               <span className="text-white font-extrabold text-xs leading-none">Q</span>
             </div>
             <span className="text-gray-800 font-bold text-base tracking-tight hidden sm:block">
@@ -59,7 +59,7 @@ export default function CustomerLayout({ children }) {
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg
                     text-sm font-medium transition
                     ${active
-                      ? 'bg-[#00B14F]/10 text-[#00B14F]'
+                      ? 'bg-[#1A2E74]/10 text-[#1A2E74]'
                       : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'}`}
                 >
                   <Icon size={17} />
@@ -82,7 +82,7 @@ export default function CustomerLayout({ children }) {
               <MdShoppingCart size={22} />
               {itemCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1
-                  bg-[#00B14F] text-white text-[10px] font-bold rounded-full
+                  bg-[#1A2E74] text-white text-[10px] font-bold rounded-full
                   flex items-center justify-center leading-none">
                   {itemCount > 99 ? '99+' : itemCount}
                 </span>
@@ -91,7 +91,7 @@ export default function CustomerLayout({ children }) {
 
             {/* Avatar + first name (desktop) */}
             <div className="hidden sm:flex items-center gap-2 pl-1">
-              <div className="w-8 h-8 rounded-full bg-[#00B14F] flex items-center justify-center
+              <div className="w-8 h-8 rounded-full bg-[#1A2E74] flex items-center justify-center
                 text-white font-bold text-sm shadow-sm shrink-0">
                 {initials}
               </div>
@@ -134,7 +134,7 @@ export default function CustomerLayout({ children }) {
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl
                     text-sm font-medium transition
                     ${active
-                      ? 'bg-[#00B14F]/10 text-[#00B14F]'
+                      ? 'bg-[#1A2E74]/10 text-[#1A2E74]'
                       : 'text-gray-600 hover:bg-gray-100'}`}
                 >
                   <Icon size={18} />

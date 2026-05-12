@@ -110,7 +110,7 @@ function OrderDetailModal({ order, items, loadingItems, onClose }) {
 
           {/* Customer info */}
           <div className="flex items-center gap-3 py-3 px-4 bg-gray-50 rounded-xl">
-            <div className="w-9 h-9 rounded-full bg-[#00B14F]/10 text-[#00B14F]
+            <div className="w-9 h-9 rounded-full bg-[#1A2E74]/10 text-[#1A2E74]
               flex items-center justify-center font-bold text-sm shrink-0">
               {(order.customer_name ?? '?')[0].toUpperCase()}
             </div>
@@ -183,7 +183,7 @@ function OrderDetailModal({ order, items, loadingItems, onClose }) {
             <div className="border-t border-gray-200 pt-2 flex justify-between
               font-bold text-gray-800">
               <span>Total</span>
-              <span className="text-[#00B14F]">₱{fmtMoney(order.total)}</span>
+              <span className="text-[#1A2E74]">₱{fmtMoney(order.total)}</span>
             </div>
           </div>
 
@@ -282,8 +282,8 @@ function AssignModal({ order, drivers, onClose, onAssign, assigning }) {
             onChange={e => setDriverId(e.target.value)}
             disabled={assigning}
             className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-              focus:outline-none focus:ring-2 focus:ring-[#00B14F]/30
-              focus:border-[#00B14F] transition disabled:bg-gray-50"
+              focus:outline-none focus:ring-2 focus:ring-[#1A2E74]/30
+              focus:border-[#1A2E74] transition disabled:bg-gray-50"
           >
             <option value="">— Choose a driver —</option>
             {drivers.map(d => (
@@ -313,7 +313,7 @@ function AssignModal({ order, drivers, onClose, onAssign, assigning }) {
             onClick={() => onAssign(order.id, driverId)}
             disabled={!driverId || assigning}
             className="flex-1 py-2.5 text-sm font-semibold text-white
-              bg-[#00B14F] rounded-xl hover:bg-[#009940]
+              bg-[#1A2E74] rounded-xl hover:bg-[#162060]
               transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {assigning ? 'Assigning…' : 'Assign'}
@@ -494,7 +494,7 @@ export default function AdminOrders() {
                   className={`px-3 py-1.5 rounded-lg text-xs font-semibold
                     capitalize transition
                     ${filter === f
-                      ? 'bg-[#00B14F] text-white'
+                      ? 'bg-[#1A2E74] text-white'
                       : 'text-gray-500 hover:bg-gray-100'}`}
                 >
                   {f === 'on_the_way' ? 'On the Way' : f}
@@ -513,8 +513,8 @@ export default function AdminOrders() {
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 className="pl-8 pr-4 py-2 text-sm border border-gray-200 rounded-xl
-                  focus:outline-none focus:ring-2 focus:ring-[#00B14F]/30
-                  focus:border-[#00B14F] w-56 transition"
+                  focus:outline-none focus:ring-2 focus:ring-[#1A2E74]/30
+                  focus:border-[#1A2E74] w-56 transition"
               />
             </div>
           </div>

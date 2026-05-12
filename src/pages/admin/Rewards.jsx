@@ -333,8 +333,8 @@ export default function Rewards() {
             <button
               onClick={openAdd}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl
-                bg-[#00B14F] text-white text-sm font-semibold
-                hover:bg-[#009940] transition shadow-sm"
+                bg-[#1A2E74] text-white text-sm font-semibold
+                hover:bg-[#162060] transition shadow-sm"
             >
               <MdAdd size={18} />
               Add Reward
@@ -423,7 +423,7 @@ export default function Rewards() {
                   value={histSearch}
                   onChange={e => setHistSearch(e.target.value)}
                   className="pl-8 pr-4 py-2 text-sm border border-gray-200 rounded-xl
-                    focus:outline-none focus:ring-2 focus:ring-[#00B14F]/30 focus:border-[#00B14F]
+                    focus:outline-none focus:ring-2 focus:ring-[#1A2E74]/30 focus:border-[#1A2E74]
                     w-56 transition"
                 />
               </div>
@@ -472,7 +472,7 @@ export default function Rewards() {
                           <td className="px-5 py-4">
                             <div className="flex items-center gap-3">
                               <div
-                                className="w-8 h-8 rounded-full bg-[#00B14F]/10 text-[#00B14F]
+                                className="w-8 h-8 rounded-full bg-[#1A2E74]/10 text-[#1A2E74]
                                   flex items-center justify-center font-bold text-sm shrink-0"
                               >
                                 {initials}
@@ -574,7 +574,7 @@ export default function Rewards() {
                       transition-colors group
                       ${form.imagePreview
                         ? 'border-transparent'
-                        : 'border-gray-200 hover:border-[#00B14F]'}`}
+                        : 'border-gray-200 hover:border-[#1A2E74]'}`}
                   >
                     {form.imagePreview ? (
                       <>
@@ -620,7 +620,7 @@ export default function Rewards() {
                     onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                     disabled={saving}
                     className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-                      focus:outline-none focus:ring-2 focus:ring-[#00B14F]/30 focus:border-[#00B14F]
+                      focus:outline-none focus:ring-2 focus:ring-[#1A2E74]/30 focus:border-[#1A2E74]
                       transition disabled:bg-gray-50 disabled:text-gray-400"
                   />
                 </div>
@@ -637,7 +637,7 @@ export default function Rewards() {
                     disabled={saving}
                     rows={3}
                     className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-                      focus:outline-none focus:ring-2 focus:ring-[#00B14F]/30 focus:border-[#00B14F]
+                      focus:outline-none focus:ring-2 focus:ring-[#1A2E74]/30 focus:border-[#1A2E74]
                       transition disabled:bg-gray-50 disabled:text-gray-400 resize-none"
                   />
                 </div>
@@ -661,7 +661,7 @@ export default function Rewards() {
                       onChange={e => setForm(f => ({ ...f, pointsRequired: e.target.value }))}
                       disabled={saving}
                       className="w-full pl-9 pr-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-                        focus:outline-none focus:ring-2 focus:ring-[#00B14F]/30 focus:border-[#00B14F]
+                        focus:outline-none focus:ring-2 focus:ring-[#1A2E74]/30 focus:border-[#1A2E74]
                         transition disabled:bg-gray-50 disabled:text-gray-400"
                     />
                   </div>
@@ -680,8 +680,8 @@ export default function Rewards() {
                     disabled={saving}
                     aria-label="Toggle active"
                     className={`relative w-11 h-6 rounded-full transition-colors shrink-0
-                      focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#00B14F]/50
-                      ${form.isActive ? 'bg-[#00B14F]' : 'bg-gray-300'}
+                      focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#1A2E74]/50
+                      ${form.isActive ? 'bg-[#1A2E74]' : 'bg-gray-300'}
                       disabled:opacity-50`}
                   >
                     <span
@@ -709,7 +709,7 @@ export default function Rewards() {
                   type="submit"
                   disabled={saving}
                   className="flex-1 px-4 py-2.5 text-sm font-semibold text-white
-                    bg-[#00B14F] rounded-xl hover:bg-[#009940]
+                    bg-[#1A2E74] rounded-xl hover:bg-[#162060]
                     transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {saving

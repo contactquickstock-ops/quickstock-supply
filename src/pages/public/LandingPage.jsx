@@ -14,12 +14,7 @@ export default function LandingPage() {
       {/* ── Navbar ── */}
       <header className="bg-white border-b border-gray-100 shadow-sm">
         <div className="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-[#00B14F] rounded-lg flex items-center justify-center shadow-sm">
-              <span className="text-white font-extrabold text-sm leading-none">Q</span>
-            </div>
-            <span className="text-gray-800 font-bold text-base tracking-tight">QuickStock</span>
-          </div>
+          <img src="/logo.png" alt="QuickStock Supply" className="h-9 object-contain" />
           <div className="flex items-center gap-2">
             <Link
               to="/login"
@@ -30,8 +25,8 @@ export default function LandingPage() {
             </Link>
             <Link
               to="/register"
-              className="px-4 py-2 text-sm font-semibold text-white bg-[#00B14F]
-                rounded-xl hover:bg-[#009940] transition shadow-sm"
+              className="px-4 py-2 text-sm font-semibold text-white bg-[#1A2E74]
+                rounded-xl hover:bg-[#162060] transition shadow-sm"
             >
               Sign Up
             </Link>
@@ -42,15 +37,15 @@ export default function LandingPage() {
       {/* ── Hero ── */}
       <section className="flex-1 flex items-center justify-center px-5 py-20">
         <div className="text-center max-w-xl">
-          <div className="inline-flex items-center gap-2 bg-[#00B14F]/10 text-[#00B14F]
+          <div className="inline-flex items-center gap-2 bg-[#1A2E74]/10 text-[#1A2E74]
             px-4 py-1.5 rounded-full text-sm font-semibold mb-6">
-            <div className="w-1.5 h-1.5 rounded-full bg-[#00B14F]" />
+            <div className="w-1.5 h-1.5 rounded-full bg-[#1A2E74]" />
             Fast & Reliable Supply Delivery
           </div>
 
           <h1 className="text-4xl sm:text-5xl font-black text-gray-800 leading-tight">
             Your Supplies,
-            <span className="text-[#00B14F]"> Delivered.</span>
+            <span className="text-[#1A2E74]"> Delivered.</span>
           </h1>
 
           <p className="text-gray-400 text-lg mt-4 leading-relaxed">
@@ -61,8 +56,8 @@ export default function LandingPage() {
           <div className="flex items-center justify-center gap-3 mt-8">
             <Link
               to="/register"
-              className="px-7 py-3 bg-[#00B14F] text-white font-bold rounded-xl
-                hover:bg-[#009940] transition shadow-md text-sm"
+              className="px-7 py-3 bg-[#1A2E74] text-white font-bold rounded-xl
+                hover:bg-[#162060] transition shadow-md text-sm"
             >
               Get Started
             </Link>
@@ -85,9 +80,9 @@ export default function LandingPage() {
               key={title}
               className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6"
             >
-              <div className="w-11 h-11 bg-[#00B14F]/10 rounded-xl flex items-center
+              <div className="w-11 h-11 bg-[#1A2E74]/10 rounded-xl flex items-center
                 justify-center mb-4">
-                <Icon size={22} className="text-[#00B14F]" />
+                <Icon size={22} className="text-[#1A2E74]" />
               </div>
               <h3 className="text-gray-800 font-bold text-sm">{title}</h3>
               <p className="text-gray-400 text-xs mt-1.5 leading-relaxed">{desc}</p>

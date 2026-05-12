@@ -16,7 +16,7 @@ function PasswordInput({ value, onChange, placeholder, show, onToggle, disabled,
         disabled={disabled}
         autoComplete={autoComplete}
         className="w-full px-3.5 py-2.5 pr-10 text-sm border border-gray-200 rounded-xl
-          focus:outline-none focus:ring-2 focus:ring-[#00B14F]/30 focus:border-[#00B14F]
+          focus:outline-none focus:ring-2 focus:ring-[#1A2E74]/30 focus:border-[#1A2E74]
           transition disabled:bg-gray-50 disabled:text-gray-400"
       />
       <button
@@ -44,7 +44,7 @@ function Field({ label, children }) {
 }
 
 const INPUT_CLS = `w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-  focus:outline-none focus:ring-2 focus:ring-[#00B14F]/30 focus:border-[#00B14F]
+  focus:outline-none focus:ring-2 focus:ring-[#1A2E74]/30 focus:border-[#1A2E74]
   transition disabled:bg-gray-50 disabled:text-gray-400`
 
 export default function RegisterPage() {
@@ -123,12 +123,12 @@ export default function RegisterPage() {
       <div className="w-full max-w-sm">
 
         {/* Brand */}
-        <div className="flex flex-col items-center gap-2 mb-7">
-          <div className="w-12 h-12 bg-[#00B14F] rounded-2xl flex items-center
-            justify-center shadow-md">
-            <span className="text-white font-black text-xl leading-none">Q</span>
-          </div>
-          <h1 className="text-gray-800 font-bold text-xl">QuickStock</h1>
+        <div className="flex flex-col items-center gap-1 mb-7">
+          <img
+            src="/logo.png"
+            alt="QuickStock Supply"
+            className="h-24 object-contain"
+          />
           <p className="text-gray-400 text-sm">Create your account</p>
         </div>
 
@@ -233,8 +233,8 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-[#00B14F] text-white font-bold rounded-xl
-                text-sm hover:bg-[#009940] active:scale-[0.98] transition-all
+              className="w-full py-3 bg-[#1A2E74] text-white font-bold rounded-xl
+                text-sm hover:bg-[#162060] active:scale-[0.98] transition-all
                 shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {loading ? 'Submitting…' : 'Create Account'}
@@ -244,7 +244,7 @@ export default function RegisterPage() {
 
         <p className="text-center text-sm text-gray-400 mt-5">
           Already have an account?{' '}
-          <Link to="/login" className="text-[#00B14F] font-semibold hover:underline">
+          <Link to="/login" className="text-[#1A2E74] font-semibold hover:underline">
             Sign in
           </Link>
         </p>

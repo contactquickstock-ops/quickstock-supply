@@ -126,7 +126,7 @@ export default function Checkout() {
             {/* Delivery address */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-3">
               <h3 className="text-gray-700 font-bold text-sm flex items-center gap-2">
-                <MdLocationOn size={18} className="text-[#00B14F]" />
+                <MdLocationOn size={18} className="text-[#1A2E74]" />
                 Delivery Address
               </h3>
               <textarea
@@ -136,7 +136,7 @@ export default function Checkout() {
                 rows={3}
                 disabled={placing}
                 className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-                  focus:outline-none focus:ring-2 focus:ring-[#00B14F]/30 focus:border-[#00B14F]
+                  focus:outline-none focus:ring-2 focus:ring-[#1A2E74]/30 focus:border-[#1A2E74]
                   transition disabled:bg-gray-50 disabled:text-gray-400 resize-none"
               />
             </div>
@@ -144,7 +144,7 @@ export default function Checkout() {
             {/* Landmark */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-3">
               <h3 className="text-gray-700 font-bold text-sm flex items-center gap-2">
-                <MdPlace size={18} className="text-[#00B14F]" />
+                <MdPlace size={18} className="text-[#1A2E74]" />
                 Landmark
                 <span className="text-gray-400 font-normal">(optional)</span>
               </h3>
@@ -155,7 +155,7 @@ export default function Checkout() {
                 placeholder="e.g. Near 7-Eleven, beside the blue gate…"
                 disabled={placing}
                 className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-                  focus:outline-none focus:ring-2 focus:ring-[#00B14F]/30 focus:border-[#00B14F]
+                  focus:outline-none focus:ring-2 focus:ring-[#1A2E74]/30 focus:border-[#1A2E74]
                   transition disabled:bg-gray-50 disabled:text-gray-400"
               />
             </div>
@@ -163,7 +163,7 @@ export default function Checkout() {
             {/* Order notes */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-3">
               <h3 className="text-gray-700 font-bold text-sm flex items-center gap-2">
-                <MdNotes size={18} className="text-[#00B14F]" />
+                <MdNotes size={18} className="text-[#1A2E74]" />
                 Order Notes
                 <span className="text-gray-400 font-normal">(optional)</span>
               </h3>
@@ -174,7 +174,7 @@ export default function Checkout() {
                 rows={3}
                 disabled={placing}
                 className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-                  focus:outline-none focus:ring-2 focus:ring-[#00B14F]/30 focus:border-[#00B14F]
+                  focus:outline-none focus:ring-2 focus:ring-[#1A2E74]/30 focus:border-[#1A2E74]
                   transition disabled:bg-gray-50 disabled:text-gray-400 resize-none"
               />
             </div>
@@ -182,12 +182,12 @@ export default function Checkout() {
             {/* Payment method — COD only */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-3">
               <h3 className="text-gray-700 font-bold text-sm flex items-center gap-2">
-                <MdPayment size={18} className="text-[#00B14F]" />
+                <MdPayment size={18} className="text-[#1A2E74]" />
                 Payment Method
               </h3>
               <div className="flex items-center gap-3 px-4 py-3.5 rounded-xl
-                border-2 border-[#00B14F] bg-[#00B14F]/5">
-                <MdCheckCircle size={20} className="text-[#00B14F] shrink-0" />
+                border-2 border-[#1A2E74] bg-[#1A2E74]/5">
+                <MdCheckCircle size={20} className="text-[#1A2E74] shrink-0" />
                 <div>
                   <p className="text-gray-800 font-bold text-sm">Cash on Delivery</p>
                   <p className="text-gray-400 text-xs mt-0.5">Pay in cash when your order arrives</p>
@@ -255,7 +255,7 @@ export default function Checkout() {
 
               <div className="flex justify-between items-center">
                 <span className="font-bold text-gray-800">Total</span>
-                <span className="font-bold text-xl text-[#00B14F]">
+                <span className="font-bold text-xl text-[#1A2E74]">
                   ₱{total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
                 </span>
               </div>
@@ -264,8 +264,8 @@ export default function Checkout() {
               <button
                 type="submit"
                 disabled={placing}
-                className="w-full py-3 bg-[#00B14F] text-white font-bold rounded-xl text-sm
-                  hover:bg-[#009940] active:scale-[0.98] transition-all shadow-sm
+                className="w-full py-3 bg-[#1A2E74] text-white font-bold rounded-xl text-sm
+                  hover:bg-[#162060] active:scale-[0.98] transition-all shadow-sm
                   disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 {placing ? 'Placing Order…' : 'Place Order'}
@@ -276,7 +276,7 @@ export default function Checkout() {
                 onClick={() => navigate('/customer/cart')}
                 disabled={placing}
                 className="w-full py-2 text-gray-400 text-sm font-medium
-                  hover:text-[#00B14F] transition disabled:opacity-50"
+                  hover:text-[#1A2E74] transition disabled:opacity-50"
               >
                 ← Back to Cart
               </button>

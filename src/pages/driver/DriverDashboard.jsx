@@ -76,7 +76,7 @@ function DeliveryCard({ order, onAccept, onDeliver, onReport, busy }) {
             <MdPhone size={15} className="text-gray-400 shrink-0" />
             <a
               href={`tel:${order.customer.contact_number}`}
-              className="text-[#00B14F] text-sm font-medium hover:underline"
+              className="text-[#1A2E74] text-sm font-medium hover:underline"
               onClick={e => e.stopPropagation()}
             >
               {order.customer.contact_number}
@@ -84,7 +84,7 @@ function DeliveryCard({ order, onAccept, onDeliver, onReport, busy }) {
           </div>
         )}
         <div className="flex items-start gap-2.5">
-          <MdLocationOn size={16} className="text-[#00B14F] shrink-0 mt-0.5" />
+          <MdLocationOn size={16} className="text-[#1A2E74] shrink-0 mt-0.5" />
           <div>
             <p className="text-gray-700 text-sm leading-snug">{order.address ?? '—'}</p>
             {order.landmark && (
@@ -135,8 +135,8 @@ function DeliveryCard({ order, onAccept, onDeliver, onReport, busy }) {
         <button
           onClick={() => onAccept(order.id)}
           disabled={busy}
-          className="w-full py-3 bg-[#00B14F] text-white font-bold rounded-xl text-sm
-            hover:bg-[#009940] active:scale-[0.98] transition-all
+          className="w-full py-3 bg-[#1A2E74] text-white font-bold rounded-xl text-sm
+            hover:bg-[#162060] active:scale-[0.98] transition-all
             disabled:opacity-60 disabled:cursor-not-allowed
             flex items-center justify-center gap-2"
         >
@@ -150,8 +150,8 @@ function DeliveryCard({ order, onAccept, onDeliver, onReport, busy }) {
           <button
             onClick={() => onDeliver(order)}
             disabled={busy}
-            className="flex-1 py-3 bg-[#00B14F] text-white font-bold rounded-xl text-sm
-              hover:bg-[#009940] active:scale-[0.98] transition-all
+            className="flex-1 py-3 bg-[#1A2E74] text-white font-bold rounded-xl text-sm
+              hover:bg-[#162060] active:scale-[0.98] transition-all
               disabled:opacity-60 disabled:cursor-not-allowed
               flex items-center justify-center gap-2"
           >
@@ -260,10 +260,10 @@ function DeliverModal({ order, onClose, onConfirm, confirming }) {
           {/* Step indicator */}
           <div className="flex items-center gap-2">
             <div className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold
-              ${photoReady ? 'bg-[#00B14F] text-white' : 'bg-gray-200 text-gray-500'}`}>
+              ${photoReady ? 'bg-[#1A2E74] text-white' : 'bg-gray-200 text-gray-500'}`}>
               {photoReady ? <MdCheckCircle size={16} /> : '1'}
             </div>
-            <p className={`text-xs font-semibold ${photoReady ? 'text-[#00B14F]' : 'text-gray-500'}`}>
+            <p className={`text-xs font-semibold ${photoReady ? 'text-[#1A2E74]' : 'text-gray-500'}`}>
               Upload delivery photo
             </p>
             <div className="flex-1 h-px bg-gray-200 mx-1" />
@@ -286,7 +286,7 @@ function DeliverModal({ order, onClose, onConfirm, confirming }) {
                   ? 'border-transparent cursor-pointer'
                   : uploading
                     ? 'border-gray-200 cursor-not-allowed'
-                    : 'border-dashed border-gray-200 hover:border-[#00B14F] cursor-pointer'}`}
+                    : 'border-dashed border-gray-200 hover:border-[#1A2E74] cursor-pointer'}`}
             >
               {imagePreview ? (
                 <>
@@ -297,7 +297,7 @@ function DeliverModal({ order, onClose, onConfirm, confirming }) {
                   />
                   {/* Uploaded checkmark */}
                   {!uploading && (
-                    <div className="absolute top-2.5 right-2.5 bg-[#00B14F] rounded-full p-1">
+                    <div className="absolute top-2.5 right-2.5 bg-[#1A2E74] rounded-full p-1">
                       <MdCheckCircle size={16} className="text-white" />
                     </div>
                   )}
@@ -314,7 +314,7 @@ function DeliverModal({ order, onClose, onConfirm, confirming }) {
                 </>
               ) : uploading ? (
                 <div className="flex flex-col items-center gap-3 text-gray-400 select-none">
-                  <div className="w-8 h-8 border-2 border-[#00B14F] border-t-transparent
+                  <div className="w-8 h-8 border-2 border-[#1A2E74] border-t-transparent
                     rounded-full animate-spin" />
                   <span className="text-xs">Uploading photo…</span>
                 </div>
@@ -363,7 +363,7 @@ function DeliverModal({ order, onClose, onConfirm, confirming }) {
             disabled={!photoReady || uploading || confirming}
             className={`flex-1 py-3 text-sm font-semibold rounded-xl transition-all
               ${photoReady && !uploading && !confirming
-                ? 'bg-[#00B14F] text-white hover:bg-[#009940] active:scale-[0.98]'
+                ? 'bg-[#1A2E74] text-white hover:bg-[#162060] active:scale-[0.98]'
                 : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
           >
             {confirming ? 'Confirming…' : 'Mark as Delivered'}

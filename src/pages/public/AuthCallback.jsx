@@ -156,11 +156,9 @@ export default function AuthCallback() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="text-center space-y-5">
-        <div className="w-14 h-14 bg-[#00B14F] rounded-2xl flex items-center
-          justify-center shadow-lg mx-auto">
-          <span className="text-white font-black text-2xl leading-none">Q</span>
-        </div>
-        <div className="w-7 h-7 rounded-full border-[3px] border-[#00B14F]
+        <img src="/logo.png" alt="QuickStock Supply"
+          className="h-16 object-contain mx-auto" />
+        <div className="w-7 h-7 rounded-full border-[3px] border-[#1A2E74]
           border-t-transparent animate-spin mx-auto" />
         <p className="text-gray-500 text-sm font-medium">{status}</p>
         <p className="text-gray-300 text-xs">QuickStock Supply</p>

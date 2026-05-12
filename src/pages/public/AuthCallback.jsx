@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../../services/supabase'
+import { supabaseAdmin } from '../../services/supabaseAdmin'
 
 // Use sessionStorage to pass messages through a full-page redirect after signOut.
 // React Router's navigate() can be unreliable right after supabase.auth.signOut()
@@ -81,7 +82,7 @@ export default function AuthCallback() {
           user.email?.split('@')[0] ??
           'User'
 
-        const { error: insertErr } = await supabase.from('profiles').insert({
+        const { error: insertErr } = await supabaseAdmin.from('profiles').insert({
           id:             user.id,
           full_name:      fullName,
           email:          user.email,

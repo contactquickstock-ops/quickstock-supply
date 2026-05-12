@@ -26,6 +26,7 @@ import CustomerMembership from './pages/customer/Membership'
 // Driver
 import DriverDashboard from './pages/driver/Dashboard'
 import DriverProfile   from './pages/driver/Profile'
+import DriverHistory   from './pages/driver/History'
 
 export default function App() {
   return (
@@ -56,6 +57,7 @@ export default function App() {
 
         {/* ── Driver ── */}
         <Route path="/driver/dashboard" element={<ProtectedRoute allowedRoles={['driver']}><DriverDashboard /></ProtectedRoute>} />
+        <Route path="/driver/history"   element={<ProtectedRoute allowedRoles={['driver']}><DriverHistory /></ProtectedRoute>} />
         <Route path="/driver/profile"   element={<ProtectedRoute allowedRoles={['driver']}><DriverProfile /></ProtectedRoute>} />
 
       </Routes>

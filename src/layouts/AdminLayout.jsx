@@ -8,19 +8,21 @@ import {
   MdDirectionsCar,
   MdPeople,
   MdInventory2,
-  MdSettings,
+  MdCardMembership,
+  MdStar,
   MdMenu,
   MdClose,
   MdLogout,
 } from 'react-icons/md'
 
 const NAV_ITEMS = [
-  { label: 'Dashboard',  icon: MdDashboard,      path: '/admin/dashboard' },
-  { label: 'Orders',     icon: MdShoppingCart,   path: '/admin/orders'    },
-  { label: 'Drivers',    icon: MdDirectionsCar,  path: '/admin/drivers'   },
-  { label: 'Customers',  icon: MdPeople,          path: '/admin/customers' },
-  { label: 'Inventory',  icon: MdInventory2,      path: '/admin/inventory' },
-  { label: 'Settings',   icon: MdSettings,        path: '/admin/settings'  },
+  { label: 'Dashboard',   icon: MdDashboard,       path: '/admin/dashboard'   },
+  { label: 'Orders',      icon: MdShoppingCart,    path: '/admin/orders'      },
+  { label: 'Drivers',     icon: MdDirectionsCar,   path: '/admin/drivers'     },
+  { label: 'Customers',   icon: MdPeople,           path: '/admin/customers'   },
+  { label: 'Products',    icon: MdInventory2,       path: '/admin/products'    },
+  { label: 'Memberships', icon: MdCardMembership,   path: '/admin/memberships' },
+  { label: 'Rewards',     icon: MdStar,             path: '/admin/rewards'     },
 ]
 
 export default function AdminLayout({ children, pageTitle = 'Dashboard' }) {

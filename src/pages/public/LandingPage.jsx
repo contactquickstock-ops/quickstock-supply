@@ -14,7 +14,7 @@ export default function LandingPage() {
       {/* ── Navbar ── */}
       <header className="bg-white border-b border-gray-100 shadow-sm">
         <div className="max-w-5xl mx-auto px-5 h-14 flex items-center justify-between">
-          <img src="/logo.png" alt="QuickStock Supply" className="h-9 object-contain" />
+          <img src="/logo.jpg" alt="QuickStock Supply" className="h-9 object-contain" />
           <div className="flex items-center gap-2">
             <Link
               to="/login"

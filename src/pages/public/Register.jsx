@@ -125,7 +125,7 @@ export default function RegisterPage() {
         {/* Brand */}
         <div className="flex flex-col items-center gap-1 mb-7">
           <img
-            src="/logo.png"
+            src="/logo.jpg"
             alt="QuickStock Supply"
             className="h-24 object-contain"
           />

@@ -61,7 +61,7 @@ export default function AdminLayout({ children, pageTitle = 'Dashboard' }) {
         {/* Brand */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
           <div className="flex items-center">
-            <img src="/logo.png" alt="QuickStock Supply"
+            <img src="/logo.jpg" alt="QuickStock Supply"
               className="h-10 object-contain bg-white rounded-xl px-1.5 py-0.5" />
           </div>
           <button

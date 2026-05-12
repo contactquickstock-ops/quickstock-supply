@@ -88,7 +88,7 @@ export default function Login() {
         {/* Logo */}
         <div className="text-center mb-8">
           <img
-            src="/logo.png"
+            src="/logo.jpg"
             alt="QuickStock Supply"
             className="h-24 mx-auto object-contain"
           />

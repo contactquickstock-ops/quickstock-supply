@@ -28,7 +28,7 @@ export default function DriverLayout({ children }) {
         <div className="max-w-lg mx-auto px-4 h-14 flex items-center justify-between">
 
           {/* Brand */}
-          <img src="/logo.png" alt="QuickStock Supply"
+          <img src="/logo.jpg" alt="QuickStock Supply"
             className="h-8 object-contain bg-white rounded-lg px-1.5 py-0.5" />
 
           {/* Driver identity + logout */}

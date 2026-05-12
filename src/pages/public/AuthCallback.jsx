@@ -156,7 +156,7 @@ export default function AuthCallback() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <div className="text-center space-y-5">
-        <img src="/logo.png" alt="QuickStock Supply"
+        <img src="/logo.jpg" alt="QuickStock Supply"
           className="h-16 object-contain mx-auto" />
         <div className="w-7 h-7 rounded-full border-[3px] border-[#1A2E74]
           border-t-transparent animate-spin mx-auto" />

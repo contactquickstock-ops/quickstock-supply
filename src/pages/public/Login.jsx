@@ -1,21 +1,18 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useLocation, Link } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import { supabase } from '../../services/supabase'
 import toast, { Toaster } from 'react-hot-toast'
 
 export default function Login() {
-  const navigate  = useNavigate()
-  const location  = useLocation()
+  const navigate = useNavigate()
 
-  // Show any message forwarded from AuthCallback (e.g. "pending approval")
+  // Show any message forwarded from AuthCallback via sessionStorage
   useEffect(() => {
-    const state = location.state
-    if (!state) return
-    if (state.notice) toast.success(state.notice, { duration: 6000 })
-    if (state.error)  toast.error(state.error,  { duration: 6000 })
-    // Clear the state so it doesn't re-show on refresh
-    window.history.replaceState({}, '', window.location.pathname)
-  }, [location.state])
+    const notice = sessionStorage.getItem('auth_notice')
+    const error  = sessionStorage.getItem('auth_error')
+    if (notice) { toast.success(notice, { duration: 6000 }); sessionStorage.removeItem('auth_notice') }
+    if (error)  { toast.error(error,   { duration: 6000 }); sessionStorage.removeItem('auth_error')  }
+  }, [])
   const [email, setEmail]       = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading]   = useState(false)

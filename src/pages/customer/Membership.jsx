@@ -217,7 +217,7 @@ function ApplyForm({ onSubmitted }) {
         })
       if (insertErr) throw new Error(insertErr.message)
 
-      toast.success('Application submitted! We'll review it shortly.', { duration: 4000 })
+      toast.success("Application submitted! We'll review it shortly.", { duration: 4000 })
       onSubmitted()
     } catch (err) {
       setFormError(err.message)

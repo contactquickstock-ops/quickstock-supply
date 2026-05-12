@@ -2,9 +2,10 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import ProtectedRoute from './routes/ProtectedRoute'
 
 // Public
-import LandingPage  from './pages/public/LandingPage'
-import LoginPage    from './pages/public/Login'
-import RegisterPage from './pages/public/Register'
+import LandingPage   from './pages/public/LandingPage'
+import LoginPage     from './pages/public/Login'
+import RegisterPage  from './pages/public/Register'
+import AuthCallback  from './pages/public/AuthCallback'
 
 // Admin
 import AdminDashboard   from './pages/admin/Dashboard'
@@ -34,9 +35,10 @@ export default function App() {
       <Routes>
 
         {/* ── Public ── */}
-        <Route path="/"         element={<LandingPage />} />
-        <Route path="/login"    element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/"              element={<LandingPage />} />
+        <Route path="/login"         element={<LoginPage />} />
+        <Route path="/register"      element={<RegisterPage />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
 
         {/* ── Admin ── */}
         <Route path="/admin/dashboard"   element={<ProtectedRoute allowedRoles={['superadmin']}><AdminDashboard /></ProtectedRoute>} />

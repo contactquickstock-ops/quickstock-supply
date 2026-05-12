@@ -75,7 +75,7 @@ function OrderDetailModal({ order, items, loadingItems, onClose }) {
           border-b border-gray-100 shrink-0">
           <div>
             <p className="text-gray-800 font-bold text-sm font-mono tracking-wide">
-              #{order.id.slice(-8).toUpperCase()}
+              #{String(order.id).padStart(6,'0')}
             </p>
             <p className="text-gray-400 text-xs mt-0.5">
               {fmtDate(order.created_at, {
@@ -357,7 +357,7 @@ export default function DriverHistory() {
                       {order.customer_name ?? '—'}
                     </p>
                     <p className="font-mono text-xs text-gray-400 mt-0.5">
-                      #{order.id.slice(-8).toUpperCase()}
+                      #{String(order.id).padStart(6,'0')}
                     </p>
                   </div>
                   <StatusBadge status={order.status} />

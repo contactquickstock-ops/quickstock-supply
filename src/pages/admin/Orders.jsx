@@ -85,7 +85,7 @@ function OrderDetailModal({ order, items, loadingItems, onClose }) {
           border-b border-gray-100 shrink-0">
           <div>
             <p className="text-gray-800 font-bold text-base font-mono tracking-wide">
-              #{order.id.slice(-8).toUpperCase()}
+              #{String(order.id).padStart(6,'0')}
             </p>
             <p className="text-gray-400 text-xs mt-0.5">
               {fmtDate(order.created_at, {
@@ -260,7 +260,7 @@ function AssignModal({ order, drivers, onClose, onAssign, assigning }) {
           <div>
             <h3 className="text-gray-800 font-bold text-base">Assign Driver</h3>
             <p className="text-gray-400 text-xs mt-0.5">
-              Order #{order.id.slice(-8).toUpperCase()}
+              Order #{String(order.id).padStart(6,'0')}
             </p>
           </div>
           <button
@@ -559,7 +559,7 @@ export default function AdminOrders() {
                       >
                         {/* Order ID */}
                         <td className="px-5 py-4 font-mono text-xs text-gray-400">
-                          #{order.id.slice(-8).toUpperCase()}
+                          #{String(order.id).padStart(6,'0')}
                         </td>
 
                         {/* Customer */}

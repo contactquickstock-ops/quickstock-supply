@@ -216,7 +216,7 @@ export default function Orders() {
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-gray-800 font-bold text-sm font-mono tracking-wide">
-                        #{order.id.slice(-8).toUpperCase()}
+                        #{String(order.id).padStart(6,'0')}
                       </p>
                       <p className="text-gray-400 text-xs mt-0.5">
                         {fmtDate(order.created_at, { month: 'short', day: 'numeric', year: 'numeric' })}
@@ -254,7 +254,7 @@ export default function Orders() {
               border-b border-gray-100 shrink-0">
               <div>
                 <p className="text-gray-800 font-bold text-base font-mono tracking-wide">
-                  #{selectedOrder.id.slice(-8).toUpperCase()}
+                  #{String(selectedOrder.id).padStart(6,'0')}
                 </p>
                 <p className="text-gray-400 text-xs mt-0.5">
                   {fmtDate(selectedOrder.created_at, {

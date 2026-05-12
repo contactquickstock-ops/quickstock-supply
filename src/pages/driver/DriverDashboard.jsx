@@ -55,7 +55,7 @@ function DeliveryCard({ order, onAccept, onDeliver, onReport, busy }) {
       {/* Order ID + Status */}
       <div className="flex items-center justify-between gap-3">
         <p className="text-gray-800 font-bold text-sm font-mono tracking-wide">
-          #{order.id.slice(-8).toUpperCase()}
+          #{String(order.id).padStart(6,'0')}
         </p>
         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full
           text-xs font-semibold whitespace-nowrap ${cfg.color}`}>
@@ -241,7 +241,7 @@ function DeliverModal({ order, onClose, onConfirm, confirming }) {
           <div>
             <h3 className="text-gray-800 font-bold text-base">Confirm Delivery</h3>
             <p className="text-gray-400 text-xs mt-0.5">
-              #{order.id.slice(-8).toUpperCase()} · {order.customer_name ?? '—'}
+              #{String(order.id).padStart(6,'0')} · {order.customer_name ?? '—'}
             </p>
           </div>
           <button
@@ -401,7 +401,7 @@ function ReportModal({ order, onClose, onConfirm, submitting }) {
           <div>
             <h3 className="text-gray-800 font-bold text-base">Report Issue</h3>
             <p className="text-gray-400 text-xs mt-0.5">
-              #{order.id.slice(-8).toUpperCase()} · {order.customer_name ?? '—'}
+              #{String(order.id).padStart(6,'0')} · {order.customer_name ?? '—'}
             </p>
           </div>
           <button
@@ -542,10 +542,10 @@ export default function DriverDashboard() {
 
         await supabase
           .from('customer_points')
-          .upsert({
-            customer_id:  order.customer_id,
-            total_points: (current?.total_points ?? 0) + pointsEarned,
-          })
+          .upsert(
+            { customer_id: order.customer_id, total_points: (current?.total_points ?? 0) + pointsEarned },
+            { onConflict: 'customer_id' }
+          )
       }
 
       // 3. Remove from active list

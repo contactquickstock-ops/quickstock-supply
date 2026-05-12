@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import { MdShoppingCart, MdSearch, MdImageNotSupported } from 'react-icons/md'
 import CustomerLayout from '../../layouts/CustomerLayout'
-import { supabase } from '../../services/supabase'
+import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
 import { useCart } from '../../context/CartContext'
 import toast from 'react-hot-toast'
 

@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { MdStar } from 'react-icons/md'
 import Swal from 'sweetalert2'
 import CustomerLayout from '../../layouts/CustomerLayout'
-import { supabase } from '../../services/supabase'
+import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
 import { useAuth } from '../../context/AuthContext'
 import toast from 'react-hot-toast'
 

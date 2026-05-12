@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react'
 import { MdCameraAlt, MdLock, MdEdit, MdCheckCircle } from 'react-icons/md'
 import DriverLayout from '../../layouts/DriverLayout'
-import { supabase } from '../../services/supabase'
+import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
 import { useAuth } from '../../context/AuthContext'
 import toast from 'react-hot-toast'
 

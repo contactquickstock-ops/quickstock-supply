@@ -4,7 +4,7 @@ import {
   MdLocationOn, MdNotes, MdImage,
 } from 'react-icons/md'
 import DriverLayout from '../../layouts/DriverLayout'
-import { supabase } from '../../services/supabase'
+import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
 import { useAuth } from '../../context/AuthContext'
 
 const STATUS_CONFIG = {

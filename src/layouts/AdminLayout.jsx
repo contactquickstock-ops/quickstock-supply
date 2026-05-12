@@ -18,7 +18,7 @@ const NAV_ITEMS = [
   { label: 'Dashboard',  icon: MdDashboard,      path: '/admin/dashboard' },
   { label: 'Orders',     icon: MdShoppingCart,   path: '/admin/orders'    },
   { label: 'Drivers',    icon: MdDirectionsCar,  path: '/admin/drivers'   },
-  { label: 'Members',    icon: MdPeople,          path: '/admin/members'   },
+  { label: 'Customers',  icon: MdPeople,          path: '/admin/customers' },
   { label: 'Inventory',  icon: MdInventory2,      path: '/admin/inventory' },
   { label: 'Settings',   icon: MdSettings,        path: '/admin/settings'  },
 ]

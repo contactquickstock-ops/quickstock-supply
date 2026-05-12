@@ -131,7 +131,7 @@ export default function AdminDashboard() {
 
       supabase
         .from('orders')
-        .select('id, customer_name, status, total_amount, created_at')
+        .select('id, customer_name, status, total, created_at')
         .order('created_at', { ascending: false })
         .limit(10),
 
@@ -155,7 +155,7 @@ export default function AdminDashboard() {
         id:       o.id,
         customer: o.customer_name ?? 'Unknown',
         status:   o.status ?? 'unknown',
-        total:    o.total_amount ?? 0,
+        total:    o.total ?? 0,
         date:     new Date(o.created_at).toLocaleDateString('en-PH', {
           month: 'short', day: 'numeric', year: 'numeric',
         }),

@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import {
   MdCheckCircle, MdCancel, MdClose,
-  MdLocationOn, MdNotes, MdImage,
+  MdLocationOn, MdNotes, MdImage, MdFilterList,
 } from 'react-icons/md'
 import DriverLayout from '../../layouts/DriverLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
@@ -237,6 +237,8 @@ export default function DriverHistory() {
   const [orders, setOrders]             = useState([])
   const [loading, setLoading]           = useState(true)
   const [filter, setFilter]             = useState('all')
+  const [dateFrom, setDateFrom]         = useState('')
+  const [dateTo, setDateTo]             = useState('')
   const [error, setError]               = useState(null)
   const [detailOrder, setDetailOrder]   = useState(null)
   const [orderItems, setOrderItems]     = useState([])
@@ -271,9 +273,14 @@ export default function DriverHistory() {
     setLoadingItems(false)
   }
 
-  const filtered = filter === 'all'
-    ? orders
-    : orders.filter(o => o.status === filter)
+  const filtered = orders
+    .filter(o => filter === 'all' || o.status === filter)
+    .filter(o => {
+      const d = o.created_at?.slice(0, 10)
+      if (dateFrom && d < dateFrom) return false
+      if (dateTo   && d > dateTo)   return false
+      return true
+    })
 
   const counts = {
     total:     orders.length,
@@ -307,19 +314,34 @@ export default function DriverHistory() {
         </div>
 
         {/* Filter tabs */}
-        <div className="flex gap-1.5">
+        <div className="flex gap-1.5 flex-wrap">
           {FILTERS.map(f => (
-            <button
-              key={f}
-              onClick={() => setFilter(f)}
+            <button key={f} onClick={() => setFilter(f)}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold capitalize transition
                 ${filter === f
                   ? 'bg-[#168AFF] text-white'
-                  : 'bg-white border border-gray-200 text-gray-500 hover:bg-gray-50'}`}
-            >
+                  : 'bg-white border border-gray-200 text-gray-500 hover:bg-gray-50'}`}>
               {f}
             </button>
           ))}
+        </div>
+
+        {/* Date filter */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <MdFilterList size={15} className="text-gray-400 shrink-0" />
+          <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}
+            className="text-xs border border-gray-200 rounded-xl px-3 py-2
+              focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF] transition" />
+          <span className="text-gray-400 text-xs">to</span>
+          <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)}
+            className="text-xs border border-gray-200 rounded-xl px-3 py-2
+              focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF] transition" />
+          {(dateFrom || dateTo) && (
+            <button onClick={() => { setDateFrom(''); setDateTo('') }}
+              className="text-xs text-[#168AFF] font-semibold hover:underline">
+              Clear
+            </button>
+          )}
         </div>
 
         {error && (

@@ -1,7 +1,7 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import {
   MdSearch, MdCheckCircle, MdBlock, MdDirectionsCar,
-  MdAdd, MdClose, MdVisibility, MdVisibilityOff,
+  MdAdd, MdClose, MdVisibility, MdVisibilityOff, MdCameraAlt,
 } from 'react-icons/md'
 import AdminLayout from '../../layouts/AdminLayout'
 import { supabaseAdmin } from '../../services/supabaseAdmin'
@@ -32,11 +32,22 @@ export default function Drivers() {
   const [search, setSearch]       = useState('')
   const [updating, setUpdating]   = useState(null)
   const [error, setError]         = useState(null)
-  const [showModal, setShowModal] = useState(false)
-  const [form, setForm]           = useState(EMPTY_FORM)
-  const [formError, setFormError] = useState(null)
-  const [creating, setCreating]   = useState(false)
-  const [showPass, setShowPass]   = useState(false)
+  const [showModal, setShowModal]   = useState(false)
+  const [form, setForm]             = useState(EMPTY_FORM)
+  const [formError, setFormError]   = useState(null)
+  const [creating, setCreating]     = useState(false)
+  const [showPass, setShowPass]     = useState(false)
+  const [avatarFile, setAvatarFile] = useState(null)
+  const [avatarPreview, setAvatarPreview] = useState(null)
+  const avatarRef                   = useRef(null)
+
+  function handleAvatarChange(e) {
+    const file = e.target.files[0]
+    if (!file) return
+    setAvatarFile(file)
+    setAvatarPreview(URL.createObjectURL(file))
+    e.target.value = ''
+  }
 
   const fetchDrivers = useCallback(async () => {
     setLoading(true)
@@ -77,6 +88,8 @@ export default function Drivers() {
     setForm(EMPTY_FORM)
     setFormError(null)
     setShowPass(false)
+    setAvatarFile(null)
+    setAvatarPreview(null)
     setShowModal(true)
   }
 
@@ -113,15 +126,30 @@ export default function Drivers() {
       return
     }
 
+    // Upload avatar if provided
+    let avatarUrl = null
+    if (avatarFile) {
+      try {
+        const fileName = `driver-${authData.user.id}.jpg`
+        const { error: uploadErr } = await supabaseAdmin.storage
+          .from('avatars').upload(fileName, avatarFile, { upsert: true })
+        if (!uploadErr) {
+          const { data: urlData } = supabaseAdmin.storage.from('avatars').getPublicUrl(fileName)
+          avatarUrl = urlData.publicUrl
+        }
+      } catch { /* avatar failure won't block driver creation */ }
+    }
+
     const { data: profileData, error: profileErr } = await supabase
       .from('profiles')
       .insert({
-        id: authData.user.id,
-        full_name: fullName.trim(),
-        email: email.trim(),
+        id:             authData.user.id,
+        full_name:      fullName.trim(),
+        email:          email.trim(),
         contact_number: contact.trim(),
-        role: 'driver',
-        status: 'approved',
+        avatar_url:     avatarUrl,
+        role:           'driver',
+        status:         'approved',
       })
       .select()
       .single()
@@ -261,11 +289,11 @@ export default function Drivers() {
                         {/* Name */}
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-3">
-                            <div
-                              className="w-8 h-8 rounded-full bg-[#168AFF]/10 text-[#168AFF]
-                                flex items-center justify-center font-bold text-sm shrink-0"
-                            >
-                              {initials}
+                            <div className="w-8 h-8 rounded-full overflow-hidden shrink-0
+                              bg-[#168AFF]/10 text-[#168AFF] flex items-center justify-center font-bold text-sm">
+                              {driver.avatar_url
+                                ? <img src={driver.avatar_url} alt={driver.full_name} className="w-full h-full object-cover" />
+                                : initials}
                             </div>
                             <span className="text-gray-700 font-medium whitespace-nowrap">
                               {driver.full_name ?? '—'}
@@ -375,6 +403,33 @@ export default function Drivers() {
                   {formError}
                 </div>
               )}
+
+              {/* Avatar picker */}
+              <div className="flex flex-col items-center gap-1.5 pb-1">
+                <button
+                  type="button"
+                  onClick={() => !creating && avatarRef.current?.click()}
+                  disabled={creating}
+                  className="relative w-20 h-20 rounded-full overflow-hidden group
+                    border-2 border-dashed border-gray-200 hover:border-[#168AFF] transition"
+                >
+                  {avatarPreview
+                    ? <img src={avatarPreview} alt="Preview" className="w-full h-full object-cover" />
+                    : <div className="w-full h-full flex flex-col items-center justify-center gap-1 bg-gray-50">
+                        <MdCameraAlt size={24} className="text-gray-300" />
+                      </div>
+                  }
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition
+                    flex items-center justify-center">
+                    <MdCameraAlt size={18} className="text-white opacity-0 group-hover:opacity-100 transition" />
+                  </div>
+                </button>
+                <p className="text-[11px] text-gray-400">
+                  {avatarPreview ? 'Tap to change' : 'Add photo (optional)'}
+                </p>
+                <input ref={avatarRef} type="file" accept="image/*"
+                  onChange={handleAvatarChange} disabled={creating} className="hidden" />
+              </div>
 
               <div>
                 <label className="block text-xs font-semibold text-gray-600 mb-1.5">

@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
+import { MdVisibility, MdVisibilityOff, MdCameraAlt } from 'react-icons/md'
 import { supabase } from '../../services/supabase'
 import { supabaseAdmin } from '../../services/supabaseAdmin'
 import toast from 'react-hot-toast'
@@ -16,16 +16,11 @@ function PasswordInput({ value, onChange, placeholder, show, onToggle, disabled,
         disabled={disabled}
         autoComplete={autoComplete}
         className="w-full px-3.5 py-2.5 pr-10 text-sm border border-gray-200 rounded-xl
-          focus:outline-none focus:ring-2 focus:ring-[#1A2E74]/30 focus:border-[#1A2E74]
+          focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF]
           transition disabled:bg-gray-50 disabled:text-gray-400"
       />
-      <button
-        type="button"
-        onClick={onToggle}
-        tabIndex={-1}
-        className="absolute right-3 top-1/2 -translate-y-1/2
-          text-gray-400 hover:text-gray-600 transition"
-      >
+      <button type="button" onClick={onToggle} tabIndex={-1}
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition">
         {show ? <MdVisibilityOff size={16} /> : <MdVisibility size={16} />}
       </button>
     </div>
@@ -35,31 +30,40 @@ function PasswordInput({ value, onChange, placeholder, show, onToggle, disabled,
 function Field({ label, children }) {
   return (
     <div>
-      <label className="block text-xs font-semibold text-gray-600 mb-1.5">
-        {label}
-      </label>
+      <label className="block text-xs font-semibold text-gray-600 mb-1.5">{label}</label>
       {children}
     </div>
   )
 }
 
 const INPUT_CLS = `w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-  focus:outline-none focus:ring-2 focus:ring-[#1A2E74]/30 focus:border-[#1A2E74]
+  focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF]
   transition disabled:bg-gray-50 disabled:text-gray-400`
 
 export default function RegisterPage() {
-  const navigate = useNavigate()
+  const navigate     = useNavigate()
+  const avatarRef    = useRef(null)
 
-  const [fullName,     setFullName]     = useState('')
-  const [email,        setEmail]        = useState('')
-  const [contact,      setContact]      = useState('')
-  const [address,      setAddress]      = useState('')
-  const [password,     setPassword]     = useState('')
-  const [confirmPass,  setConfirmPass]  = useState('')
-  const [showPass,     setShowPass]     = useState(false)
-  const [showConfirm,  setShowConfirm]  = useState(false)
-  const [loading,      setLoading]      = useState(false)
-  const [error,        setError]        = useState(null)
+  const [fullName,      setFullName]      = useState('')
+  const [email,         setEmail]         = useState('')
+  const [contact,       setContact]       = useState('')
+  const [address,       setAddress]       = useState('')
+  const [password,      setPassword]      = useState('')
+  const [confirmPass,   setConfirmPass]   = useState('')
+  const [showPass,      setShowPass]      = useState(false)
+  const [showConfirm,   setShowConfirm]   = useState(false)
+  const [loading,       setLoading]       = useState(false)
+  const [error,         setError]         = useState(null)
+  const [avatarFile,    setAvatarFile]    = useState(null)
+  const [avatarPreview, setAvatarPreview] = useState(null)
+
+  function handleAvatarChange(e) {
+    const file = e.target.files[0]
+    if (!file) return
+    setAvatarFile(file)
+    setAvatarPreview(URL.createObjectURL(file))
+    e.target.value = ''
+  }
 
   async function handleRegister(e) {
     e.preventDefault()
@@ -82,24 +86,36 @@ export default function RegisterPage() {
     setError(null)
 
     // 1. Create auth user
-    const { data, error: signUpErr } = await supabase.auth.signUp({
-      email:    email.trim(),
-      password,
-    })
-
+    const { data, error: signUpErr } = await supabase.auth.signUp({ email: email.trim(), password })
     if (signUpErr) {
       setError(signUpErr.message)
       setLoading(false)
       return
     }
 
-    // 2. Insert profile (use admin client to bypass RLS)
+    // 2. Upload avatar if selected
+    let avatarUrl = null
+    if (avatarFile) {
+      try {
+        const fileName = `customer-${data.user.id}.jpg`
+        const { error: uploadErr } = await supabaseAdmin.storage
+          .from('avatars')
+          .upload(fileName, avatarFile, { upsert: true })
+        if (!uploadErr) {
+          const { data: urlData } = supabaseAdmin.storage.from('avatars').getPublicUrl(fileName)
+          avatarUrl = urlData.publicUrl
+        }
+      } catch { /* avatar failure won't block registration */ }
+    }
+
+    // 3. Insert profile
     const { error: profileErr } = await supabaseAdmin.from('profiles').insert({
       id:             data.user.id,
       full_name:      fullName.trim(),
       email:          email.trim(),
       contact_number: contact.trim(),
       address:        address.trim(),
+      avatar_url:     avatarUrl,
       role:           'customer',
       status:         'pending',
     })
@@ -110,13 +126,12 @@ export default function RegisterPage() {
       return
     }
 
-    // 3. Sign out immediately — account needs admin approval first
     await supabase.auth.signOut()
-    toast.success('Account submitted. Please wait for admin approval.', {
-      duration: 5000,
-    })
+    toast.success('Account submitted. Please wait for admin approval.', { duration: 5000 })
     navigate('/login')
   }
+
+  const initials = fullName.trim() ? fullName.trim()[0].toUpperCase() : null
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -124,99 +139,96 @@ export default function RegisterPage() {
 
         {/* Brand */}
         <div className="flex flex-col items-center gap-1 mb-7">
-          <img
-            src="/logo.jpg"
-            alt="QuickStock Supply"
-            className="h-24 object-contain"
-          />
+          <img src="/logo.jpg" alt="QuickStock Supply" className="h-20 object-contain" />
           <p className="text-gray-400 text-sm">Create your account</p>
         </div>
 
-        {/* Form card */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
           <form onSubmit={handleRegister} className="space-y-4">
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700
-                text-sm px-4 py-3 rounded-xl">
+              <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
                 {error}
               </div>
             )}
 
-            {/* Full Name */}
+            {/* Avatar picker */}
+            <div className="flex flex-col items-center gap-1.5 pb-1">
+              <button
+                type="button"
+                onClick={() => !loading && avatarRef.current?.click()}
+                disabled={loading}
+                className="relative w-20 h-20 rounded-full overflow-hidden group
+                  border-2 border-dashed border-gray-200 hover:border-[#168AFF] transition"
+              >
+                {avatarPreview ? (
+                  <img src={avatarPreview} alt="Preview" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center
+                    gap-1 bg-gray-50">
+                    {initials
+                      ? <span className="text-2xl font-black text-gray-300">{initials}</span>
+                      : <MdCameraAlt size={24} className="text-gray-300" />
+                    }
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20
+                  transition flex items-center justify-center">
+                  <MdCameraAlt size={18} className="text-white opacity-0 group-hover:opacity-100 transition" />
+                </div>
+              </button>
+              <p className="text-[11px] text-gray-400">
+                {avatarPreview ? 'Tap to change photo' : 'Add profile photo (optional)'}
+              </p>
+              <input
+                ref={avatarRef}
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarChange}
+                disabled={loading}
+                className="hidden"
+              />
+            </div>
+
             <Field label="Full Name">
-              <input
-                type="text"
-                value={fullName}
+              <input type="text" value={fullName}
                 onChange={e => setFullName(e.target.value)}
-                placeholder="Juan Dela Cruz"
-                disabled={loading}
-                className={INPUT_CLS}
-              />
+                placeholder="Juan Dela Cruz" disabled={loading} className={INPUT_CLS} />
             </Field>
 
-            {/* Email */}
             <Field label="Email Address">
-              <input
-                type="email"
-                value={email}
+              <input type="email" value={email}
                 onChange={e => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                disabled={loading}
-                autoComplete="email"
-                className={INPUT_CLS}
-              />
+                placeholder="you@example.com" disabled={loading}
+                autoComplete="email" className={INPUT_CLS} />
             </Field>
 
-            {/* Contact */}
             <Field label="Contact Number">
-              <input
-                type="tel"
-                value={contact}
+              <input type="tel" value={contact}
                 onChange={e => setContact(e.target.value)}
-                placeholder="09171234567"
-                disabled={loading}
-                className={INPUT_CLS}
-              />
+                placeholder="09171234567" disabled={loading} className={INPUT_CLS} />
             </Field>
 
-            {/* Address */}
             <Field label="Delivery Address">
-              <textarea
-                value={address}
+              <textarea value={address}
                 onChange={e => setAddress(e.target.value)}
                 placeholder="House no., street, barangay, city…"
-                disabled={loading}
-                rows={3}
-                className={`${INPUT_CLS} resize-none`}
-              />
+                disabled={loading} rows={3}
+                className={`${INPUT_CLS} resize-none`} />
             </Field>
 
-            {/* Password */}
             <Field label="Password">
-              <PasswordInput
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="Min. 6 characters"
-                show={showPass}
-                onToggle={() => setShowPass(v => !v)}
-                disabled={loading}
-                autoComplete="new-password"
-              />
+              <PasswordInput value={password} onChange={e => setPassword(e.target.value)}
+                placeholder="Min. 6 characters" show={showPass}
+                onToggle={() => setShowPass(v => !v)} disabled={loading}
+                autoComplete="new-password" />
             </Field>
 
-            {/* Confirm Password */}
             <Field label="Confirm Password">
-              <PasswordInput
-                value={confirmPass}
-                onChange={e => setConfirmPass(e.target.value)}
-                placeholder="Re-enter your password"
-                show={showConfirm}
-                onToggle={() => setShowConfirm(v => !v)}
-                disabled={loading}
-                autoComplete="new-password"
-              />
-              {/* Inline match indicator */}
+              <PasswordInput value={confirmPass} onChange={e => setConfirmPass(e.target.value)}
+                placeholder="Re-enter your password" show={showConfirm}
+                onToggle={() => setShowConfirm(v => !v)} disabled={loading}
+                autoComplete="new-password" />
               {confirmPass && (
                 <p className={`text-xs mt-1.5 font-medium
                   ${password === confirmPass ? 'text-green-600' : 'text-red-400'}`}>
@@ -225,18 +237,14 @@ export default function RegisterPage() {
               )}
             </Field>
 
-            {/* Notice */}
             <p className="text-xs text-gray-400 bg-gray-50 rounded-xl px-3.5 py-2.5">
               Your account will be reviewed by an admin before activation.
             </p>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 bg-[#1A2E74] text-white font-bold rounded-xl
-                text-sm hover:bg-[#162060] active:scale-[0.98] transition-all
-                shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
-            >
+            <button type="submit" disabled={loading}
+              className="w-full py-3 bg-[#168AFF] text-white font-bold rounded-xl
+                text-sm hover:bg-[#1270DB] active:scale-[0.98] transition-all
+                shadow-sm disabled:opacity-60 disabled:cursor-not-allowed">
               {loading ? 'Submitting…' : 'Create Account'}
             </button>
           </form>
@@ -244,9 +252,7 @@ export default function RegisterPage() {
 
         <p className="text-center text-sm text-gray-400 mt-5">
           Already have an account?{' '}
-          <Link to="/login" className="text-[#1A2E74] font-semibold hover:underline">
-            Sign in
-          </Link>
+          <Link to="/login" className="text-[#168AFF] font-semibold hover:underline">Sign in</Link>
         </p>
       </div>
     </div>

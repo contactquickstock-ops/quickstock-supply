@@ -1,11 +1,12 @@
 import { useEffect, useState, useCallback } from 'react'
 import {
   MdClose, MdLocationOn, MdNotes,
-  MdImage, MdReceipt,
+  MdImage, MdReceipt, MdFilterList, MdChat,
 } from 'react-icons/md'
 import CustomerLayout from '../../layouts/CustomerLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
 import { useAuth } from '../../context/AuthContext'
+import OrderChat from '../../components/OrderChat'
 
 // ── Status config ─────────────────────────────────────────────────────────────
 
@@ -135,6 +136,9 @@ export default function Orders() {
   const [selectedOrder, setSelectedOrder]     = useState(null)
   const [orderItems, setOrderItems]           = useState([])
   const [loadingItems, setLoadingItems]       = useState(false)
+  const [showChat, setShowChat]               = useState(false)
+  const [dateFrom, setDateFrom]               = useState('')
+  const [dateTo, setDateTo]                   = useState('')
 
   const fetchOrders = useCallback(async () => {
     if (!user) return
@@ -165,7 +169,20 @@ export default function Orders() {
   function closeDetail() {
     setSelectedOrder(null)
     setOrderItems([])
+    setShowChat(false)
   }
+
+  const filteredOrders = orders.filter(o => {
+    const d = o.created_at?.slice(0, 10)
+    if (dateFrom && d < dateFrom) return false
+    if (dateTo   && d > dateTo)   return false
+    return true
+  })
+
+  const ACTIVE_STATUSES = ['pending', 'confirmed', 'assigned', 'on_the_way']
+  const isChatActive = selectedOrder
+    ? ACTIVE_STATUSES.includes(selectedOrder.status)
+    : false
 
   const fmtDate = (iso, opts) =>
     new Date(iso).toLocaleDateString('en-PH', opts)
@@ -185,12 +202,30 @@ export default function Orders() {
           </p>
         </div>
 
+        {/* Date filter */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <MdFilterList size={15} className="text-gray-400 shrink-0" />
+          <input type="date" value={dateFrom} onChange={e => setDateFrom(e.target.value)}
+            className="text-xs border border-gray-200 rounded-xl px-3 py-2
+              focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF] transition" />
+          <span className="text-gray-400 text-xs">to</span>
+          <input type="date" value={dateTo} onChange={e => setDateTo(e.target.value)}
+            className="text-xs border border-gray-200 rounded-xl px-3 py-2
+              focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF] transition" />
+          {(dateFrom || dateTo) && (
+            <button onClick={() => { setDateFrom(''); setDateTo('') }}
+              className="text-xs text-[#168AFF] font-semibold hover:underline">
+              Clear
+            </button>
+          )}
+        </div>
+
         {/* Order list */}
         {loading ? (
           <div className="space-y-3">
             {Array.from({ length: 4 }).map((_, i) => <SkeletonOrderCard key={i} />)}
           </div>
-        ) : orders.length === 0 ? (
+        ) : filteredOrders.length === 0 ? (
           <div className="bg-white rounded-2xl border border-gray-100 shadow-sm
             px-5 py-16 flex flex-col items-center gap-3 text-center">
             <MdReceipt size={44} className="text-gray-200" />
@@ -203,7 +238,7 @@ export default function Orders() {
           </div>
         ) : (
           <div className="space-y-3">
-            {orders.map(order => {
+            {filteredOrders.map(order => {
               const itemCount = order.order_items?.length ?? 0
               return (
                 <button
@@ -385,6 +420,31 @@ export default function Orders() {
                     className="w-full rounded-xl object-cover max-h-64
                       border border-gray-100 shadow-sm"
                   />
+                </div>
+              )}
+
+              {/* ── Chat with Driver ── */}
+              {selectedOrder.driver_id && (
+                <div>
+                  <button
+                    onClick={() => setShowChat(v => !v)}
+                    className="flex items-center gap-2 text-[10px] font-bold
+                      text-gray-400 uppercase tracking-widest mb-2 hover:text-[#168AFF] transition">
+                    <MdChat size={13} />
+                    {isChatActive ? 'Message Driver' : 'Chat History'}
+                    <span className={`ml-1 text-[10px] font-normal normal-case
+                      ${showChat ? 'text-[#168AFF]' : 'text-gray-400'}`}>
+                      {showChat ? '▲ hide' : '▼ show'}
+                    </span>
+                  </button>
+                  {showChat && (
+                    <OrderChat
+                      orderId={selectedOrder.id}
+                      userId={user.id}
+                      userRole="customer"
+                      isActive={isChatActive}
+                    />
+                  )}
                 </div>
               )}
 

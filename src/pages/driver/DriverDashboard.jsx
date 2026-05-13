@@ -2,8 +2,9 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import {
   MdDirectionsCar, MdLocationOn, MdPerson, MdPhone,
   MdInventory2, MdRefresh, MdCheckCircle, MdWarning,
-  MdClose, MdCameraAlt, MdUpload, MdStar,
+  MdClose, MdCameraAlt, MdUpload, MdStar, MdChat,
 } from 'react-icons/md'
+import OrderChat from '../../components/OrderChat'
 import DriverLayout from '../../layouts/DriverLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
 import { useAuth } from '../../context/AuthContext'
@@ -44,7 +45,7 @@ function SkeletonCard() {
 
 // ── Delivery Card ─────────────────────────────────────────────────────────────
 
-function DeliveryCard({ order, onAccept, onDeliver, onReport, busy }) {
+function DeliveryCard({ order, onAccept, onDeliver, onReport, busy, chatOpen, onToggleChat, driverId }) {
   const cfg   = STATUS_CONFIG[order.status] ?? { color: 'bg-gray-100 text-gray-600', label: order.status }
   const items = order.order_items ?? []
 
@@ -142,6 +143,28 @@ function DeliveryCard({ order, onAccept, onDeliver, onReport, busy }) {
             </p>
           </div>
         </div>
+      )}
+
+      {/* Chat toggle */}
+      <button
+        onClick={onToggleChat}
+        className={`w-full flex items-center justify-center gap-2 py-2 rounded-xl
+          text-xs font-semibold border transition
+          ${chatOpen
+            ? 'bg-[#168AFF]/10 border-[#168AFF]/30 text-[#168AFF]'
+            : 'bg-gray-50 border-gray-200 text-gray-500 hover:bg-blue-50 hover:border-[#168AFF]/30 hover:text-[#168AFF]'}`}
+      >
+        <MdChat size={15} />
+        {chatOpen ? 'Hide Chat' : 'Message Customer'}
+      </button>
+
+      {chatOpen && (
+        <OrderChat
+          orderId={order.id}
+          userId={driverId}
+          userRole="driver"
+          isActive={true}
+        />
       )}
 
       {/* Actions */}
@@ -498,6 +521,7 @@ export default function DriverDashboard() {
   const [deliverTarget, setDeliverTarget] = useState(null)
   const [reportTarget, setReportTarget]   = useState(null)
   const [modalBusy, setModalBusy]         = useState(false)
+  const [chatOrderId, setChatOrderId]     = useState(null)
 
   const fetchDeliveries = useCallback(async () => {
     if (!user) return
@@ -676,6 +700,9 @@ export default function DriverDashboard() {
                 onAccept={acceptDelivery}
                 onDeliver={o => setDeliverTarget(o)}
                 onReport={o => setReportTarget(o)}
+                chatOpen={chatOrderId === order.id}
+                onToggleChat={() => setChatOrderId(chatOrderId === order.id ? null : order.id)}
+                driverId={user.id}
               />
             ))}
           </div>

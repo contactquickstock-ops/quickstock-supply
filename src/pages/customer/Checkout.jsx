@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, Navigate } from 'react-router-dom'
+import { useNavigate, Navigate, useLocation } from 'react-router-dom'
 import {
   MdLocationOn, MdPlace, MdNotes, MdPayment,
-  MdCheckCircle, MdShoppingCart,
+  MdCheckCircle, MdShoppingCart, MdStar, MdCardGiftcard,
 } from 'react-icons/md'
 import CustomerLayout from '../../layouts/CustomerLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
@@ -20,6 +20,9 @@ export default function Checkout() {
   const { user, profile }                                        = useAuth()
   const { cartItems, totalAmount, itemCount, clearCart }         = useCart()
   const navigate                                                 = useNavigate()
+  const location                                                 = useLocation()
+
+  const selectedReward = location.state?.selectedReward ?? null
 
   const [address,  setAddress]  = useState(profile?.address ?? '')
   const [landmark, setLandmark] = useState('')
@@ -67,6 +70,7 @@ export default function Checkout() {
           address:       address.trim(),
           landmark:      landmark.trim() || null,
           notes:         notes.trim() || null,
+          reward_id:     selectedReward?.id ?? null,
         })
         .select()
         .single()
@@ -234,6 +238,33 @@ export default function Checkout() {
                   </div>
                 ))}
               </div>
+
+              <div className="border-t border-gray-100" />
+
+              {/* Applied reward */}
+              {selectedReward && (
+                <div className="flex items-center gap-2.5 px-3 py-2.5 bg-[#168AFF]/5
+                  rounded-xl border border-[#168AFF]/20">
+                  <div className="w-8 h-8 rounded-lg overflow-hidden bg-white border border-[#168AFF]/20 shrink-0">
+                    {selectedReward.image_url
+                      ? <img src={selectedReward.image_url} alt={selectedReward.name} className="w-full h-full object-cover" />
+                      : <div className="w-full h-full flex items-center justify-center">
+                          <MdStar size={16} className="text-yellow-400" />
+                        </div>
+                    }
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-1 mb-0.5">
+                      <MdCardGiftcard size={12} className="text-[#168AFF] shrink-0" />
+                      <p className="text-[10px] font-bold text-[#168AFF] uppercase tracking-wide">Reward Applied</p>
+                    </div>
+                    <p className="text-xs font-bold text-gray-700 truncate">{selectedReward.name}</p>
+                    <p className="text-[10px] text-gray-400">
+                      {selectedReward.points_required} pts · redeemed on delivery
+                    </p>
+                  </div>
+                </div>
+              )}
 
               <div className="border-t border-gray-100" />
 

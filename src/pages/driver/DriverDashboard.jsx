@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import {
   MdDirectionsCar, MdLocationOn, MdPerson, MdPhone,
   MdInventory2, MdRefresh, MdCheckCircle, MdWarning,
-  MdClose, MdCameraAlt, MdUpload,
+  MdClose, MdCameraAlt, MdUpload, MdStar,
 } from 'react-icons/md'
 import DriverLayout from '../../layouts/DriverLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
@@ -129,6 +129,20 @@ function DeliveryCard({ order, onAccept, onDeliver, onReport, busy }) {
           ₱{Number(order.total ?? 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
         </span>
       </div>
+
+      {/* Reward badge */}
+      {order.rewards && (
+        <div className="flex items-center gap-2 px-3 py-2 bg-yellow-50
+          rounded-xl border border-yellow-100">
+          <MdStar size={15} className="text-yellow-500 shrink-0" />
+          <div className="min-w-0">
+            <p className="text-yellow-800 text-xs font-bold truncate">{order.rewards.name}</p>
+            <p className="text-yellow-600 text-[10px]">
+              Customer reward · {order.rewards.points_required} pts deducted on delivery
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Actions */}
       {order.status === 'assigned' && (
@@ -491,7 +505,7 @@ export default function DriverDashboard() {
     setError(null)
     const { data, error: err } = await supabase
       .from('orders')
-      .select('*, customer:profiles!orders_customer_id_fkey(contact_number), order_items(quantity, products(name, unit_type))')
+      .select('*, customer:profiles!orders_customer_id_fkey(contact_number), order_items(quantity, products(name, unit_type)), rewards(id, name, points_required)')
       .eq('driver_id', user.id)
       .in('status', ['assigned', 'on_the_way'])
       .order('created_at', { ascending: false })
@@ -531,27 +545,46 @@ export default function DriverDashboard() {
         .eq('id', order.id)
       if (orderErr) throw new Error(orderErr.message)
 
-      // 2. Award points to customer (₱100 spent = 1 point)
-      const pointsEarned = Math.floor((order.total ?? 0) / 100)
-      if (pointsEarned > 0) {
-        const { data: current } = await supabase
-          .from('customer_points')
-          .select('total_points')
-          .eq('customer_id', order.customer_id)
-          .maybeSingle()
+      // 2. Get current customer points
+      const { data: currentPts } = await supabase
+        .from('customer_points')
+        .select('total_points')
+        .eq('customer_id', order.customer_id)
+        .maybeSingle()
 
+      let balance = currentPts?.total_points ?? 0
+
+      // 3. Award points earned from this order (₱100 = 1 pt)
+      const pointsEarned = Math.floor((order.total ?? 0) / 100)
+      balance += pointsEarned
+
+      // 4. Deduct reward points if a reward was applied
+      const reward = order.rewards
+      let rewardMsg = ''
+      if (reward?.id) {
+        balance = Math.max(0, balance - (reward.points_required ?? 0))
         await supabase
-          .from('customer_points')
-          .upsert(
-            { customer_id: order.customer_id, total_points: (current?.total_points ?? 0) + pointsEarned },
-            { onConflict: 'customer_id' }
-          )
+          .from('redeemed_rewards')
+          .insert({
+            customer_id: order.customer_id,
+            reward_id:   reward.id,
+            redeemed_at: new Date().toISOString(),
+          })
+        rewardMsg = ` · "${reward.name}" redeemed`
       }
 
-      // 3. Remove from active list
+      // 5. Save final points balance
+      await supabase
+        .from('customer_points')
+        .upsert(
+          { customer_id: order.customer_id, total_points: balance },
+          { onConflict: 'customer_id' }
+        )
+
+      // 6. Remove from active list
       setOrders(prev => prev.filter(o => o.id !== order.id))
       setDeliverTarget(null)
-      toast.success(`Delivered! +${pointsEarned} pts awarded to customer.`)
+      toast.success(`Delivered! +${pointsEarned} pts earned${rewardMsg}.`)
     } catch (err) {
       toast.error('Failed to confirm delivery: ' + err.message)
     } finally {

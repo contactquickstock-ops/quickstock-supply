@@ -1,0 +1,222 @@
+import { useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
+import {
+  MdMenu, MdClose, MdArrowForward,
+  MdPhone, MdEmail, MdLocationOn, MdFavorite,
+} from 'react-icons/md'
+import { FaFacebookF } from 'react-icons/fa'
+
+const NAV = [
+  { label: 'Home',       path: '/'         },
+  { label: 'About Us',   path: '/about'    },
+  { label: 'Products',   path: '/products' },
+  { label: 'Rewards',    path: '/rewards'  },
+  { label: 'Contact Us', path: '/contact'  },
+]
+
+export default function PublicLayout({ children }) {
+  const [menuOpen, setMenuOpen] = useState(false)
+  const { pathname } = useLocation()
+
+  return (
+    <div className="min-h-screen bg-white flex flex-col">
+
+      {/* ── Announcement bar ── */}
+      <div className="bg-[#00B14F] text-white text-xs sm:text-sm text-center
+        py-2 px-4 font-medium shrink-0">
+        🚚 FREE delivery on orders ₱500 and above &nbsp;|&nbsp; Open Mon – Sat · 8 AM to 6 PM
+      </div>
+
+      {/* ── Header ── */}
+      <header className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+
+          {/* Top row: logo + follow us */}
+          <div className="flex items-center justify-between h-14 border-b border-gray-50">
+            <Link to="/">
+              <img src="/logo.jpg" alt="QuickStock Supply" className="h-10 object-contain" />
+            </Link>
+            <div className="hidden sm:flex items-center gap-3">
+              <span className="text-xs text-gray-500 font-medium">Follow us:</span>
+              <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer"
+                className="w-7 h-7 bg-[#1877F2] rounded-full flex items-center
+                  justify-center hover:opacity-90 transition"
+                aria-label="Facebook">
+                <FaFacebookF size={13} className="text-white" />
+              </a>
+            </div>
+          </div>
+
+          {/* Nav row */}
+          <div className="flex items-center justify-between h-12">
+
+            {/* Desktop nav */}
+            <nav className="hidden md:flex items-center gap-7">
+              {NAV.map(({ label, path }) => {
+                const active = pathname === path
+                return (
+                  <Link key={path} to={path}
+                    className={`text-sm font-semibold transition whitespace-nowrap
+                      ${active
+                        ? 'text-[#00B14F] border-b-2 border-[#00B14F] pb-0.5'
+                        : 'text-gray-700 hover:text-[#00B14F]'}`}>
+                    {label}
+                  </Link>
+                )
+              })}
+            </nav>
+
+            {/* Auth + hamburger */}
+            <div className="flex items-center gap-2 ml-auto md:ml-0">
+              <Link to="/login"
+                className="hidden sm:inline-flex px-4 py-1.5 text-sm font-semibold
+                  text-[#00B14F] border border-[#00B14F] rounded-lg
+                  hover:bg-green-50 transition">
+                Login
+              </Link>
+              <Link to="/register"
+                className="hidden sm:inline-flex px-4 py-1.5 text-sm font-semibold
+                  text-white bg-[#00B14F] rounded-lg hover:bg-[#009940]
+                  transition shadow-sm">
+                Sign Up
+              </Link>
+              <button
+                className="md:hidden p-2 text-gray-600 hover:text-[#00B14F] transition"
+                onClick={() => setMenuOpen(v => !v)}
+                aria-label="Toggle menu">
+                {menuOpen ? <MdClose size={26} /> : <MdMenu size={26} />}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile menu */}
+        {menuOpen && (
+          <div className="md:hidden bg-white border-t border-gray-100 px-4 pb-4
+            pt-2 space-y-1 shadow-lg">
+            {NAV.map(({ label, path }) => (
+              <Link key={path} to={path}
+                onClick={() => setMenuOpen(false)}
+                className="block py-3 px-4 text-gray-700 font-semibold text-base
+                  hover:text-[#00B14F] hover:bg-green-50 rounded-xl transition">
+                {label}
+              </Link>
+            ))}
+            <div className="pt-3 flex gap-2">
+              <Link to="/login" onClick={() => setMenuOpen(false)}
+                className="flex-1 py-2.5 text-center text-sm font-semibold
+                  text-[#00B14F] border border-[#00B14F] rounded-xl hover:bg-green-50 transition">
+                Login
+              </Link>
+              <Link to="/register" onClick={() => setMenuOpen(false)}
+                className="flex-1 py-2.5 text-center text-sm font-semibold
+                  text-white bg-[#00B14F] rounded-xl hover:bg-[#009940] transition">
+                Sign Up
+              </Link>
+            </div>
+          </div>
+        )}
+      </header>
+
+      {/* ── Page content ── */}
+      <main className="flex-1">{children}</main>
+
+      {/* ── Footer ── */}
+      <footer className="bg-gray-900 text-gray-300">
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 grid grid-cols-1
+          sm:grid-cols-2 lg:grid-cols-4 gap-8">
+
+          {/* Brand */}
+          <div className="space-y-4">
+            <img src="/logo.jpg" alt="QuickStock Supply"
+              className="h-14 object-contain bg-white rounded-xl px-3 py-1.5" />
+            <p className="text-gray-400 text-sm leading-relaxed">
+              Your trusted online grocery supplier. Fast, fresh, and affordable —
+              delivered straight to your door.
+            </p>
+            <div className="flex items-center gap-2">
+              <span className="text-gray-400 text-xs">Follow us:</span>
+              <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer"
+                className="w-8 h-8 bg-[#1877F2] rounded-full flex items-center
+                  justify-center hover:opacity-90 transition"
+                aria-label="Facebook">
+                <FaFacebookF size={13} className="text-white" />
+              </a>
+            </div>
+          </div>
+
+          {/* Quick Links */}
+          <div className="space-y-4">
+            <h4 className="text-white font-bold text-base">Quick Links</h4>
+            <ul className="space-y-2.5">
+              {NAV.map(({ label, path }) => (
+                <li key={label}>
+                  <Link to={path}
+                    className="text-gray-400 hover:text-[#00B14F] text-sm transition
+                      flex items-center gap-1.5">
+                    <MdArrowForward size={12} className="text-[#00B14F]" /> {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Account */}
+          <div className="space-y-4">
+            <h4 className="text-white font-bold text-base">My Account</h4>
+            <ul className="space-y-2.5">
+              {[
+                ['Login',            '/login'   ],
+                ['Register',         '/register'],
+                ['My Orders',        '/login'   ],
+                ['Rewards & Points', '/login'   ],
+                ['Membership',       '/login'   ],
+              ].map(([label, path]) => (
+                <li key={label}>
+                  <Link to={path}
+                    className="text-gray-400 hover:text-[#00B14F] text-sm transition
+                      flex items-center gap-1.5">
+                    <MdArrowForward size={12} className="text-[#00B14F]" /> {label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Contact */}
+          <div className="space-y-4">
+            <h4 className="text-white font-bold text-base">Contact Info</h4>
+            <ul className="space-y-3">
+              {[
+                [MdPhone,      '+63 912 345 6789'            ],
+                [MdEmail,      'contactquickstock@gmail.com' ],
+                [MdLocationOn, 'Philippines'                 ],
+              ].map(([Icon, text]) => (
+                <li key={text} className="flex items-start gap-2.5 text-gray-400 text-sm">
+                  <Icon size={16} className="text-[#00B14F] shrink-0 mt-0.5" />
+                  {text}
+                </li>
+              ))}
+            </ul>
+            <div className="pt-2">
+              <p className="text-gray-500 text-xs font-medium mb-1.5">Business Hours</p>
+              <p className="text-gray-400 text-xs">Mon – Sat: 8:00 AM – 6:00 PM</p>
+              <p className="text-gray-400 text-xs">Sunday: Closed</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="border-t border-gray-800">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row
+            items-center justify-between gap-2 text-xs text-gray-500">
+            <p>© {new Date().getFullYear()} QuickStock Supply. All rights reserved.</p>
+            <p className="flex items-center gap-1">
+              Made with <MdFavorite size={12} className="text-red-400 mx-0.5" /> in the Philippines
+            </p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
+}

@@ -6,6 +6,10 @@ import LandingPage   from './pages/public/LandingPage'
 import LoginPage     from './pages/public/Login'
 import RegisterPage  from './pages/public/Register'
 import AuthCallback  from './pages/public/AuthCallback'
+import AboutPage     from './pages/public/AboutPage'
+import ProductsPage  from './pages/public/ProductsPage'
+import RewardsPage   from './pages/public/RewardsPage'
+import ContactPage   from './pages/public/ContactPage'
 
 // Admin
 import AdminDashboard   from './pages/admin/Dashboard'
@@ -36,6 +40,10 @@ export default function App() {
 
         {/* ── Public ── */}
         <Route path="/"              element={<LandingPage />} />
+        <Route path="/about"         element={<AboutPage />} />
+        <Route path="/products"      element={<ProductsPage />} />
+        <Route path="/rewards"       element={<RewardsPage />} />
+        <Route path="/contact"       element={<ContactPage />} />
         <Route path="/login"         element={<LoginPage />} />
         <Route path="/register"      element={<RegisterPage />} />
         <Route path="/auth/callback" element={<AuthCallback />} />

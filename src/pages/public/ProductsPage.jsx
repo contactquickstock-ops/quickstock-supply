@@ -1,46 +1,49 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { MdShoppingCart, MdArrowForward, MdLock } from 'react-icons/md'
+import { MdShoppingCart, MdArrowForward, MdLock, MdImage } from 'react-icons/md'
 import PublicLayout from '../../layouts/PublicLayout'
+import { supabaseAdmin } from '../../services/supabaseAdmin'
 
-const CATEGORIES = ['All', 'Rice & Grains', 'Eggs & Dairy', 'Cooking Oil', 'Beverages', 'Canned Goods', 'Noodles & Pasta', 'Condiments', 'Snacks']
-
-const PRODUCTS = [
-  { name: 'Ganador Premium Rice',      cat: 'Rice & Grains',  unit: '5kg bag',    price: 250, emoji: '🌾', badge: 'Best Seller' },
-  { name: 'Dinorado Rice',             cat: 'Rice & Grains',  unit: '5kg bag',    price: 280, emoji: '🌾', badge: 'Popular'     },
-  { name: 'Sinandomeng Rice',          cat: 'Rice & Grains',  unit: '5kg bag',    price: 240, emoji: '🌾', badge: null          },
-  { name: 'Farm Fresh Eggs',           cat: 'Eggs & Dairy',   unit: 'per tray',   price: 175, emoji: '🥚', badge: 'Fresh'       },
-  { name: 'Magnolia Gold Butter',      cat: 'Eggs & Dairy',   unit: '225g',       price: 85,  emoji: '🧈', badge: null          },
-  { name: 'Bear Brand Milk',           cat: 'Eggs & Dairy',   unit: '300g',       price: 68,  emoji: '🥛', badge: 'Popular'     },
-  { name: 'Baguio Oil Canola',         cat: 'Cooking Oil',    unit: '1L',         price: 130, emoji: '🛢️', badge: null          },
-  { name: 'Minola Coconut Oil',        cat: 'Cooking Oil',    unit: '1L',         price: 115, emoji: '🛢️', badge: 'Best Seller' },
-  { name: 'Pepsi Regular',             cat: 'Beverages',      unit: '1.5L',       price: 55,  emoji: '🥤', badge: 'Hot'         },
-  { name: 'Coca-Cola',                 cat: 'Beverages',      unit: '1.5L',       price: 58,  emoji: '🥤', badge: null          },
-  { name: 'C2 Green Tea',              cat: 'Beverages',      unit: '500mL',      price: 28,  emoji: '🍵', badge: null          },
-  { name: 'Lipton Iced Tea',           cat: 'Beverages',      unit: '1L',         price: 45,  emoji: '🍹', badge: null          },
-  { name: 'San Marino Corned Tuna',    cat: 'Canned Goods',   unit: 'per can',    price: 78,  emoji: '🥫', badge: 'Popular'     },
-  { name: 'Argentina Corned Beef',     cat: 'Canned Goods',   unit: '260g',       price: 95,  emoji: '🥫', badge: null          },
-  { name: 'Lucky Me Pancit Canton',    cat: 'Noodles & Pasta', unit: 'per pack',  price: 15,  emoji: '🍜', badge: 'Hot'         },
-  { name: 'Quickchow Instant Mami',    cat: 'Noodles & Pasta', unit: 'per pack',  price: 14,  emoji: '🍜', badge: null          },
-  { name: 'Datu Puti Vinegar',         cat: 'Condiments',     unit: '350mL',      price: 32,  emoji: '🧂', badge: null          },
-  { name: 'Mang Tomas Sauce',          cat: 'Condiments',     unit: '320g',       price: 48,  emoji: '🍶', badge: 'Popular'     },
-  { name: 'Sky Flakes Crackers',       cat: 'Snacks',         unit: 'per pack',   price: 35,  emoji: '🍘', badge: null          },
-  { name: 'Nova Country Cheddar',      cat: 'Snacks',         unit: 'per pack',   price: 30,  emoji: '🍫', badge: null          },
-]
-
-const BADGE_COLORS = {
-  'Best Seller': 'bg-yellow-400 text-yellow-900',
-  'Popular':     'bg-blue-500 text-white',
-  'Fresh':       'bg-green-500 text-white',
-  'Hot':         'bg-orange-500 text-white',
+function SkeletonCard() {
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden
+      flex flex-col animate-pulse">
+      <div className="h-28 bg-gray-100" />
+      <div className="p-3 space-y-2 flex-1">
+        <div className="h-3 bg-gray-100 rounded w-1/3" />
+        <div className="h-4 bg-gray-100 rounded w-3/4" />
+        <div className="h-3 bg-gray-100 rounded w-1/2" />
+        <div className="h-5 bg-gray-100 rounded w-1/3 mt-1" />
+        <div className="h-8 bg-gray-100 rounded-lg mt-2" />
+      </div>
+    </div>
+  )
 }
 
 export default function ProductsPage() {
-  const [activeCategory, setActiveCategory] = useState('All')
+  const [products, setProducts]       = useState([])
+  const [loading, setLoading]         = useState(true)
+  const [activeCategory, setCategory] = useState('All')
+
+  useEffect(() => {
+    async function load() {
+      setLoading(true)
+      const { data } = await supabaseAdmin
+        .from('products')
+        .select('id, name, description, category, price, unit_type, image_url')
+        .eq('is_available', true)
+        .order('created_at', { ascending: false })
+      setProducts(data ?? [])
+      setLoading(false)
+    }
+    load()
+  }, [])
+
+  const categories = ['All', ...Array.from(new Set(products.map(p => p.category).filter(Boolean)))]
 
   const filtered = activeCategory === 'All'
-    ? PRODUCTS
-    : PRODUCTS.filter(p => p.cat === activeCategory)
+    ? products
+    : products.filter(p => p.category === activeCategory)
 
   return (
     <PublicLayout>
@@ -81,64 +84,88 @@ export default function ProductsPage() {
         <div className="max-w-7xl mx-auto space-y-7">
 
           {/* Category filter tabs */}
-          <div className="flex flex-wrap gap-2">
-            {CATEGORIES.map(cat => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-4 py-2 rounded-xl text-sm font-semibold transition
-                  ${activeCategory === cat
-                    ? 'bg-[#00B14F] text-white shadow-sm'
-                    : 'bg-white border border-gray-200 text-gray-600 hover:border-[#00B14F] hover:text-[#00B14F]'}`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
+          {!loading && categories.length > 1 && (
+            <div className="flex flex-wrap gap-2">
+              {categories.map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setCategory(cat)}
+                  className={`px-4 py-2 rounded-xl text-sm font-semibold transition
+                    ${activeCategory === cat
+                      ? 'bg-[#00B14F] text-white shadow-sm'
+                      : 'bg-white border border-gray-200 text-gray-600 hover:border-[#00B14F] hover:text-[#00B14F]'}`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          )}
 
-          {/* Count */}
-          <p className="text-gray-500 text-sm">
-            Showing <span className="font-bold text-gray-800">{filtered.length}</span> products
-            {activeCategory !== 'All' && (
-              <span> in <span className="text-[#00B14F] font-semibold">{activeCategory}</span></span>
-            )}
-          </p>
+          {/* Loading */}
+          {loading ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+              {Array.from({ length: 10 }).map((_, i) => <SkeletonCard key={i} />)}
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm
+              px-5 py-20 text-center text-gray-400 text-sm">
+              {products.length === 0
+                ? 'No products available yet. Check back soon!'
+                : 'No products in this category.'}
+            </div>
+          ) : (
+            <>
+              <p className="text-gray-500 text-sm">
+                Showing <span className="font-bold text-gray-800">{filtered.length}</span> products
+                {activeCategory !== 'All' && (
+                  <span> in <span className="text-[#00B14F] font-semibold">{activeCategory}</span></span>
+                )}
+              </p>
 
-          {/* Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-            {filtered.map(({ name, unit, price, emoji, badge }) => (
-              <div key={name}
-                className="bg-white rounded-2xl border border-gray-100 shadow-sm
-                  overflow-hidden hover:shadow-md hover:border-[#00B14F]/30
-                  transition-all duration-200 flex flex-col">
-                {/* Image area */}
-                <div className="relative bg-green-50 h-28 flex items-center justify-center">
-                  <span className="text-5xl">{emoji}</span>
-                  {badge && (
-                    <span className={`absolute top-2 left-2 px-2 py-0.5 rounded-lg
-                      text-[10px] font-bold ${BADGE_COLORS[badge] ?? 'bg-gray-200 text-gray-700'}`}>
-                      {badge}
-                    </span>
-                  )}
-                </div>
-                {/* Info */}
-                <div className="p-3 flex flex-col flex-1 gap-1.5">
-                  <p className="text-gray-800 font-semibold text-xs leading-snug line-clamp-2">{name}</p>
-                  <p className="text-gray-400 text-[10px]">{unit}</p>
-                  <p className="text-[#00B14F] font-black text-base mt-auto">
-                    ₱{price.toLocaleString()}
-                  </p>
-                  {/* Not clickable — requires login */}
-                  <Link to="/login"
-                    className="mt-1 w-full py-1.5 border border-[#00B14F] text-[#00B14F]
-                      text-xs font-bold rounded-lg text-center hover:bg-green-50
-                      transition flex items-center justify-center gap-1">
-                    <MdShoppingCart size={12} /> Login to Order
-                  </Link>
-                </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                {filtered.map(product => (
+                  <div key={product.id}
+                    className="bg-white rounded-2xl border border-gray-100 shadow-sm
+                      overflow-hidden hover:shadow-md hover:border-[#00B14F]/30
+                      transition-all duration-200 flex flex-col">
+                    {/* Image area */}
+                    <div className="relative bg-green-50 h-28 flex items-center justify-center overflow-hidden">
+                      {product.image_url ? (
+                        <img
+                          src={product.image_url}
+                          alt={product.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <MdImage size={40} className="text-gray-200" />
+                      )}
+                    </div>
+                    {/* Info */}
+                    <div className="p-3 flex flex-col flex-1 gap-1.5">
+                      {product.category && (
+                        <p className="text-[10px] font-semibold text-[#00B14F] uppercase tracking-wide">
+                          {product.category}
+                        </p>
+                      )}
+                      <p className="text-gray-800 font-semibold text-xs leading-snug line-clamp-2">{product.name}</p>
+                      {product.unit_type && (
+                        <p className="text-gray-400 text-[10px]">per {product.unit_type}</p>
+                      )}
+                      <p className="text-[#00B14F] font-black text-base mt-auto">
+                        ₱{Number(product.price).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+                      </p>
+                      <Link to="/login"
+                        className="mt-1 w-full py-1.5 border border-[#00B14F] text-[#00B14F]
+                          text-xs font-bold rounded-lg text-center hover:bg-green-50
+                          transition flex items-center justify-center gap-1">
+                        <MdShoppingCart size={12} /> Login to Order
+                      </Link>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </>
+          )}
         </div>
       </section>
 

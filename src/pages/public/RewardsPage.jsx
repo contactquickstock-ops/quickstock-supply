@@ -1,6 +1,8 @@
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { MdStar, MdArrowForward, MdCheckCircle, MdCardGiftcard } from 'react-icons/md'
+import { MdStar, MdArrowForward, MdCheckCircle, MdCardGiftcard, MdImage } from 'react-icons/md'
 import PublicLayout from '../../layouts/PublicLayout'
+import { supabaseAdmin } from '../../services/supabaseAdmin'
 
 const HOW_IT_WORKS = [
   { step: '01', title: 'Create an Account',  desc: 'Register and get approved by our admin to access the store.' },
@@ -9,28 +11,50 @@ const HOW_IT_WORKS = [
   { step: '04', title: 'Redeem Rewards',     desc: 'Use your points to claim exclusive vouchers and gifts.'      },
 ]
 
-const REWARDS = [
-  { pts: 100,  name: 'Free Delivery Voucher',  desc: 'Get one order delivered for free.',          emoji: '🚚', color: 'bg-blue-50 border-blue-100' },
-  { pts: 200,  name: '₱50 Discount Coupon',    desc: 'Save ₱50 on your next order.',               emoji: '🏷️', color: 'bg-yellow-50 border-yellow-100' },
-  { pts: 300,  name: 'Free Rice (5kg)',         desc: 'Get a free 5kg bag of premium rice.',        emoji: '🌾', color: 'bg-green-50 border-green-100' },
-  { pts: 500,  name: 'Gift Bundle (Small)',     desc: 'A selection of everyday essentials.',        emoji: '🎁', color: 'bg-purple-50 border-purple-100' },
-  { pts: 800,  name: '₱200 Discount Coupon',   desc: 'Save ₱200 on any single order.',             emoji: '💰', color: 'bg-orange-50 border-orange-100' },
-  { pts: 1000, name: 'Premium Gift Bundle',    desc: 'Our best bundle — hand-selected products.', emoji: '🎀', color: 'bg-red-50 border-red-100' },
+const TIERS = [
+  { name: 'Starter',  min: 0,    max: 199,  color: 'bg-gray-100 text-gray-700',    star: '⭐' },
+  { name: 'Silver',   min: 200,  max: 499,  color: 'bg-slate-200 text-slate-700',  star: '🥈' },
+  { name: 'Gold',     min: 500,  max: 999,  color: 'bg-yellow-100 text-yellow-800', star: '🥇' },
+  { name: 'Platinum', min: 1000, max: null, color: 'bg-green-100 text-green-800',  star: '💎' },
 ]
 
-const TIERS = [
-  { name: 'Starter',    min: 0,    max: 199,   color: 'bg-gray-100 text-gray-700',   star: '⭐'  },
-  { name: 'Silver',     min: 200,  max: 499,   color: 'bg-slate-200 text-slate-700', star: '🥈'  },
-  { name: 'Gold',       min: 500,  max: 999,   color: 'bg-yellow-100 text-yellow-800',star: '🥇' },
-  { name: 'Platinum',   min: 1000, max: null,  color: 'bg-green-100 text-green-800', star: '💎'  },
-]
+function SkeletonCard() {
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm
+      overflow-hidden flex animate-pulse gap-4 p-5">
+      <div className="w-14 h-14 bg-gray-100 rounded-2xl shrink-0" />
+      <div className="flex-1 space-y-2 py-1">
+        <div className="h-4 bg-gray-100 rounded w-1/3" />
+        <div className="h-3 bg-gray-100 rounded w-3/4" />
+        <div className="h-3 bg-gray-100 rounded w-1/2" />
+      </div>
+    </div>
+  )
+}
 
 export default function RewardsPage() {
+  const [rewards, setRewards] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function load() {
+      setLoading(true)
+      const { data } = await supabaseAdmin
+        .from('rewards')
+        .select('id, name, description, points_required, image_url')
+        .eq('is_active', true)
+        .order('points_required', { ascending: true })
+      setRewards(data ?? [])
+      setLoading(false)
+    }
+    load()
+  }, [])
+
   return (
     <PublicLayout>
 
       {/* ── Hero ── */}
-      <section className="bg-gradient-to-br from-[#00B14F] to-[#007A35] text-white py-16 px-4">
+      <section className="bg-linear-to-br from-[#00B14F] to-[#007A35] text-white py-16 px-4">
         <div className="max-w-3xl mx-auto text-center space-y-4">
           <span className="inline-flex items-center gap-2 bg-white/20 text-white
             text-xs font-bold px-4 py-1.5 rounded-full">
@@ -107,7 +131,7 @@ export default function RewardsPage() {
         </div>
       </section>
 
-      {/* ── Rewards Catalog ── */}
+      {/* ── Rewards Catalog (live from DB) ── */}
       <section className="py-14 px-4 bg-white">
         <div className="max-w-5xl mx-auto space-y-10">
           <div className="text-center space-y-2">
@@ -117,28 +141,50 @@ export default function RewardsPage() {
               Redeem your earned points for any of these exciting rewards.
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {REWARDS.map(({ pts, name, desc, emoji, color }) => (
-              <div key={name}
-                className={`rounded-2xl border ${color} p-5 flex items-start gap-4
-                  hover:shadow-md transition-shadow`}>
-                <div className="w-14 h-14 bg-white rounded-2xl flex items-center
-                  justify-center shadow-sm shrink-0 text-3xl">
-                  {emoji}
-                </div>
-                <div className="flex-1 space-y-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="inline-flex items-center gap-1 bg-[#00B14F] text-white
-                      text-xs font-bold px-2 py-0.5 rounded-lg">
-                      <MdStar size={10} /> {pts} pts
-                    </span>
+
+          {loading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+            </div>
+          ) : rewards.length === 0 ? (
+            <div className="bg-gray-50 rounded-2xl border border-gray-100 px-5 py-16
+              text-center text-gray-400 text-sm">
+              No rewards available yet. Check back soon!
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {rewards.map(reward => (
+                <div key={reward.id}
+                  className="rounded-2xl border border-gray-100 bg-white p-5
+                    flex items-start gap-4 hover:shadow-md transition-shadow">
+                  <div className="w-14 h-14 rounded-2xl overflow-hidden bg-green-50
+                    border border-gray-100 flex items-center justify-center shrink-0">
+                    {reward.image_url ? (
+                      <img
+                        src={reward.image_url}
+                        alt={reward.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <MdImage size={28} className="text-gray-200" />
+                    )}
                   </div>
-                  <h3 className="font-bold text-gray-800 text-sm">{name}</h3>
-                  <p className="text-gray-500 text-xs leading-relaxed">{desc}</p>
+                  <div className="flex-1 space-y-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="inline-flex items-center gap-1 bg-[#00B14F] text-white
+                        text-xs font-bold px-2 py-0.5 rounded-lg">
+                        <MdStar size={10} /> {Number(reward.points_required).toLocaleString()} pts
+                      </span>
+                    </div>
+                    <h3 className="font-bold text-gray-800 text-sm">{reward.name}</h3>
+                    {reward.description && (
+                      <p className="text-gray-500 text-xs leading-relaxed">{reward.description}</p>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -169,7 +215,7 @@ export default function RewardsPage() {
       </section>
 
       {/* ── CTA ── */}
-      <section className="py-12 px-4 bg-gradient-to-r from-[#00B14F] to-[#007A35]">
+      <section className="py-12 px-4 bg-linear-to-r from-[#00B14F] to-[#007A35]">
         <div className="max-w-3xl mx-auto text-center space-y-5">
           <MdCardGiftcard size={48} className="text-yellow-300 mx-auto" />
           <h2 className="text-3xl font-black text-white">Start Earning Today!</h2>

@@ -7,6 +7,8 @@ import {
 import { FaFacebookF } from 'react-icons/fa'
 import PublicLayout from '../../layouts/PublicLayout'
 
+const FB_URL = 'https://www.facebook.com/profile.php?id=61570722723997'
+
 const FAQS = [
   {
     q: 'How do I create an account?',
@@ -47,7 +49,7 @@ export default function ContactPage() {
     <PublicLayout>
 
       {/* ── Hero ── */}
-      <section className="bg-gradient-to-br from-[#00B14F] to-[#007A35] text-white py-16 px-4">
+      <section className="bg-linear-to-br from-[#168AFF] to-[#0D5FC4] text-white py-16 px-4">
         <div className="max-w-3xl mx-auto text-center space-y-4">
           <span className="inline-flex items-center gap-2 bg-white/20 text-white
             text-xs font-bold px-4 py-1.5 rounded-full">
@@ -65,19 +67,19 @@ export default function ContactPage() {
       <section className="py-14 px-4 bg-white">
         <div className="max-w-5xl mx-auto space-y-10">
           <div className="text-center space-y-2">
-            <span className="text-[#00B14F] font-bold text-sm uppercase tracking-widest">Get In Touch</span>
+            <span className="text-[#168AFF] font-bold text-sm uppercase tracking-widest">Get In Touch</span>
             <h2 className="text-3xl font-black text-gray-800">Contact Information</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             {[
-              { icon: MdPhone,      label: 'Phone',   value: '+63 912 345 6789',             sub: 'Mon–Sat, 8AM–6PM'  },
+              { icon: MdPhone,      label: 'Phone',   value: '09304453799',                 sub: 'Mon–Sun, 8AM–7PM'   },
               { icon: MdEmail,      label: 'Email',   value: 'contactquickstock@gmail.com',  sub: 'We reply within 24h' },
-              { icon: MdLocationOn, label: 'Address', value: 'Philippines',                  sub: 'Service area'       },
+              { icon: MdLocationOn, label: 'Address', value: 'Lubogan, Toril Davao City',   sub: 'Service area'        },
             ].map(({ icon: Icon, label, value, sub }) => (
               <div key={label}
                 className="flex flex-col items-center gap-3 text-center p-6 bg-gray-50
-                  rounded-2xl border border-gray-100 hover:border-[#00B14F] transition">
-                <div className="w-14 h-14 bg-[#00B14F] rounded-2xl flex items-center
+                  rounded-2xl border border-gray-100 hover:border-[#168AFF] transition">
+                <div className="w-14 h-14 bg-[#168AFF] rounded-2xl flex items-center
                   justify-center shadow-md">
                   <Icon size={24} className="text-white" />
                 </div>
@@ -92,22 +94,20 @@ export default function ContactPage() {
 
           {/* Business hours + Social */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-            <div className="bg-green-50 rounded-2xl border border-green-100 p-6 space-y-4">
+            <div className="bg-blue-50 rounded-2xl border border-blue-100 p-6 space-y-4">
               <div className="flex items-center gap-2">
-                <MdAccessTime size={20} className="text-[#00B14F]" />
+                <MdAccessTime size={20} className="text-[#168AFF]" />
                 <h3 className="font-bold text-gray-800 text-base">Business Hours</h3>
               </div>
               <div className="space-y-2">
                 {[
-                  ['Monday – Friday', '8:00 AM – 6:00 PM'],
-                  ['Saturday',        '8:00 AM – 5:00 PM'],
-                  ['Sunday',          'Closed'],
+                  ['Monday – Friday', '8:00 AM – 7:00 PM'],
+                  ['Saturday',        '8:00 AM – 7:00 PM'],
+                  ['Sunday',          '8:00 AM – 7:00 PM'],
                 ].map(([day, hours]) => (
                   <div key={day} className="flex justify-between text-sm">
                     <span className="text-gray-600 font-medium">{day}</span>
-                    <span className={hours === 'Closed' ? 'text-red-500 font-semibold' : 'text-gray-800 font-semibold'}>
-                      {hours}
-                    </span>
+                    <span className="text-gray-800 font-semibold">{hours}</span>
                   </div>
                 ))}
               </div>
@@ -118,7 +118,7 @@ export default function ContactPage() {
               <p className="text-gray-500 text-sm">
                 Stay updated with new products, promos, and announcements on our Facebook page.
               </p>
-              <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer"
+              <a href={FB_URL} target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#1877F2]
                   text-white font-bold rounded-xl hover:opacity-90 transition text-sm">
                 <FaFacebookF size={16} /> Follow on Facebook
@@ -132,7 +132,7 @@ export default function ContactPage() {
       <section className="py-14 px-4 bg-gray-50">
         <div className="max-w-2xl mx-auto space-y-8">
           <div className="text-center space-y-2">
-            <span className="text-[#00B14F] font-bold text-sm uppercase tracking-widest">Send a Message</span>
+            <span className="text-[#168AFF] font-bold text-sm uppercase tracking-widest">Send a Message</span>
             <h2 className="text-3xl font-black text-gray-800">Drop Us a Message</h2>
             <p className="text-gray-500 text-sm">
               Fill out the form below and we'll get back to you within 24 hours.
@@ -140,15 +140,15 @@ export default function ContactPage() {
           </div>
 
           {sent ? (
-            <div className="bg-green-50 border border-green-200 rounded-2xl p-8 text-center space-y-3">
-              <MdCheckCircle size={48} className="text-[#00B14F] mx-auto" />
+            <div className="bg-blue-50 border border-blue-200 rounded-2xl p-8 text-center space-y-3">
+              <MdCheckCircle size={48} className="text-[#168AFF] mx-auto" />
               <h3 className="font-bold text-gray-800 text-lg">Message Sent!</h3>
               <p className="text-gray-500 text-sm">
                 Thank you for reaching out. We'll reply to your email within 24 hours.
               </p>
               <button
                 onClick={() => { setSent(false); setForm({ name:'', email:'', subject:'', message:'' }) }}
-                className="text-[#00B14F] font-semibold text-sm hover:underline">
+                className="text-[#168AFF] font-semibold text-sm hover:underline">
                 Send another message
               </button>
             </div>
@@ -162,8 +162,8 @@ export default function ContactPage() {
                     onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                     placeholder="Juan Dela Cruz"
                     className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-                      focus:outline-none focus:ring-2 focus:ring-[#00B14F]/30
-                      focus:border-[#00B14F] transition" />
+                      focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30
+                      focus:border-[#168AFF] transition" />
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-gray-600 mb-1.5">Email Address *</label>
@@ -171,8 +171,8 @@ export default function ContactPage() {
                     onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
                     placeholder="you@example.com"
                     className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-                      focus:outline-none focus:ring-2 focus:ring-[#00B14F]/30
-                      focus:border-[#00B14F] transition" />
+                      focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30
+                      focus:border-[#168AFF] transition" />
                 </div>
               </div>
               <div>
@@ -181,8 +181,8 @@ export default function ContactPage() {
                   onChange={e => setForm(f => ({ ...f, subject: e.target.value }))}
                   placeholder="How can we help you?"
                   className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-                    focus:outline-none focus:ring-2 focus:ring-[#00B14F]/30
-                    focus:border-[#00B14F] transition" />
+                    focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30
+                    focus:border-[#168AFF] transition" />
               </div>
               <div>
                 <label className="block text-xs font-semibold text-gray-600 mb-1.5">Message *</label>
@@ -190,12 +190,12 @@ export default function ContactPage() {
                   onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
                   placeholder="Write your message here…"
                   className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-                    focus:outline-none focus:ring-2 focus:ring-[#00B14F]/30
-                    focus:border-[#00B14F] transition resize-none" />
+                    focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30
+                    focus:border-[#168AFF] transition resize-none" />
               </div>
               <button type="submit"
-                className="w-full py-3 bg-[#00B14F] text-white font-bold rounded-xl
-                  hover:bg-[#009940] transition shadow-sm flex items-center
+                className="w-full py-3 bg-[#168AFF] text-white font-bold rounded-xl
+                  hover:bg-[#1270DB] transition shadow-sm flex items-center
                   justify-center gap-2 text-sm">
                 <MdSend size={16} /> Send Message
               </button>
@@ -208,14 +208,14 @@ export default function ContactPage() {
       <section className="py-14 px-4 bg-white">
         <div className="max-w-3xl mx-auto space-y-8">
           <div className="text-center space-y-2">
-            <span className="text-[#00B14F] font-bold text-sm uppercase tracking-widest">FAQs</span>
+            <span className="text-[#168AFF] font-bold text-sm uppercase tracking-widest">FAQs</span>
             <h2 className="text-3xl font-black text-gray-800">Frequently Asked Questions</h2>
           </div>
           <div className="space-y-4">
             {FAQS.map(({ q, a }) => (
               <div key={q} className="bg-gray-50 rounded-2xl border border-gray-100 p-5 space-y-2">
                 <h3 className="font-bold text-gray-800 text-sm flex items-start gap-2">
-                  <span className="w-5 h-5 bg-[#00B14F] text-white rounded-full flex items-center
+                  <span className="w-5 h-5 bg-[#168AFF] text-white rounded-full flex items-center
                     justify-center text-xs font-black shrink-0 mt-0.5">?</span>
                   {q}
                 </h3>
@@ -227,13 +227,13 @@ export default function ContactPage() {
       </section>
 
       {/* ── CTA ── */}
-      <section className="py-12 px-4 bg-[#00B14F]">
+      <section className="py-12 px-4 bg-[#168AFF]">
         <div className="max-w-3xl mx-auto text-center space-y-5">
           <h2 className="text-2xl sm:text-3xl font-black text-white">
             Ready to Get Started?
           </h2>
           <p className="text-white/85 text-base">
-            Register now and enjoy fresh groceries delivered to your door.
+            Register now and enjoy fast supply delivery directly to your store.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <Link to="/register"

@@ -49,7 +49,7 @@ export default function ProductsPage() {
     <PublicLayout>
 
       {/* ── Hero ── */}
-      <section className="bg-gradient-to-br from-[#00B14F] to-[#007A35] text-white py-14 px-4">
+      <section className="bg-linear-to-br from-[#168AFF] to-[#0D5FC4] text-white py-14 px-4">
         <div className="max-w-3xl mx-auto text-center space-y-4">
           <span className="inline-flex items-center gap-2 bg-white/20 text-white
             text-xs font-bold px-4 py-1.5 rounded-full">
@@ -70,9 +70,9 @@ export default function ProductsPage() {
           <MdLock size={16} className="text-yellow-600 shrink-0" />
           <span>
             Create an account and get approved to place orders. &nbsp;
-            <Link to="/register" className="text-[#00B14F] font-bold hover:underline">
+            <Link to="/register" className="text-[#168AFF] font-bold hover:underline">
               Register here
-            </Link> or <Link to="/login" className="text-[#00B14F] font-bold hover:underline">
+            </Link> or <Link to="/login" className="text-[#168AFF] font-bold hover:underline">
               Login
             </Link>
           </span>
@@ -92,8 +92,8 @@ export default function ProductsPage() {
                   onClick={() => setCategory(cat)}
                   className={`px-4 py-2 rounded-xl text-sm font-semibold transition
                     ${activeCategory === cat
-                      ? 'bg-[#00B14F] text-white shadow-sm'
-                      : 'bg-white border border-gray-200 text-gray-600 hover:border-[#00B14F] hover:text-[#00B14F]'}`}
+                      ? 'bg-[#168AFF] text-white shadow-sm'
+                      : 'bg-white border border-gray-200 text-gray-600 hover:border-[#168AFF] hover:text-[#168AFF]'}`}
                 >
                   {cat}
                 </button>
@@ -118,7 +118,7 @@ export default function ProductsPage() {
               <p className="text-gray-500 text-sm">
                 Showing <span className="font-bold text-gray-800">{filtered.length}</span> products
                 {activeCategory !== 'All' && (
-                  <span> in <span className="text-[#00B14F] font-semibold">{activeCategory}</span></span>
+                  <span> in <span className="text-[#168AFF] font-semibold">{activeCategory}</span></span>
                 )}
               </p>
 
@@ -126,10 +126,10 @@ export default function ProductsPage() {
                 {filtered.map(product => (
                   <div key={product.id}
                     className="bg-white rounded-2xl border border-gray-100 shadow-sm
-                      overflow-hidden hover:shadow-md hover:border-[#00B14F]/30
+                      overflow-hidden hover:shadow-md hover:border-[#168AFF]/30
                       transition-all duration-200 flex flex-col">
                     {/* Image area */}
-                    <div className="relative bg-green-50 h-28 flex items-center justify-center overflow-hidden">
+                    <div className="relative bg-blue-50 h-28 flex items-center justify-center overflow-hidden">
                       {product.image_url ? (
                         <img
                           src={product.image_url}
@@ -143,7 +143,7 @@ export default function ProductsPage() {
                     {/* Info */}
                     <div className="p-3 flex flex-col flex-1 gap-1.5">
                       {product.category && (
-                        <p className="text-[10px] font-semibold text-[#00B14F] uppercase tracking-wide">
+                        <p className="text-[10px] font-semibold text-[#168AFF] uppercase tracking-wide">
                           {product.category}
                         </p>
                       )}
@@ -151,12 +151,12 @@ export default function ProductsPage() {
                       {product.unit_type && (
                         <p className="text-gray-400 text-[10px]">per {product.unit_type}</p>
                       )}
-                      <p className="text-[#00B14F] font-black text-base mt-auto">
+                      <p className="text-[#168AFF] font-black text-base mt-auto">
                         ₱{Number(product.price).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
                       </p>
                       <Link to="/login"
-                        className="mt-1 w-full py-1.5 border border-[#00B14F] text-[#00B14F]
-                          text-xs font-bold rounded-lg text-center hover:bg-green-50
+                        className="mt-1 w-full py-1.5 border border-[#168AFF] text-[#168AFF]
+                          text-xs font-bold rounded-lg text-center hover:bg-blue-50
                           transition flex items-center justify-center gap-1">
                         <MdShoppingCart size={12} /> Login to Order
                       </Link>
@@ -170,7 +170,7 @@ export default function ProductsPage() {
       </section>
 
       {/* ── CTA ── */}
-      <section className="py-12 px-4 bg-[#00B14F]">
+      <section className="py-12 px-4 bg-[#168AFF]">
         <div className="max-w-3xl mx-auto text-center space-y-5">
           <h2 className="text-2xl sm:text-3xl font-black text-white">
             Ready to Start Ordering?

@@ -14,6 +14,8 @@ const NAV = [
   { label: 'Contact Us', path: '/contact'  },
 ]
 
+const FB_URL = 'https://www.facebook.com/profile.php?id=61570722723997'
+
 export default function PublicLayout({ children }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const { pathname } = useLocation()
@@ -22,9 +24,9 @@ export default function PublicLayout({ children }) {
     <div className="min-h-screen bg-white flex flex-col">
 
       {/* ── Announcement bar ── */}
-      <div className="bg-[#00B14F] text-white text-xs sm:text-sm text-center
+      <div className="bg-[#168AFF] text-white text-xs sm:text-sm text-center
         py-2 px-4 font-medium shrink-0">
-        🚚 FREE delivery on orders ₱500 and above &nbsp;|&nbsp; Open Mon – Sat · 8 AM to 6 PM
+        🚚 FREE delivery on orders ₱500 and above &nbsp;|&nbsp; Open Mon – Sun · 8 AM to 7 PM
       </div>
 
       {/* ── Header ── */}
@@ -38,7 +40,7 @@ export default function PublicLayout({ children }) {
             </Link>
             <div className="hidden sm:flex items-center gap-3">
               <span className="text-xs text-gray-500 font-medium">Follow us:</span>
-              <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer"
+              <a href={FB_URL} target="_blank" rel="noopener noreferrer"
                 className="w-7 h-7 bg-[#1877F2] rounded-full flex items-center
                   justify-center hover:opacity-90 transition"
                 aria-label="Facebook">
@@ -58,8 +60,8 @@ export default function PublicLayout({ children }) {
                   <Link key={path} to={path}
                     className={`text-sm font-semibold transition whitespace-nowrap
                       ${active
-                        ? 'text-[#00B14F] border-b-2 border-[#00B14F] pb-0.5'
-                        : 'text-gray-700 hover:text-[#00B14F]'}`}>
+                        ? 'text-[#168AFF] border-b-2 border-[#168AFF] pb-0.5'
+                        : 'text-gray-700 hover:text-[#168AFF]'}`}>
                     {label}
                   </Link>
                 )
@@ -70,18 +72,18 @@ export default function PublicLayout({ children }) {
             <div className="flex items-center gap-2 ml-auto md:ml-0">
               <Link to="/login"
                 className="hidden sm:inline-flex px-4 py-1.5 text-sm font-semibold
-                  text-[#00B14F] border border-[#00B14F] rounded-lg
-                  hover:bg-green-50 transition">
+                  text-[#168AFF] border border-[#168AFF] rounded-lg
+                  hover:bg-blue-50 transition">
                 Login
               </Link>
               <Link to="/register"
                 className="hidden sm:inline-flex px-4 py-1.5 text-sm font-semibold
-                  text-white bg-[#00B14F] rounded-lg hover:bg-[#009940]
+                  text-white bg-[#168AFF] rounded-lg hover:bg-[#1270DB]
                   transition shadow-sm">
                 Sign Up
               </Link>
               <button
-                className="md:hidden p-2 text-gray-600 hover:text-[#00B14F] transition"
+                className="md:hidden p-2 text-gray-600 hover:text-[#168AFF] transition"
                 onClick={() => setMenuOpen(v => !v)}
                 aria-label="Toggle menu">
                 {menuOpen ? <MdClose size={26} /> : <MdMenu size={26} />}
@@ -98,19 +100,19 @@ export default function PublicLayout({ children }) {
               <Link key={path} to={path}
                 onClick={() => setMenuOpen(false)}
                 className="block py-3 px-4 text-gray-700 font-semibold text-base
-                  hover:text-[#00B14F] hover:bg-green-50 rounded-xl transition">
+                  hover:text-[#168AFF] hover:bg-blue-50 rounded-xl transition">
                 {label}
               </Link>
             ))}
             <div className="pt-3 flex gap-2">
               <Link to="/login" onClick={() => setMenuOpen(false)}
                 className="flex-1 py-2.5 text-center text-sm font-semibold
-                  text-[#00B14F] border border-[#00B14F] rounded-xl hover:bg-green-50 transition">
+                  text-[#168AFF] border border-[#168AFF] rounded-xl hover:bg-blue-50 transition">
                 Login
               </Link>
               <Link to="/register" onClick={() => setMenuOpen(false)}
                 className="flex-1 py-2.5 text-center text-sm font-semibold
-                  text-white bg-[#00B14F] rounded-xl hover:bg-[#009940] transition">
+                  text-white bg-[#168AFF] rounded-xl hover:bg-[#1270DB] transition">
                 Sign Up
               </Link>
             </div>
@@ -132,12 +134,12 @@ export default function PublicLayout({ children }) {
             <img src="/logo.jpg" alt="QuickStock Supply"
               className="h-14 object-contain bg-white rounded-xl px-3 py-1.5" />
             <p className="text-gray-400 text-sm leading-relaxed">
-              Your trusted online grocery supplier. Fast, fresh, and affordable —
-              delivered straight to your door.
+              Your trusted supply partner for sari-sari stores, restaurants, and small
+              businesses. Fast, affordable, and reliable — delivered directly to your store.
             </p>
             <div className="flex items-center gap-2">
               <span className="text-gray-400 text-xs">Follow us:</span>
-              <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer"
+              <a href={FB_URL} target="_blank" rel="noopener noreferrer"
                 className="w-8 h-8 bg-[#1877F2] rounded-full flex items-center
                   justify-center hover:opacity-90 transition"
                 aria-label="Facebook">
@@ -153,9 +155,9 @@ export default function PublicLayout({ children }) {
               {NAV.map(({ label, path }) => (
                 <li key={label}>
                   <Link to={path}
-                    className="text-gray-400 hover:text-[#00B14F] text-sm transition
+                    className="text-gray-400 hover:text-[#168AFF] text-sm transition
                       flex items-center gap-1.5">
-                    <MdArrowForward size={12} className="text-[#00B14F]" /> {label}
+                    <MdArrowForward size={12} className="text-[#168AFF]" /> {label}
                   </Link>
                 </li>
               ))}
@@ -175,9 +177,9 @@ export default function PublicLayout({ children }) {
               ].map(([label, path]) => (
                 <li key={label}>
                   <Link to={path}
-                    className="text-gray-400 hover:text-[#00B14F] text-sm transition
+                    className="text-gray-400 hover:text-[#168AFF] text-sm transition
                       flex items-center gap-1.5">
-                    <MdArrowForward size={12} className="text-[#00B14F]" /> {label}
+                    <MdArrowForward size={12} className="text-[#168AFF]" /> {label}
                   </Link>
                 </li>
               ))}
@@ -189,20 +191,19 @@ export default function PublicLayout({ children }) {
             <h4 className="text-white font-bold text-base">Contact Info</h4>
             <ul className="space-y-3">
               {[
-                [MdPhone,      '+63 912 345 6789'            ],
+                [MdPhone,      '09304453799'                 ],
                 [MdEmail,      'contactquickstock@gmail.com' ],
-                [MdLocationOn, 'Philippines'                 ],
+                [MdLocationOn, 'Lubogan, Toril Davao City'   ],
               ].map(([Icon, text]) => (
                 <li key={text} className="flex items-start gap-2.5 text-gray-400 text-sm">
-                  <Icon size={16} className="text-[#00B14F] shrink-0 mt-0.5" />
+                  <Icon size={16} className="text-[#168AFF] shrink-0 mt-0.5" />
                   {text}
                 </li>
               ))}
             </ul>
             <div className="pt-2">
               <p className="text-gray-500 text-xs font-medium mb-1.5">Business Hours</p>
-              <p className="text-gray-400 text-xs">Mon – Sat: 8:00 AM – 6:00 PM</p>
-              <p className="text-gray-400 text-xs">Sunday: Closed</p>
+              <p className="text-gray-400 text-xs">Mon – Sun: 8:00 AM – 7:00 PM</p>
             </div>
           </div>
         </div>

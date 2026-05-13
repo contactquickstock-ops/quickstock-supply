@@ -54,7 +54,7 @@ export default function RewardsPage() {
     <PublicLayout>
 
       {/* ── Hero ── */}
-      <section className="bg-linear-to-br from-[#00B14F] to-[#007A35] text-white py-16 px-4">
+      <section className="bg-linear-to-br from-[#168AFF] to-[#0D5FC4] text-white py-16 px-4">
         <div className="max-w-3xl mx-auto text-center space-y-4">
           <span className="inline-flex items-center gap-2 bg-white/20 text-white
             text-xs font-bold px-4 py-1.5 rounded-full">
@@ -88,13 +88,13 @@ export default function RewardsPage() {
       <section className="py-14 px-4 bg-white">
         <div className="max-w-5xl mx-auto space-y-10">
           <div className="text-center space-y-2">
-            <span className="text-[#00B14F] font-bold text-sm uppercase tracking-widest">Simple Process</span>
+            <span className="text-[#168AFF] font-bold text-sm uppercase tracking-widest">Simple Process</span>
             <h2 className="text-3xl font-black text-gray-800">How to Earn & Redeem</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {HOW_IT_WORKS.map(({ step, title, desc }) => (
               <div key={step} className="flex flex-col items-center text-center gap-3">
-                <div className="w-16 h-16 bg-[#00B14F] rounded-2xl flex items-center
+                <div className="w-16 h-16 bg-[#168AFF] rounded-2xl flex items-center
                   justify-center shadow-md">
                   <span className="text-white font-black text-lg">{step}</span>
                 </div>
@@ -110,7 +110,7 @@ export default function RewardsPage() {
       <section className="py-14 px-4 bg-gray-50">
         <div className="max-w-5xl mx-auto space-y-10">
           <div className="text-center space-y-2">
-            <span className="text-[#00B14F] font-bold text-sm uppercase tracking-widest">Tiers</span>
+            <span className="text-[#168AFF] font-bold text-sm uppercase tracking-widest">Tiers</span>
             <h2 className="text-3xl font-black text-gray-800">Membership Levels</h2>
             <p className="text-gray-500 text-sm max-w-md mx-auto">
               Climb through the tiers as you earn more points and unlock better benefits.
@@ -135,7 +135,7 @@ export default function RewardsPage() {
       <section className="py-14 px-4 bg-white">
         <div className="max-w-5xl mx-auto space-y-10">
           <div className="text-center space-y-2">
-            <span className="text-[#00B14F] font-bold text-sm uppercase tracking-widest">Catalog</span>
+            <span className="text-[#168AFF] font-bold text-sm uppercase tracking-widest">Catalog</span>
             <h2 className="text-3xl font-black text-gray-800">Available Rewards</h2>
             <p className="text-gray-500 text-sm max-w-md mx-auto">
               Redeem your earned points for any of these exciting rewards.
@@ -157,7 +157,7 @@ export default function RewardsPage() {
                 <div key={reward.id}
                   className="rounded-2xl border border-gray-100 bg-white p-5
                     flex items-start gap-4 hover:shadow-md transition-shadow">
-                  <div className="w-14 h-14 rounded-2xl overflow-hidden bg-green-50
+                  <div className="w-14 h-14 rounded-2xl overflow-hidden bg-blue-50
                     border border-gray-100 flex items-center justify-center shrink-0">
                     {reward.image_url ? (
                       <img
@@ -171,7 +171,7 @@ export default function RewardsPage() {
                   </div>
                   <div className="flex-1 space-y-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="inline-flex items-center gap-1 bg-[#00B14F] text-white
+                      <span className="inline-flex items-center gap-1 bg-[#168AFF] text-white
                         text-xs font-bold px-2 py-0.5 rounded-lg">
                         <MdStar size={10} /> {Number(reward.points_required).toLocaleString()} pts
                       </span>
@@ -192,7 +192,7 @@ export default function RewardsPage() {
       <section className="py-14 px-4 bg-gray-50">
         <div className="max-w-4xl mx-auto space-y-8">
           <div className="text-center space-y-2">
-            <span className="text-[#00B14F] font-bold text-sm uppercase tracking-widest">Benefits</span>
+            <span className="text-[#168AFF] font-bold text-sm uppercase tracking-widest">Benefits</span>
             <h2 className="text-3xl font-black text-gray-800">Why Join Our Rewards Program?</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -206,7 +206,7 @@ export default function RewardsPage() {
             ].map(b => (
               <div key={b} className="flex items-start gap-3 bg-white rounded-xl
                 border border-gray-100 px-4 py-3 shadow-sm">
-                <MdCheckCircle size={18} className="text-[#00B14F] shrink-0 mt-0.5" />
+                <MdCheckCircle size={18} className="text-[#168AFF] shrink-0 mt-0.5" />
                 <p className="text-gray-700 text-sm">{b}</p>
               </div>
             ))}
@@ -215,7 +215,7 @@ export default function RewardsPage() {
       </section>
 
       {/* ── CTA ── */}
-      <section className="py-12 px-4 bg-linear-to-r from-[#00B14F] to-[#007A35]">
+      <section className="py-12 px-4 bg-linear-to-r from-[#168AFF] to-[#0D5FC4]">
         <div className="max-w-3xl mx-auto text-center space-y-5">
           <MdCardGiftcard size={48} className="text-yellow-300 mx-auto" />
           <h2 className="text-3xl font-black text-white">Start Earning Today!</h2>

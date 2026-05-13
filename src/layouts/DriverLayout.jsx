@@ -24,7 +24,7 @@ export default function DriverLayout({ children }) {
     <div className="min-h-screen bg-gray-50 flex flex-col">
 
       {/* ── Top bar ── */}
-      <header className="fixed top-0 inset-x-0 z-30 bg-[#1A2E74] shadow-md">
+      <header className="fixed top-0 inset-x-0 z-30 bg-[#168AFF] shadow-md">
         <div className="max-w-lg mx-auto px-4 h-14 flex items-center justify-between">
 
           {/* Brand */}
@@ -74,13 +74,13 @@ export default function DriverLayout({ children }) {
                 to={path}
                 className={`flex-1 flex flex-col items-center justify-center gap-1 py-3
                   text-xs font-semibold transition-colors
-                  ${active ? 'text-[#1A2E74]' : 'text-gray-400 hover:text-gray-600'}`}
+                  ${active ? 'text-[#168AFF]' : 'text-gray-400 hover:text-gray-600'}`}
               >
                 <Icon size={22} />
                 {label}
                 {active && (
                   <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8
-                    h-0.5 bg-[#1A2E74] rounded-full" />
+                    h-0.5 bg-[#168AFF] rounded-full" />
                 )}
               </Link>
             )

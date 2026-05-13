@@ -100,7 +100,7 @@ export default function DriverProfile() {
             aria-label="Change profile photo"
           >
             {/* Circle */}
-            <div className="w-24 h-24 rounded-full overflow-hidden bg-[#1A2E74]
+            <div className="w-24 h-24 rounded-full overflow-hidden bg-[#168AFF]
               flex items-center justify-center shadow-lg ring-4 ring-white">
               {avatarUrl ? (
                 <img
@@ -183,8 +183,8 @@ export default function DriverProfile() {
           className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-4"
         >
           <div className="flex items-center gap-2 pb-1">
-            <MdEdit size={13} className="text-[#1A2E74] shrink-0" />
-            <p className="text-xs font-semibold text-[#1A2E74]">You can edit this</p>
+            <MdEdit size={13} className="text-[#168AFF] shrink-0" />
+            <p className="text-xs font-semibold text-[#168AFF]">You can edit this</p>
           </div>
 
           <div>
@@ -198,7 +198,7 @@ export default function DriverProfile() {
               placeholder="e.g. 09171234567"
               disabled={savingContact}
               className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-                focus:outline-none focus:ring-2 focus:ring-[#1A2E74]/30 focus:border-[#1A2E74]
+                focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF]
                 transition disabled:bg-gray-50 disabled:text-gray-400"
             />
           </div>
@@ -211,7 +211,7 @@ export default function DriverProfile() {
               active:scale-[0.98] transition-all
               ${contactSaved
                 ? 'bg-green-100 text-green-700'
-                : 'bg-[#1A2E74] text-white hover:bg-[#162060]'}
+                : 'bg-[#168AFF] text-white hover:bg-[#1270DB]'}
               disabled:opacity-60 disabled:cursor-not-allowed`}
           >
             {contactSaved

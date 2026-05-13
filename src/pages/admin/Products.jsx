@@ -63,7 +63,7 @@ function ProductCard({ product, toggling, onEdit, onToggle }) {
 
       {/* Content */}
       <div className="p-4 flex flex-col flex-1 gap-1">
-        <span className="text-[10px] font-semibold text-[#1A2E74] uppercase tracking-wide">
+        <span className="text-[10px] font-semibold text-[#168AFF] uppercase tracking-wide">
           {product.category ?? '—'}
         </span>
         <h4 className="text-gray-800 font-bold text-sm leading-snug line-clamp-1">
@@ -296,8 +296,8 @@ export default function Products() {
           <button
             onClick={openAdd}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-xl
-              bg-[#1A2E74] text-white text-sm font-semibold
-              hover:bg-[#162060] transition shadow-sm"
+              bg-[#168AFF] text-white text-sm font-semibold
+              hover:bg-[#1270DB] transition shadow-sm"
           >
             <MdAdd size={18} />
             Add Product
@@ -339,7 +339,7 @@ export default function Products() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full pl-8 pr-4 py-2 text-sm border border-gray-200 rounded-xl
-              focus:outline-none focus:ring-2 focus:ring-[#1A2E74]/30 focus:border-[#1A2E74]
+              focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF]
               transition"
           />
         </div>
@@ -426,7 +426,7 @@ export default function Products() {
                       transition-colors group
                       ${form.imagePreview
                         ? 'border-transparent'
-                        : 'border-gray-200 hover:border-[#1A2E74]'}`}
+                        : 'border-gray-200 hover:border-[#168AFF]'}`}
                   >
                     {form.imagePreview ? (
                       <>
@@ -472,7 +472,7 @@ export default function Products() {
                     onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
                     disabled={saving}
                     className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-                      focus:outline-none focus:ring-2 focus:ring-[#1A2E74]/30 focus:border-[#1A2E74]
+                      focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF]
                       transition disabled:bg-gray-50 disabled:text-gray-400"
                   />
                 </div>
@@ -489,7 +489,7 @@ export default function Products() {
                     disabled={saving}
                     rows={3}
                     className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-                      focus:outline-none focus:ring-2 focus:ring-[#1A2E74]/30 focus:border-[#1A2E74]
+                      focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF]
                       transition disabled:bg-gray-50 disabled:text-gray-400 resize-none"
                   />
                 </div>
@@ -507,7 +507,7 @@ export default function Products() {
                     onChange={e => setForm(f => ({ ...f, category: e.target.value }))}
                     disabled={saving}
                     className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-                      focus:outline-none focus:ring-2 focus:ring-[#1A2E74]/30 focus:border-[#1A2E74]
+                      focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF]
                       transition disabled:bg-gray-50 disabled:text-gray-400"
                   />
                   <datalist id="product-categories">
@@ -533,7 +533,7 @@ export default function Products() {
                       onChange={e => setForm(f => ({ ...f, price: e.target.value }))}
                       disabled={saving}
                       className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-                        focus:outline-none focus:ring-2 focus:ring-[#1A2E74]/30 focus:border-[#1A2E74]
+                        focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF]
                         transition disabled:bg-gray-50 disabled:text-gray-400"
                     />
                   </div>
@@ -546,7 +546,7 @@ export default function Products() {
                       onChange={e => setForm(f => ({ ...f, unitType: e.target.value }))}
                       disabled={saving}
                       className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-                        focus:outline-none focus:ring-2 focus:ring-[#1A2E74]/30 focus:border-[#1A2E74]
+                        focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF]
                         transition disabled:bg-gray-50 disabled:text-gray-400"
                     >
                       {UNIT_TYPES.map(u => <option key={u} value={u}>{u}</option>)}
@@ -567,8 +567,8 @@ export default function Products() {
                     disabled={saving}
                     aria-label="Toggle availability"
                     className={`relative w-11 h-6 rounded-full transition-colors shrink-0
-                      focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#1A2E74]/50
-                      ${form.isAvailable ? 'bg-[#1A2E74]' : 'bg-gray-300'}
+                      focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-[#168AFF]/50
+                      ${form.isAvailable ? 'bg-[#168AFF]' : 'bg-gray-300'}
                       disabled:opacity-50`}
                   >
                     <span
@@ -596,7 +596,7 @@ export default function Products() {
                   type="submit"
                   disabled={saving}
                   className="flex-1 px-4 py-2.5 text-sm font-semibold text-white
-                    bg-[#1A2E74] rounded-xl hover:bg-[#162060]
+                    bg-[#168AFF] rounded-xl hover:bg-[#1270DB]
                     transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {saving

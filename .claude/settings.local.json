@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(xargs sed -i 's/#1A2E74/#168AFF/g; s/#162060/#1270DB/g')"
+    ]
+  }
+}

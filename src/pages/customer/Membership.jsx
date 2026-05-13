@@ -31,7 +31,7 @@ function ActiveCard({ membership, profile }) {
     <div className="space-y-5 max-w-lg mx-auto">
 
       {/* Membership card */}
-      <div className="relative bg-gradient-to-br from-[#1A2E74] to-[#007A38]
+      <div className="relative bg-gradient-to-br from-[#168AFF] to-[#007A38]
         rounded-2xl p-6 text-white shadow-lg overflow-hidden">
 
         {/* Background decoration */}
@@ -91,7 +91,7 @@ function ActiveCard({ membership, profile }) {
         <ul className="space-y-2.5">
           {BENEFITS.map((b, i) => (
             <li key={i} className="flex items-start gap-3">
-              <MdCheckCircle size={16} className="text-[#1A2E74] shrink-0 mt-0.5" />
+              <MdCheckCircle size={16} className="text-[#168AFF] shrink-0 mt-0.5" />
               <span className="text-gray-600 text-sm">{b}</span>
             </li>
           ))}
@@ -155,8 +155,8 @@ function RejectedCard({ onReapply }) {
         </div>
         <button
           onClick={onReapply}
-          className="mt-1 px-6 py-2.5 bg-[#1A2E74] text-white rounded-xl
-            font-semibold text-sm hover:bg-[#162060] transition shadow-sm"
+          className="mt-1 px-6 py-2.5 bg-[#168AFF] text-white rounded-xl
+            font-semibold text-sm hover:bg-[#1270DB] transition shadow-sm"
         >
           Apply Again
         </button>
@@ -229,8 +229,8 @@ function ApplyForm({ onSubmitted }) {
     <div className="space-y-5 max-w-lg mx-auto">
 
       {/* Benefits preview */}
-      <div className="bg-gradient-to-br from-[#1A2E74]/8 to-[#1A2E74]/3
-        border border-[#1A2E74]/20 rounded-2xl p-5">
+      <div className="bg-gradient-to-br from-[#168AFF]/8 to-[#168AFF]/3
+        border border-[#168AFF]/20 rounded-2xl p-5">
         <h3 className="text-gray-700 font-bold text-sm mb-3 flex items-center gap-2">
           <MdStar size={16} className="text-yellow-400" />
           Membership Benefits
@@ -238,7 +238,7 @@ function ApplyForm({ onSubmitted }) {
         <ul className="space-y-2">
           {BENEFITS.map((b, i) => (
             <li key={i} className="flex items-start gap-2.5">
-              <MdCheckCircle size={15} className="text-[#1A2E74] shrink-0 mt-0.5" />
+              <MdCheckCircle size={15} className="text-[#168AFF] shrink-0 mt-0.5" />
               <span className="text-gray-600 text-sm">{b}</span>
             </li>
           ))}
@@ -273,7 +273,7 @@ function ApplyForm({ onSubmitted }) {
                 transition-colors group
                 ${imagePreview
                   ? 'border-transparent'
-                  : 'border-gray-200 hover:border-[#1A2E74]'}`}
+                  : 'border-gray-200 hover:border-[#168AFF]'}`}
             >
               {imagePreview ? (
                 <>
@@ -316,8 +316,8 @@ function ApplyForm({ onSubmitted }) {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full py-3 bg-[#1A2E74] text-white font-bold rounded-xl text-sm
-              hover:bg-[#162060] active:scale-[0.98] transition-all shadow-sm
+            className="w-full py-3 bg-[#168AFF] text-white font-bold rounded-xl text-sm
+              hover:bg-[#1270DB] active:scale-[0.98] transition-all shadow-sm
               disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {submitting ? 'Submitting…' : 'Submit Application'}

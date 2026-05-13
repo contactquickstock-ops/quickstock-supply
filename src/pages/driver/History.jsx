@@ -100,7 +100,7 @@ function OrderDetailModal({ order, items, loadingItems, onClose }) {
 
           {/* Customer info */}
           <div className="flex items-center gap-3 py-3 px-4 bg-gray-50 rounded-xl">
-            <div className="w-9 h-9 rounded-full bg-[#1A2E74]/10 text-[#1A2E74]
+            <div className="w-9 h-9 rounded-full bg-[#168AFF]/10 text-[#168AFF]
               flex items-center justify-center font-bold text-sm shrink-0">
               {(order.customer_name ?? '?')[0].toUpperCase()}
             </div>
@@ -171,7 +171,7 @@ function OrderDetailModal({ order, items, loadingItems, onClose }) {
             <div className="border-t border-gray-200 pt-2 flex justify-between
               font-bold text-gray-800">
               <span>Total</span>
-              <span className="text-[#1A2E74]">₱{fmtMoney(order.total)}</span>
+              <span className="text-[#168AFF]">₱{fmtMoney(order.total)}</span>
             </div>
           </div>
 
@@ -314,7 +314,7 @@ export default function DriverHistory() {
               onClick={() => setFilter(f)}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold capitalize transition
                 ${filter === f
-                  ? 'bg-[#1A2E74] text-white'
+                  ? 'bg-[#168AFF] text-white'
                   : 'bg-white border border-gray-200 text-gray-500 hover:bg-gray-50'}`}
             >
               {f}
@@ -368,7 +368,7 @@ export default function DriverHistory() {
                 </p>
 
                 <div className="flex items-center justify-between">
-                  <p className="text-[#1A2E74] font-bold text-sm">
+                  <p className="text-[#168AFF] font-bold text-sm">
                     ₱{fmtMoney(order.total)}
                   </p>
                   <p className="text-gray-400 text-xs">

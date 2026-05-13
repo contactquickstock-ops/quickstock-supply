@@ -62,14 +62,14 @@ function OrderStepper({ status }) {
               <div
                 className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0
                   transition-colors
-                  ${done ? 'border-[#1A2E74] bg-[#1A2E74]' : 'border-gray-200 bg-white'}`}
+                  ${done ? 'border-[#168AFF] bg-[#168AFF]' : 'border-gray-200 bg-white'}`}
               >
                 {done && <Checkmark />}
               </div>
               {!last && (
                 <div
                   className={`h-0.5 flex-1 transition-colors
-                    ${i < currentIdx ? 'bg-[#1A2E74]' : 'bg-gray-200'}`}
+                    ${i < currentIdx ? 'bg-[#168AFF]' : 'bg-gray-200'}`}
                 />
               )}
             </div>
@@ -343,7 +343,7 @@ export default function Orders() {
                 <div className="border-t border-gray-200 pt-2 flex justify-between
                   font-bold text-gray-800">
                   <span>Total</span>
-                  <span className="text-[#1A2E74]">₱{fmtMoney(selectedOrder.total)}</span>
+                  <span className="text-[#168AFF]">₱{fmtMoney(selectedOrder.total)}</span>
                 </div>
               </div>
 

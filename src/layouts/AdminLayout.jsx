@@ -52,7 +52,7 @@ export default function AdminLayout({ children, pageTitle = 'Dashboard' }) {
       {/* ── Sidebar ── */}
       <aside
         className={`
-          fixed top-0 left-0 h-full w-64 bg-[#1A2E74] z-30 flex flex-col
+          fixed top-0 left-0 h-full w-64 bg-[#168AFF] z-30 flex flex-col
           transition-transform duration-300 ease-in-out
           ${open ? 'translate-x-0' : '-translate-x-full'}
           lg:static lg:translate-x-0
@@ -86,7 +86,7 @@ export default function AdminLayout({ children, pageTitle = 'Dashboard' }) {
                   flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium
                   transition-all duration-150 select-none
                   ${active
-                    ? 'bg-white text-[#1A2E74] shadow-sm'
+                    ? 'bg-white text-[#168AFF] shadow-sm'
                     : 'text-white/75 hover:bg-white/10 hover:text-white'}
                 `}
               >
@@ -140,7 +140,7 @@ export default function AdminLayout({ children, pageTitle = 'Dashboard' }) {
               </p>
             </div>
             <div
-              className="w-9 h-9 rounded-full bg-[#1A2E74] flex items-center justify-center
+              className="w-9 h-9 rounded-full bg-[#168AFF] flex items-center justify-center
                 text-white font-bold text-sm shadow-sm shrink-0"
             >
               {initials}

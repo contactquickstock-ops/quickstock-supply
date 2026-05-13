@@ -45,7 +45,7 @@ function ProductCard({ product, isAdding, onAddToCart }) {
 
       {/* Info */}
       <div className="p-3 flex flex-col flex-1">
-        <p className="text-[10px] font-semibold text-[#1A2E74] uppercase tracking-wide">
+        <p className="text-[10px] font-semibold text-[#168AFF] uppercase tracking-wide">
           {product.category ?? '—'}
         </p>
         <h4 className="text-gray-800 font-bold text-sm leading-snug line-clamp-2 mt-0.5">
@@ -68,7 +68,7 @@ function ProductCard({ product, isAdding, onAddToCart }) {
             text-sm font-semibold transition-all duration-200
             ${isAdding
               ? 'bg-green-100 text-green-600 scale-95'
-              : 'bg-[#1A2E74] text-white hover:bg-[#162060] active:scale-95'}`}
+              : 'bg-[#168AFF] text-white hover:bg-[#1270DB] active:scale-95'}`}
         >
           <MdShoppingCart size={16} />
           {isAdding ? 'Added!' : 'Add to Cart'}
@@ -157,7 +157,7 @@ export default function CustomerDashboard() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full pl-9 pr-4 py-2.5 text-sm bg-white border border-gray-200 rounded-xl
-              focus:outline-none focus:ring-2 focus:ring-[#1A2E74]/30 focus:border-[#1A2E74]
+              focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF]
               transition"
           />
         </div>
@@ -171,8 +171,8 @@ export default function CustomerDashboard() {
                 onClick={() => setCategory(cat)}
                 className={`px-4 py-1.5 rounded-full text-sm font-semibold transition-all
                   ${activeCategory === cat
-                    ? 'bg-[#1A2E74] text-white shadow-sm'
-                    : 'bg-white text-gray-500 border border-gray-200 hover:border-[#1A2E74] hover:text-[#1A2E74]'}`}
+                    ? 'bg-[#168AFF] text-white shadow-sm'
+                    : 'bg-white text-gray-500 border border-gray-200 hover:border-[#168AFF] hover:text-[#168AFF]'}`}
               >
                 {cat}
               </button>

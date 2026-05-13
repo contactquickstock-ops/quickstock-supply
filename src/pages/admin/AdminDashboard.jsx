@@ -62,7 +62,7 @@ function CustomTooltip({ active, payload, label }) {
   return (
     <div className="bg-white rounded-xl shadow-lg border border-gray-100 px-4 py-2.5 text-sm">
       <p className="text-gray-500 font-medium">{label}</p>
-      <p className="text-[#1A2E74] font-bold mt-0.5">
+      <p className="text-[#168AFF] font-bold mt-0.5">
         {payload[0].value} order{payload[0].value !== 1 ? 's' : ''}
       </p>
     </div>
@@ -185,7 +185,7 @@ export default function AdminDashboard() {
             title="Total Orders"
             value={stats.totalOrders}
             icon={MdShoppingCart}
-            iconColor="text-[#1A2E74]"
+            iconColor="text-[#168AFF]"
             iconBg="bg-green-50"
             loading={loading}
           />
@@ -251,7 +251,7 @@ export default function AdminDashboard() {
                 <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f0fdf4', radius: 6 }} />
                 <Bar
                   dataKey="orders"
-                  fill="#1A2E74"
+                  fill="#168AFF"
                   radius={[6, 6, 0, 0]}
                   maxBarSize={52}
                 />

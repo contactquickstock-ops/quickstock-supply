@@ -52,14 +52,14 @@ export default function AdminLayout({ children, pageTitle = 'Dashboard' }) {
       {/* ── Sidebar ── */}
       <aside
         className={`
-          fixed top-0 left-0 h-full w-64 bg-gray-900 z-30 flex flex-col
+          fixed top-0 left-0 h-full w-64 bg-[#0d1b2e] z-30 flex flex-col
           transition-transform duration-300 ease-in-out
           ${open ? 'translate-x-0' : '-translate-x-full'}
           lg:static lg:translate-x-0
         `}
       >
         {/* Brand */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-800">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-[#1a2f50]">
           <div className="flex items-center">
             <img src="/logo.jpg" alt="QuickStock Supply"
               className="h-10 object-contain bg-white rounded-xl px-1.5 py-0.5" />
@@ -87,7 +87,7 @@ export default function AdminLayout({ children, pageTitle = 'Dashboard' }) {
                   transition-all duration-150 select-none
                   ${active
                     ? 'bg-[#168AFF] text-white shadow-md'
-                    : 'text-gray-400 hover:bg-gray-800 hover:text-white'}
+                    : 'text-blue-200/70 hover:bg-[#1a2f50] hover:text-white'}
                 `}
               >
                 <Icon size={19} />
@@ -98,11 +98,11 @@ export default function AdminLayout({ children, pageTitle = 'Dashboard' }) {
         </nav>
 
         {/* Logout */}
-        <div className="px-3 py-5 border-t border-gray-800">
+        <div className="px-3 py-5 border-t border-[#1a2f50]">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-gray-400
-              hover:bg-gray-800 hover:text-white text-sm font-medium w-full
+            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-blue-200/70
+              hover:bg-[#1a2f50] hover:text-white text-sm font-medium w-full
               transition-all duration-150"
           >
             <MdLogout size={19} />

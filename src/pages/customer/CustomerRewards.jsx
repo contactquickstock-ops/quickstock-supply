@@ -1,39 +1,30 @@
 import { useEffect, useState, useCallback } from 'react'
-import { MdStar } from 'react-icons/md'
-import Swal from 'sweetalert2'
+import { MdStar, MdCheckCircle, MdShoppingCart } from 'react-icons/md'
 import CustomerLayout from '../../layouts/CustomerLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
 import { useAuth } from '../../context/AuthContext'
-import toast from 'react-hot-toast'
-
-// ── Skeleton helpers ──────────────────────────────────────────────────────────
 
 function SkeletonBalance() {
-  return (
-    <div className="h-32 bg-white rounded-2xl border border-gray-100 shadow-sm animate-pulse" />
-  )
+  return <div className="h-32 bg-white rounded-2xl border border-gray-100 shadow-sm animate-pulse" />
 }
 
 function SkeletonRewardCard() {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm
-      overflow-hidden animate-pulse">
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden animate-pulse">
       <div className="h-36 bg-gray-100" />
       <div className="p-4 space-y-2.5">
         <div className="h-4 bg-gray-100 rounded-lg w-3/4" />
         <div className="h-3 bg-gray-100 rounded-lg w-full" />
         <div className="h-6 bg-gray-100 rounded-full w-1/3 mt-1" />
-        <div className="h-9 bg-gray-100 rounded-xl" />
+        <div className="h-7 bg-gray-100 rounded-xl mt-2" />
       </div>
     </div>
   )
 }
 
-// ── Points balance card ───────────────────────────────────────────────────────
-
 function BalanceCard({ points }) {
   return (
-    <div className="relative bg-gradient-to-br from-yellow-400 to-orange-400
+    <div className="relative bg-linear-to-br from-yellow-400 to-orange-400
       rounded-2xl p-6 text-white shadow-lg overflow-hidden">
       <div className="absolute -top-6 -right-6 w-32 h-32 rounded-full bg-white/10 pointer-events-none" />
       <div className="absolute -bottom-8 -left-4 w-36 h-36 rounded-full bg-white/5 pointer-events-none" />
@@ -53,24 +44,28 @@ function BalanceCard({ points }) {
   )
 }
 
-// ── Reward card ───────────────────────────────────────────────────────────────
+function RewardCard({ reward, canRedeem, myPoints }) {
+  const shortage = reward.points_required - myPoints
 
-function RewardCard({ reward, canRedeem, redeeming, onRedeem }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden
-      flex flex-col hover:shadow-md transition-shadow">
+    <div className={`bg-white rounded-2xl border shadow-sm overflow-hidden flex flex-col
+      transition-shadow hover:shadow-md
+      ${canRedeem ? 'border-gray-100' : 'border-gray-100'}`}>
 
       {/* Image */}
-      <div className="h-36 bg-gray-50 shrink-0 overflow-hidden">
+      <div className="h-36 bg-gray-50 shrink-0 overflow-hidden relative">
         {reward.image_url ? (
-          <img
-            src={reward.image_url}
-            alt={reward.name}
-            className="w-full h-full object-cover"
-          />
+          <img src={reward.image_url} alt={reward.name} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-200">
             <MdStar size={36} />
+          </div>
+        )}
+        {/* Overlay badge on image */}
+        {canRedeem && (
+          <div className="absolute top-2.5 right-2.5 bg-green-500 text-white
+            text-[10px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow">
+            <MdCheckCircle size={10} /> Claimable
           </div>
         )}
       </div>
@@ -83,7 +78,7 @@ function RewardCard({ reward, canRedeem, redeeming, onRedeem }) {
         {reward.description && (
           <p className="text-gray-400 text-xs line-clamp-2">{reward.description}</p>
         )}
-        <div className="mt-auto pt-2">
+        <div className="mt-auto pt-2 flex items-center gap-2 flex-wrap">
           <span className={`inline-flex items-center gap-1 px-2.5 py-1
             rounded-full text-xs font-bold
             ${canRedeem ? 'bg-yellow-50 text-yellow-700' : 'bg-gray-100 text-gray-400'}`}>
@@ -93,31 +88,35 @@ function RewardCard({ reward, canRedeem, redeeming, onRedeem }) {
         </div>
       </div>
 
-      {/* Redeem button */}
+      {/* Status footer — no button */}
       <div className="px-4 pb-4 shrink-0">
-        <button
-          onClick={onRedeem}
-          disabled={!canRedeem || redeeming}
-          className={`w-full py-2 rounded-xl text-sm font-bold transition-all
-            ${canRedeem && !redeeming
-              ? 'bg-[#168AFF] text-white hover:bg-[#1270DB] active:scale-[0.98]'
-              : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
-        >
-          {redeeming ? 'Redeeming…' : canRedeem ? 'Redeem' : 'Not Enough Points'}
-        </button>
+        {canRedeem ? (
+          <div className="flex items-center gap-2 px-3 py-2 bg-green-50
+            border border-green-100 rounded-xl">
+            <MdShoppingCart size={14} className="text-green-600 shrink-0" />
+            <p className="text-green-700 text-xs font-semibold">
+              Select in your cart to redeem
+            </p>
+          </div>
+        ) : (
+          <div className="flex items-center justify-between px-3 py-2 bg-gray-50
+            border border-gray-100 rounded-xl">
+            <p className="text-gray-400 text-xs font-medium">Not enough points</p>
+            <span className="text-xs font-bold text-[#168AFF]">
+              +{shortage.toLocaleString()} needed
+            </span>
+          </div>
+        )}
       </div>
     </div>
   )
 }
 
-// ── Main page ─────────────────────────────────────────────────────────────────
-
 export default function CustomerRewards() {
-  const { user }                        = useAuth()
-  const [points, setPoints]             = useState(null)
-  const [rewards, setRewards]           = useState([])
-  const [loading, setLoading]           = useState(true)
-  const [redeemingId, setRedeemingId]   = useState(null)
+  const { user }              = useAuth()
+  const [points, setPoints]   = useState(null)
+  const [rewards, setRewards] = useState([])
+  const [loading, setLoading] = useState(true)
 
   const fetchData = useCallback(async () => {
     if (!user) return
@@ -129,7 +128,6 @@ export default function CustomerRewards() {
         .select('total_points')
         .eq('customer_id', user.id)
         .maybeSingle(),
-
       supabase
         .from('rewards')
         .select('*')
@@ -144,115 +142,19 @@ export default function CustomerRewards() {
 
   useEffect(() => { fetchData() }, [fetchData])
 
-  async function handleRedeem(reward) {
-    if (!user || redeemingId) return
-
-    const afterBalance = (points ?? 0) - reward.points_required
-
-    // ── SweetAlert2 confirmation ──────────────────────────────────────────────
-    const result = await Swal.fire({
-      title: 'Confirm Redemption',
-      html: `
-        <p style="font-size:13px;color:#6b7280;margin-bottom:14px;">
-          You are about to redeem <strong style="color:#111827">${reward.name}</strong>.
-        </p>
-        <div style="background:#f9fafb;border-radius:12px;padding:14px;font-size:13px;text-align:left;">
-          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-            <span style="color:#6b7280;">Current balance</span>
-            <span style="font-weight:700;color:#111827;">${Number(points ?? 0).toLocaleString()} pts</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
-            <span style="color:#6b7280;">Points to deduct</span>
-            <span style="font-weight:700;color:#ef4444;">− ${Number(reward.points_required).toLocaleString()} pts</span>
-          </div>
-          <div style="display:flex;justify-content:space-between;padding-top:8px;
-            border-top:1px solid #e5e7eb;font-weight:700;">
-            <span style="color:#374151;">Remaining balance</span>
-            <span style="color:#168AFF;">${Number(afterBalance).toLocaleString()} pts</span>
-          </div>
-        </div>
-        <p style="font-size:11px;color:#9ca3af;margin-top:12px;">
-          This action cannot be undone.
-        </p>
-      `,
-      showCancelButton: true,
-      confirmButtonText: 'Confirm Redeem',
-      cancelButtonText: 'Cancel',
-      confirmButtonColor: '#168AFF',
-      cancelButtonColor: '#9ca3af',
-      reverseButtons: true,
-      focusConfirm: false,
-      customClass: {
-        popup:         'rounded-2xl',
-        confirmButton: 'rounded-xl font-semibold text-sm px-5 py-2.5',
-        cancelButton:  'rounded-xl font-semibold text-sm px-5 py-2.5',
-      },
-    })
-
-    if (!result.isConfirmed) return
-
-    // ── Redeem logic ──────────────────────────────────────────────────────────
-    setRedeemingId(reward.id)
-
-    try {
-      // Re-verify balance server-side (guard against stale UI)
-      const { data: current } = await supabase
-        .from('customer_points')
-        .select('total_points')
-        .eq('customer_id', user.id)
-        .maybeSingle()
-
-      const currentTotal = current?.total_points ?? 0
-
-      if (currentTotal < reward.points_required) {
-        toast.error('Not enough points to redeem this reward.')
-        setPoints(currentTotal)
-        return
-      }
-
-      const newTotal = currentTotal - reward.points_required
-
-      // Deduct points
-      const { error: pointsErr } = await supabase
-        .from('customer_points')
-        .upsert({ customer_id: user.id, total_points: newTotal })
-      if (pointsErr) throw new Error(pointsErr.message)
-
-      // Record redemption
-      const { error: redeemErr } = await supabase
-        .from('redeemed_rewards')
-        .insert({
-          customer_id: user.id,
-          reward_id:   reward.id,
-          redeemed_at: new Date().toISOString(),
-        })
-      if (redeemErr) throw new Error(redeemErr.message)
-
-      setPoints(newTotal)
-      toast.success(`${reward.name} redeemed!`, { duration: 3000 })
-    } catch {
-      toast.error('Failed to redeem reward. Please try again.')
-    } finally {
-      setRedeemingId(null)
-    }
-  }
-
   return (
     <CustomerLayout>
       <div className="space-y-6 max-w-4xl mx-auto">
 
-        {/* Heading */}
         <div>
           <h2 className="text-xl font-bold text-gray-800">Rewards</h2>
           <p className="text-gray-400 text-sm mt-0.5">
-            Redeem your points for exclusive rewards
+            Your points and available rewards — redeem them when placing an order
           </p>
         </div>
 
-        {/* Points balance */}
         {loading ? <SkeletonBalance /> : <BalanceCard points={points} />}
 
-        {/* Rewards catalog */}
         <div>
           <h3 className="text-gray-700 font-bold text-base mb-4">Available Rewards</h3>
 
@@ -271,9 +173,8 @@ export default function CustomerRewards() {
                 <RewardCard
                   key={reward.id}
                   reward={reward}
+                  myPoints={points ?? 0}
                   canRedeem={(points ?? 0) >= reward.points_required}
-                  redeeming={redeemingId === reward.id}
-                  onRedeem={() => handleRedeem(reward)}
                 />
               ))}
             </div>

@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { MdCameraAlt, MdLock, MdEdit, MdCheckCircle } from 'react-icons/md'
 import DriverLayout from '../../layouts/DriverLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
@@ -11,6 +11,12 @@ export default function DriverProfile() {
 
   const [contact, setContact]                     = useState(profile?.contact_number ?? '')
   const [avatarUrl, setAvatarUrl]                 = useState(profile?.avatar_url ?? null)
+
+  // Sync avatar and contact when profile loads (may arrive after mount)
+  useEffect(() => {
+    if (profile?.avatar_url && !avatarUrl) setAvatarUrl(profile.avatar_url)
+    if (profile?.contact_number && !contact) setContact(profile.contact_number)
+  }, [profile?.avatar_url, profile?.contact_number]) // eslint-disable-line react-hooks/exhaustive-deps
   const [uploadingPhoto, setUploadingPhoto]       = useState(false)
   const [savingContact, setSavingContact]         = useState(false)
   const [contactSaved, setContactSaved]           = useState(false)
@@ -140,7 +146,6 @@ export default function DriverProfile() {
             ref={fileInputRef}
             type="file"
             accept="image/*"
-            capture="user"
             onChange={handlePhotoChange}
             disabled={uploadingPhoto}
             className="hidden"

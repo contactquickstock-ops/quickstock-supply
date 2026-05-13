@@ -121,7 +121,7 @@ export default function PublicLayout({ children }) {
       </header>
 
       {/* ── Page content ── */}
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 [&_p]:text-justify">{children}</main>
 
       {/* ── Footer ── */}
       <footer className="bg-gray-900 text-gray-300">

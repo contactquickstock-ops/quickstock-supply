@@ -52,20 +52,20 @@ export default function AdminLayout({ children, pageTitle = 'Dashboard' }) {
       {/* ── Sidebar ── */}
       <aside
         className={`
-          fixed top-0 left-0 h-full w-64 bg-[#168AFF] z-30 flex flex-col
+          fixed top-0 left-0 h-full w-64 bg-gray-900 z-30 flex flex-col
           transition-transform duration-300 ease-in-out
           ${open ? 'translate-x-0' : '-translate-x-full'}
           lg:static lg:translate-x-0
         `}
       >
         {/* Brand */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-800">
           <div className="flex items-center">
             <img src="/logo.jpg" alt="QuickStock Supply"
               className="h-10 object-contain bg-white rounded-xl px-1.5 py-0.5" />
           </div>
           <button
-            className="lg:hidden text-white/70 hover:text-white transition-colors"
+            className="lg:hidden text-gray-400 hover:text-white transition-colors"
             onClick={() => setOpen(false)}
             aria-label="Close sidebar"
           >
@@ -86,8 +86,8 @@ export default function AdminLayout({ children, pageTitle = 'Dashboard' }) {
                   flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium
                   transition-all duration-150 select-none
                   ${active
-                    ? 'bg-white text-[#168AFF] shadow-sm'
-                    : 'text-white/75 hover:bg-white/10 hover:text-white'}
+                    ? 'bg-[#168AFF] text-white shadow-md'
+                    : 'text-gray-400 hover:bg-gray-800 hover:text-white'}
                 `}
               >
                 <Icon size={19} />
@@ -98,11 +98,11 @@ export default function AdminLayout({ children, pageTitle = 'Dashboard' }) {
         </nav>
 
         {/* Logout */}
-        <div className="px-3 py-5 border-t border-green-400/40">
+        <div className="px-3 py-5 border-t border-gray-800">
           <button
             onClick={handleLogout}
-            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-white/75
-              hover:bg-white/10 hover:text-white text-sm font-medium w-full
+            className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-gray-400
+              hover:bg-gray-800 hover:text-white text-sm font-medium w-full
               transition-all duration-150"
           >
             <MdLogout size={19} />

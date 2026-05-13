@@ -186,7 +186,7 @@ export default function AdminDashboard() {
             value={stats.totalOrders}
             icon={MdShoppingCart}
             iconColor="text-[#168AFF]"
-            iconBg="bg-green-50"
+            iconBg="bg-blue-50"
             loading={loading}
           />
           <SummaryCard
@@ -248,7 +248,7 @@ export default function AdminDashboard() {
                   axisLine={false}
                   tickLine={false}
                 />
-                <Tooltip content={<CustomTooltip />} cursor={{ fill: '#f0fdf4', radius: 6 }} />
+                <Tooltip content={<CustomTooltip />} cursor={{ fill: '#eff6ff', radius: 6 }} />
                 <Bar
                   dataKey="orders"
                   fill="#168AFF"

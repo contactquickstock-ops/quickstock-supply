@@ -89,9 +89,15 @@ export default function LandingPage() {
           <div className="hidden lg:flex justify-center">
             <div className="relative">
               <div className="w-80 h-80 bg-white/10 rounded-3xl border border-white/20
-                backdrop-blur-sm flex items-center justify-center shadow-2xl">
-                <img src="/logo.jpg" alt="QuickStock Supply"
-                  className="w-64 h-64 object-contain drop-shadow-2xl" />
+                backdrop-blur-sm flex items-center justify-center shadow-2xl overflow-hidden">
+                <video
+                  src="/hero-animation.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div className="absolute -top-4 -right-4 bg-yellow-400 text-gray-900
                 px-4 py-2 rounded-2xl shadow-lg font-bold text-sm text-center">

@@ -8,14 +8,12 @@ import {
 import PublicLayout from '../../layouts/PublicLayout'
 
 const CATEGORIES = [
-  { emoji: '🌾', label: 'Rice & Grains'   },
-  { emoji: '🥚', label: 'Eggs & Dairy'    },
-  { emoji: '🛢️', label: 'Cooking Oil'     },
-  { emoji: '🥤', label: 'Beverages'       },
-  { emoji: '🥫', label: 'Canned Goods'    },
-  { emoji: '🍜', label: 'Noodles & Pasta' },
-  { emoji: '🧂', label: 'Condiments'      },
-  { emoji: '🍫', label: 'Snacks & Sweets' },
+  { emoji: '🌾', label: 'Rice & Grains',   available: true  },
+  { emoji: '🥚', label: 'Eggs',            available: true  },
+  { emoji: '🛢️', label: 'Cooking Oil',     available: true  },
+  { emoji: '🥤', label: 'Beverages',       available: true  },
+  { emoji: '🧂', label: 'Condiments',      available: true  },
+  { emoji: '🍜', label: 'Noodles & Pasta', available: false },
 ]
 
 const FEATURES = [
@@ -146,13 +144,21 @@ export default function LandingPage() {
             </p>
           </div>
           {/* Categories are display-only — no navigation */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-            {CATEGORIES.map(({ emoji, label }) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
+            {CATEGORIES.map(({ emoji, label, available }) => (
               <div key={label}
-                className="bg-white rounded-2xl border border-gray-100 shadow-sm
-                  p-5 flex flex-col items-center gap-3 text-center select-none">
-                <span className="text-4xl">{emoji}</span>
-                <span className="text-gray-700 font-semibold text-sm">{label}</span>
+                className="relative bg-white rounded-2xl border border-gray-100 shadow-sm
+                  p-5 flex flex-col items-center gap-3 text-center select-none overflow-hidden">
+                <span className={`text-4xl transition ${!available ? 'opacity-25' : ''}`}>{emoji}</span>
+                <span className={`font-semibold text-sm transition ${!available ? 'text-gray-300' : 'text-gray-700'}`}>{label}</span>
+                {!available && (
+                  <div className="absolute inset-0 backdrop-blur-[1px] flex items-center justify-center rounded-2xl">
+                    <span className="text-[10px] font-bold text-gray-500 bg-white/90 border border-gray-200
+                      px-3 py-1 rounded-full shadow-sm">
+                      Available Soon
+                    </span>
+                  </div>
+                )}
               </div>
             ))}
           </div>

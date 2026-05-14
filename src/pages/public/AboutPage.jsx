@@ -9,12 +9,6 @@ const VALUES = [
   { icon: MdHeadsetMic,    title: 'Service',  desc: 'Our team is always here to assist you every step of the way.'                         },
 ]
 
-const MILESTONES = [
-  { year: '2024', text: 'QuickStock Supply was founded in the Philippines.' },
-  { year: '2025', text: 'Launched online ordering platform and mobile-friendly site.' },
-  { year: '2025', text: 'Introduced the Rewards & Membership program.' },
-  { year: '2026', text: 'Expanded product catalog to 500+ items across all categories.' },
-]
 
 export default function AboutPage() {
   return (
@@ -44,14 +38,14 @@ export default function AboutPage() {
               Built for Every Filipino Business
             </h2>
             <p className="text-gray-600 text-base leading-relaxed">
-              QuickStock Supply started with a simple vision: make restocking easier for
-              sari-sari stores, restaurants, and small businesses. We noticed that getting
-              basic supplies often meant long queues, traffic, and wasted time.
+              QuickStock Supply was created to support hardworking Filipino entrepreneurs
+              and small businesses by providing a faster and more reliable way to restock
+              essential goods.
             </p>
             <p className="text-gray-600 text-base leading-relaxed">
-              So we built a platform that lets you order your essentials online — from
-              rice and cooking oil to snacks and beverages — and have them delivered
-              straight to your store. <em>Diretso sa Tindahan Mo.</em>
+              We believe small businesses deserve modern supply solutions, rewarding
+              partnerships, and dependable access to inventory that helps their stores
+              grow every day.
             </p>
             <div className="space-y-2.5 pt-2">
               {[
@@ -125,30 +119,6 @@ export default function AboutPage() {
                 </div>
                 <h3 className="font-bold text-gray-800 text-base">{title}</h3>
                 <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Milestones ── */}
-      <section className="py-14 px-4 bg-gray-50">
-        <div className="max-w-3xl mx-auto space-y-10">
-          <div className="text-center space-y-2">
-            <span className="text-[#168AFF] font-bold text-sm uppercase tracking-widest">Our Journey</span>
-            <h2 className="text-3xl font-black text-gray-800">Milestones</h2>
-          </div>
-          <div className="space-y-4">
-            {MILESTONES.map(({ year, text }, i) => (
-              <div key={i} className="flex gap-5 items-start">
-                <div className="w-16 h-16 bg-[#168AFF] rounded-2xl flex items-center
-                  justify-center shrink-0 shadow-md">
-                  <span className="text-white font-black text-sm">{year}</span>
-                </div>
-                <div className="flex-1 bg-white rounded-2xl border border-gray-100
-                  shadow-sm px-5 py-4 flex items-center">
-                  <p className="text-gray-700 text-sm leading-relaxed">{text}</p>
-                </div>
               </div>
             ))}
           </div>

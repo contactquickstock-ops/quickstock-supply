@@ -172,7 +172,21 @@ export default function RegisterPage() {
       } catch { /* avatar failure won't block registration */ }
     }
 
-    // 3. Insert profile as pending immediately (no OTP step)
+    // 3. Check if profile already exists (handles duplicate registration attempts)
+    const { data: existing } = await supabaseAdmin
+      .from('profiles')
+      .select('id, status')
+      .eq('id', data.user.id)
+      .maybeSingle()
+
+    if (existing) {
+      await supabase.auth.signOut()
+      setError('This email is already registered. Please sign in instead.')
+      setLoading(false)
+      return
+    }
+
+    // 4. Insert profile as pending
     const { error: profileErr } = await supabaseAdmin.from('profiles').insert({
       id:         data.user.id,
       full_name:  fullName.trim(),

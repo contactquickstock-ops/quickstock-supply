@@ -56,9 +56,19 @@ export default function RegisterPage() {
   const [error,         setError]         = useState(null)
   const [avatarFile,    setAvatarFile]    = useState(null)
   const [avatarPreview, setAvatarPreview] = useState(null)
-  const [agreed,        setAgreed]        = useState(false)
-  const [showTerms,     setShowTerms]     = useState(false)
-  const [showPrivacy,   setShowPrivacy]   = useState(false)
+  const [agreed,          setAgreed]          = useState(false)
+  const [showTerms,       setShowTerms]       = useState(false)
+  const [showPrivacy,     setShowPrivacy]     = useState(false)
+  const [termsScrolled,   setTermsScrolled]   = useState(false)
+  const [privacyScrolled, setPrivacyScrolled] = useState(false)
+  const [termsRead,       setTermsRead]       = useState(false)
+  const [privacyRead,     setPrivacyRead]     = useState(false)
+
+  function handleDocScroll(e, setter) {
+    const el = e.currentTarget
+    const atBottom = el.scrollHeight - el.scrollTop <= el.clientHeight + 16
+    if (atBottom) setter(true)
+  }
 
   function handleAvatarChange(e) {
     const file = e.target.files[0]
@@ -248,42 +258,86 @@ export default function RegisterPage() {
               Your account will be reviewed by an admin before activation.
             </p>
 
-            {/* Terms & Conditions checkbox */}
-            <label className="flex items-start gap-3 cursor-pointer select-none group">
-              <div className="relative mt-0.5 shrink-0">
-                <input
-                  type="checkbox"
-                  checked={agreed}
-                  onChange={e => setAgreed(e.target.checked)}
-                  disabled={loading}
-                  className="sr-only"
-                />
-                <div className={`w-4.5 h-4.5 rounded border-2 flex items-center justify-center transition
-                  ${agreed
-                    ? 'bg-[#168AFF] border-[#168AFF]'
-                    : 'border-gray-300 group-hover:border-[#168AFF]'}`}>
-                  {agreed && (
-                    <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
-                      <path d="M1 3.5L3.2 5.5L8 1" stroke="white" strokeWidth="1.8"
-                        strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  )}
+            {/* Terms & Conditions — read both to unlock checkbox */}
+            <div className={`rounded-xl border p-4 space-y-3 transition
+              ${termsRead && privacyRead
+                ? 'border-[#168AFF]/30 bg-blue-50/50'
+                : 'border-gray-200 bg-gray-50'}`}>
+
+              <p className="text-xs font-semibold text-gray-600">
+                Before proceeding, please read the following documents:
+              </p>
+
+              {/* Document links with read status */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <button type="button"
+                    onClick={() => { setTermsScrolled(false); setShowTerms(true) }}
+                    className="text-xs text-[#168AFF] font-semibold hover:underline flex items-center gap-1.5">
+                    📄 Terms &amp; Conditions
+                  </button>
+                  {termsRead
+                    ? <span className="text-[10px] font-bold text-green-600 flex items-center gap-1">
+                        <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                          <path d="M1 4L3.5 6.5L9 1" stroke="currentColor" strokeWidth="2"
+                            strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        Read
+                      </span>
+                    : <span className="text-[10px] text-gray-400">Tap to read</span>
+                  }
+                </div>
+                <div className="flex items-center justify-between">
+                  <button type="button"
+                    onClick={() => { setPrivacyScrolled(false); setShowPrivacy(true) }}
+                    className="text-xs text-[#168AFF] font-semibold hover:underline flex items-center gap-1.5">
+                    🔒 Privacy Policy
+                  </button>
+                  {privacyRead
+                    ? <span className="text-[10px] font-bold text-green-600 flex items-center gap-1">
+                        <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                          <path d="M1 4L3.5 6.5L9 1" stroke="currentColor" strokeWidth="2"
+                            strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                        Read
+                      </span>
+                    : <span className="text-[10px] text-gray-400">Tap to read</span>
+                  }
                 </div>
               </div>
-              <span className="text-xs text-gray-600 leading-relaxed">
-                I have read and agree to the{' '}
-                <button type="button" onClick={() => setShowTerms(true)}
-                  className="text-[#168AFF] font-semibold hover:underline">
-                  Terms &amp; Conditions
-                </button>
-                {' '}and{' '}
-                <button type="button" onClick={() => setShowPrivacy(true)}
-                  className="text-[#168AFF] font-semibold hover:underline">
-                  Privacy Policy
-                </button>
-                , including the collection and use of my personal information.
-              </span>
-            </label>
+
+              {/* Checkbox — only unlocked after both are read */}
+              <label className={`flex items-start gap-3 select-none
+                ${termsRead && privacyRead ? 'cursor-pointer' : 'cursor-not-allowed opacity-50'}`}>
+                <div className="relative mt-0.5 shrink-0">
+                  <input
+                    type="checkbox"
+                    checked={agreed}
+                    onChange={e => setAgreed(e.target.checked)}
+                    disabled={loading || !termsRead || !privacyRead}
+                    className="sr-only"
+                  />
+                  <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition
+                    ${agreed
+                      ? 'bg-[#168AFF] border-[#168AFF]'
+                      : termsRead && privacyRead
+                        ? 'border-gray-300 hover:border-[#168AFF]'
+                        : 'border-gray-200 bg-gray-100'}`}>
+                    {agreed && (
+                      <svg width="9" height="7" viewBox="0 0 9 7" fill="none">
+                        <path d="M1 3.5L3.2 5.5L8 1" stroke="white" strokeWidth="1.8"
+                          strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    )}
+                  </div>
+                </div>
+                <span className="text-xs text-gray-600 leading-relaxed">
+                  {termsRead && privacyRead
+                    ? 'I have read and agree to the Terms & Conditions and Privacy Policy, including the collection and use of my personal information.'
+                    : 'Read both documents above to enable this checkbox.'}
+                </span>
+              </label>
+            </div>
 
             <button type="submit" disabled={loading || !agreed}
               className="w-full py-3 bg-[#168AFF] text-white font-bold rounded-xl
@@ -302,27 +356,57 @@ export default function RegisterPage() {
 
       {/* ── Terms & Conditions Modal ── */}
       {showTerms && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-          onClick={e => { if (e.target === e.currentTarget) setShowTerms(false) }}>
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[80vh] flex flex-col">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-              <h3 className="font-bold text-gray-800 text-base">Terms &amp; Conditions</h3>
-              <button onClick={() => setShowTerms(false)} className="text-gray-400 hover:text-gray-600 transition">✕</button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[82vh] flex flex-col">
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 shrink-0">
+              <div>
+                <h3 className="font-bold text-gray-800 text-base">Terms &amp; Conditions</h3>
+                <p className="text-[11px] text-gray-400 mt-0.5">
+                  {termsScrolled ? '✓ Scroll complete — you may agree below' : 'Please scroll to the bottom to continue'}
+                </p>
+              </div>
+              <button onClick={() => setShowTerms(false)}
+                className="text-gray-400 hover:text-gray-600 transition text-lg leading-none">✕</button>
             </div>
-            <div className="overflow-y-auto flex-1 px-6 py-5 space-y-4 text-sm text-gray-600 leading-relaxed">
+
+            {/* Scrollable body */}
+            <div
+              className="overflow-y-auto flex-1 px-6 py-5 space-y-4 text-sm text-gray-600 leading-relaxed"
+              onScroll={e => handleDocScroll(e, setTermsScrolled)}
+            >
               <p><strong className="text-gray-800">1. Acceptance of Terms</strong><br />By registering an account with QuickStock Supply, you agree to be bound by these Terms and Conditions. If you do not agree, you may not use the platform.</p>
               <p><strong className="text-gray-800">2. Account Registration</strong><br />You must provide accurate and complete information during registration. Your account is subject to admin approval before you can place orders. You are responsible for maintaining the confidentiality of your login credentials.</p>
-              <p><strong className="text-gray-800">3. Orders &amp; Payments</strong><br />All orders are subject to availability and confirmation. We currently accept Cash on Delivery (COD). Prices are in Philippine Peso (₱) and may change without prior notice.</p>
-              <p><strong className="text-gray-800">4. Delivery</strong><br />We aim for same-day delivery for orders placed before 3 PM. Delivery is free for orders ₱500 and above. A ₱25 delivery fee applies to orders below ₱500.</p>
-              <p><strong className="text-gray-800">5. Rewards &amp; Membership</strong><br />Premium membership is required to earn reward points. Membership fees and reward terms are subject to change with prior notice to members.</p>
-              <p><strong className="text-gray-800">6. Prohibited Conduct</strong><br />You agree not to misuse the platform, submit false information, or engage in any fraudulent activity. Violations may result in account suspension.</p>
-              <p><strong className="text-gray-800">7. Limitation of Liability</strong><br />QuickStock Supply is not liable for any indirect, incidental, or consequential damages arising from the use of our services.</p>
-              <p><strong className="text-gray-800">8. Changes to Terms</strong><br />We reserve the right to update these Terms at any time. Continued use of the platform after changes constitutes acceptance of the new Terms.</p>
+              <p><strong className="text-gray-800">3. Use of the Platform</strong><br />QuickStock Supply is an online supply ordering platform for sari-sari stores, restaurants, and small businesses in the Philippines. Access is granted only to approved account holders.</p>
+              <p><strong className="text-gray-800">4. Orders &amp; Payments</strong><br />All orders are subject to availability and admin confirmation. We currently accept Cash on Delivery (COD) only. Prices are in Philippine Peso (₱) and may change without prior notice.</p>
+              <p><strong className="text-gray-800">5. Delivery Policy</strong><br />We aim for same-day delivery for orders placed before 3 PM. Orders placed after 3 PM are delivered the next business day. Delivery is free for orders ₱500 and above. A ₱25 delivery fee applies to orders below ₱500.</p>
+              <p><strong className="text-gray-800">6. Premium Membership &amp; Rewards</strong><br />Only Premium Clients are eligible to earn and redeem reward points. Premium membership requires a one-time fee of ₱1,500 for 2 years (promo for first-time members), with annual renewal at ₱1,000. Membership fees and reward terms are subject to change with prior notice.</p>
+              <p><strong className="text-gray-800">7. Cancellation Policy</strong><br />Orders may be cancelled only before they are confirmed by an admin. Once confirmed, cancellations must be requested immediately by contacting us. Cancellations after assignment to a driver are subject to admin discretion.</p>
+              <p><strong className="text-gray-800">8. Prohibited Conduct</strong><br />You agree not to misuse the platform, submit false information, abuse the rewards system, or engage in any fraudulent activity. Violations may result in immediate account suspension without prior notice.</p>
+              <p><strong className="text-gray-800">9. Limitation of Liability</strong><br />QuickStock Supply shall not be liable for any indirect, incidental, or consequential damages arising from the use of our services, including but not limited to delays, product unavailability, or delivery issues caused by force majeure.</p>
+              <p><strong className="text-gray-800">10. Governing Law</strong><br />These Terms and Conditions are governed by the laws of the Republic of the Philippines. Any disputes shall be resolved in the appropriate courts of Davao City.</p>
+              <p><strong className="text-gray-800">11. Changes to Terms</strong><br />We reserve the right to update these Terms at any time. Continued use of the platform after changes are posted constitutes your acceptance of the revised Terms.</p>
+              <p><strong className="text-gray-800">12. Contact</strong><br />For questions about these Terms, contact us at contactquickstock@gmail.com or through our Facebook page.</p>
+              {/* Scroll sentinel */}
+              <div className="h-2" />
             </div>
-            <div className="px-6 py-4 border-t border-gray-100">
-              <button onClick={() => { setAgreed(true); setShowTerms(false) }}
-                className="w-full py-2.5 bg-[#168AFF] text-white font-bold rounded-xl text-sm hover:bg-[#1270DB] transition">
-                I Agree
+
+            {/* Footer */}
+            <div className="px-6 py-4 border-t border-gray-100 shrink-0 space-y-2">
+              {!termsScrolled && (
+                <p className="text-[11px] text-center text-orange-500 font-medium">
+                  ↓ Scroll down to read all terms before agreeing
+                </p>
+              )}
+              <button
+                onClick={() => { setTermsRead(true); setShowTerms(false) }}
+                disabled={!termsScrolled}
+                className={`w-full py-2.5 font-bold rounded-xl text-sm transition
+                  ${termsScrolled
+                    ? 'bg-[#168AFF] text-white hover:bg-[#1270DB]'
+                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}>
+                {termsScrolled ? 'I Have Read & Agree to the Terms' : 'Read to the bottom to agree'}
               </button>
             </div>
           </div>
@@ -331,26 +415,68 @@ export default function RegisterPage() {
 
       {/* ── Privacy Policy Modal ── */}
       {showPrivacy && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-          onClick={e => { if (e.target === e.currentTarget) setShowPrivacy(false) }}>
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[80vh] flex flex-col">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-              <h3 className="font-bold text-gray-800 text-base">Privacy Policy</h3>
-              <button onClick={() => setShowPrivacy(false)} className="text-gray-400 hover:text-gray-600 transition">✕</button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[82vh] flex flex-col">
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 shrink-0">
+              <div>
+                <h3 className="font-bold text-gray-800 text-base">Privacy Policy</h3>
+                <p className="text-[11px] text-gray-400 mt-0.5">
+                  {privacyScrolled ? '✓ Scroll complete — you may agree below' : 'Please scroll to the bottom to continue'}
+                </p>
+              </div>
+              <button onClick={() => setShowPrivacy(false)}
+                className="text-gray-400 hover:text-gray-600 transition text-lg leading-none">✕</button>
             </div>
-            <div className="overflow-y-auto flex-1 px-6 py-5 space-y-4 text-sm text-gray-600 leading-relaxed">
-              <p><strong className="text-gray-800">Information We Collect</strong><br />We collect personal information you provide during registration, including your full name, email address, contact number, delivery address, and profile photo. We also collect order history and transaction data.</p>
-              <p><strong className="text-gray-800">How We Use Your Information</strong><br />Your information is used to process orders, communicate delivery updates, manage your account, and improve our services. We may also use it to send promotional offers if you have opted in.</p>
-              <p><strong className="text-gray-800">Information Sharing</strong><br />We do not sell or share your personal information with third parties except as necessary to fulfill orders (e.g., assigned drivers see your delivery address and contact number). We do not disclose your data without your consent unless required by law.</p>
-              <p><strong className="text-gray-800">Data Security</strong><br />We implement appropriate security measures to protect your personal information from unauthorized access, alteration, or disclosure. Your password is encrypted and never stored in plain text.</p>
-              <p><strong className="text-gray-800">Data Retention</strong><br />We retain your personal information for as long as your account is active or as needed to provide services. You may request account deletion by contacting us.</p>
-              <p><strong className="text-gray-800">Your Rights</strong><br />You have the right to access, correct, or delete your personal information. Contact us at contactquickstock@gmail.com for any privacy-related requests.</p>
-              <p><strong className="text-gray-800">Contact Us</strong><br />For privacy concerns, email us at contactquickstock@gmail.com or message us on Facebook.</p>
+
+            {/* Scrollable body */}
+            <div
+              className="overflow-y-auto flex-1 px-6 py-5 space-y-4 text-sm text-gray-600 leading-relaxed"
+              onScroll={e => handleDocScroll(e, setPrivacyScrolled)}
+            >
+              <p className="text-xs text-gray-400 italic">Effective date: 2025 · QuickStock Supply, Lubogan, Toril, Davao City</p>
+
+              <p><strong className="text-gray-800">1. Information We Collect</strong><br />When you register on QuickStock Supply, we collect personal information including your full name, email address, contact number, home or business delivery address, and optional profile photo. We also collect order history, transaction data, and usage information when you interact with our platform.</p>
+
+              <p><strong className="text-gray-800">2. Why We Collect Your Information</strong><br />Your personal information is collected to comply with Republic Act No. 10173, also known as the Data Privacy Act of 2012 of the Philippines. We collect only information that is necessary for the legitimate operation of our services.</p>
+
+              <p><strong className="text-gray-800">3. How We Use Your Information</strong><br />We use your information to: process and fulfill your orders; assign drivers and communicate delivery updates; manage your account and rewards points; respond to your inquiries and support requests; and improve our platform and services. We will not use your data for any purpose beyond what is stated here without your explicit consent.</p>
+
+              <p><strong className="text-gray-800">4. Information Sharing</strong><br />We do not sell, rent, or trade your personal information to any third party. We only share information strictly necessary to fulfill your orders — for example, assigned delivery drivers will see your delivery address and contact number. We do not disclose your data without your consent unless required by Philippine law or a valid court order.</p>
+
+              <p><strong className="text-gray-800">5. Data Security</strong><br />We implement appropriate technical and organizational security measures to protect your personal information from unauthorized access, alteration, disclosure, or destruction. Your password is encrypted using industry-standard methods and is never stored in plain text. Access to personal data is limited to authorized personnel only.</p>
+
+              <p><strong className="text-gray-800">6. Data Retention</strong><br />We retain your personal information for as long as your account remains active or as necessary to provide our services and comply with legal obligations. You may request deletion of your account and associated data at any time by contacting us.</p>
+
+              <p><strong className="text-gray-800">7. Your Rights Under the Data Privacy Act</strong><br />As a data subject under RA 10173, you have the right to: be informed about how your data is processed; access your personal information; correct inaccurate data; object to processing; and request deletion or blocking of your data. To exercise any of these rights, contact us at contactquickstock@gmail.com.</p>
+
+              <p><strong className="text-gray-800">8. Cookies &amp; Usage Data</strong><br />Our platform may use cookies and similar tracking technologies to enhance your browsing experience and analyze how our site is used. You may disable cookies in your browser settings, though this may affect certain features of the platform.</p>
+
+              <p><strong className="text-gray-800">9. Children's Privacy</strong><br />QuickStock Supply is intended for adults and business operators. We do not knowingly collect personal information from individuals under 18 years of age. If we become aware that a minor has provided us with personal data, we will promptly delete it.</p>
+
+              <p><strong className="text-gray-800">10. Changes to This Policy</strong><br />We may update this Privacy Policy from time to time to reflect changes in our practices or applicable law. We will notify registered users of significant changes via email or an in-app notification. Continued use of the platform after updates means you accept the revised policy.</p>
+
+              <p><strong className="text-gray-800">11. Contact &amp; Data Protection Officer</strong><br />For any privacy concerns, data requests, or complaints, please contact us at: <strong>contactquickstock@gmail.com</strong> or message us via our official Facebook page. We will respond to your request within a reasonable time.</p>
+              {/* Scroll sentinel */}
+              <div className="h-2" />
             </div>
-            <div className="px-6 py-4 border-t border-gray-100">
-              <button onClick={() => { setAgreed(true); setShowPrivacy(false) }}
-                className="w-full py-2.5 bg-[#168AFF] text-white font-bold rounded-xl text-sm hover:bg-[#1270DB] transition">
-                I Agree
+
+            {/* Footer */}
+            <div className="px-6 py-4 border-t border-gray-100 shrink-0 space-y-2">
+              {!privacyScrolled && (
+                <p className="text-[11px] text-center text-orange-500 font-medium">
+                  ↓ Scroll down to read the full policy before agreeing
+                </p>
+              )}
+              <button
+                onClick={() => { setPrivacyRead(true); setShowPrivacy(false) }}
+                disabled={!privacyScrolled}
+                className={`w-full py-2.5 font-bold rounded-xl text-sm transition
+                  ${privacyScrolled
+                    ? 'bg-[#168AFF] text-white hover:bg-[#1270DB]'
+                    : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}>
+                {privacyScrolled ? 'I Have Read & Agree to the Privacy Policy' : 'Read to the bottom to agree'}
               </button>
             </div>
           </div>

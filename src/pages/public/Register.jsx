@@ -146,14 +146,10 @@ export default function RegisterPage() {
     setLoading(true)
     setError(null)
 
-    // 1. Upload avatar if selected (temp — before user ID is known, skip for now; handled post-OTP)
-    // Avatar will be uploaded after OTP verification using the user ID
-
-    // 2. Create auth user — Supabase sends 6-digit OTP to email
+    // 1. Create auth user
     const { data, error: signUpErr } = await supabase.auth.signUp({
       email:    email.trim(),
       password,
-      options:  { emailRedirectTo: undefined },
     })
 
     if (signUpErr) {
@@ -162,7 +158,7 @@ export default function RegisterPage() {
       return
     }
 
-    // 3. Upload avatar now that we have the user ID
+    // 2. Upload avatar if selected
     let avatarUrl = null
     if (avatarFile && data.user?.id) {
       try {
@@ -176,20 +172,27 @@ export default function RegisterPage() {
       } catch { /* avatar failure won't block registration */ }
     }
 
-    // 4. Navigate to OTP page — profile is created AFTER OTP verification
-    navigate('/verify-otp', {
-      state: {
-        email: email.trim(),
-        payload: {
-          id:         data.user.id,
-          full_name:  fullName.trim(),
-          email:      email.trim(),
-          avatar_url: avatarUrl,
-          role:       'customer',
-          status:     'pending',
-        },
-      },
+    // 3. Insert profile as pending immediately (no OTP step)
+    const { error: profileErr } = await supabaseAdmin.from('profiles').insert({
+      id:         data.user.id,
+      full_name:  fullName.trim(),
+      email:      email.trim(),
+      avatar_url: avatarUrl,
+      role:       'customer',
+      status:     'pending',
     })
+
+    if (profileErr) {
+      setError('Profile setup failed. Please contact support.')
+      setLoading(false)
+      return
+    }
+
+    // 4. Sign out — account needs admin approval
+    await supabase.auth.signOut()
+    sessionStorage.setItem('auth_notice',
+      'Account created! Your account is awaiting admin approval.')
+    navigate('/login')
   }
 
   const initials = fullName.trim() ? fullName.trim()[0].toUpperCase() : null

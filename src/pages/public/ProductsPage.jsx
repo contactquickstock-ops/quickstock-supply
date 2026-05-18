@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { MdShoppingCart, MdArrowForward, MdLock, MdImage } from 'react-icons/md'
+import { MdShoppingCart, MdArrowForward, MdLock, MdImage, MdSearch } from 'react-icons/md'
 import PublicLayout from '../../layouts/PublicLayout'
 import { supabaseAdmin } from '../../services/supabaseAdmin'
 
@@ -24,6 +24,7 @@ export default function ProductsPage() {
   const [products, setProducts]       = useState([])
   const [loading, setLoading]         = useState(true)
   const [activeCategory, setCategory] = useState('All')
+  const [search, setSearch]           = useState('')
 
   useEffect(() => {
     async function load() {
@@ -41,9 +42,15 @@ export default function ProductsPage() {
 
   const categories = ['All', ...Array.from(new Set(products.map(p => p.category).filter(Boolean)))]
 
-  const filtered = activeCategory === 'All'
-    ? products
-    : products.filter(p => p.category === activeCategory)
+  const filtered = products.filter(p => {
+    const matchCat = activeCategory === 'All' || p.category === activeCategory
+    const q = search.toLowerCase()
+    const matchSearch = !q ||
+      (p.name        ?? '').toLowerCase().includes(q) ||
+      (p.category    ?? '').toLowerCase().includes(q) ||
+      (p.description ?? '').toLowerCase().includes(q)
+    return matchCat && matchSearch
+  })
 
   return (
     <PublicLayout>
@@ -83,6 +90,23 @@ export default function ProductsPage() {
       <section className="py-12 px-4 bg-gray-50">
         <div className="max-w-7xl mx-auto space-y-7">
 
+          {/* Search bar */}
+          <div className="relative max-w-sm">
+            <MdSearch
+              size={18}
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+            />
+            <input
+              type="text"
+              placeholder="Search products…"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 text-sm border border-gray-200 rounded-xl
+                bg-white focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30
+                focus:border-[#168AFF] transition shadow-sm"
+            />
+          </div>
+
           {/* Category filter tabs */}
           {!loading && categories.length > 1 && (
             <div className="flex flex-wrap gap-2">
@@ -111,14 +135,19 @@ export default function ProductsPage() {
               px-5 py-20 text-center text-gray-400 text-sm">
               {products.length === 0
                 ? 'No products available yet. Check back soon!'
+                : search
+                ? 'No products match your search.'
                 : 'No products in this category.'}
             </div>
           ) : (
             <>
               <p className="text-gray-500 text-sm">
-                Showing <span className="font-bold text-gray-800">{filtered.length}</span> products
+                Showing <span className="font-bold text-gray-800">{filtered.length}</span> product{filtered.length !== 1 ? 's' : ''}
                 {activeCategory !== 'All' && (
                   <span> in <span className="text-[#168AFF] font-semibold">{activeCategory}</span></span>
+                )}
+                {search && (
+                  <span> for <span className="text-[#168AFF] font-semibold">"{search}"</span></span>
                 )}
               </p>
 

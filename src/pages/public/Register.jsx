@@ -2,7 +2,6 @@ import { useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { MdVisibility, MdVisibilityOff, MdCameraAlt, MdCheckCircle } from 'react-icons/md'
 import { supabase } from '../../services/supabase'
-import { supabaseAdmin } from '../../services/supabaseAdmin'
 
 // ── Password strength checker ─────────────────────────────────────────────────
 function checkStrength(pw) {
@@ -84,23 +83,31 @@ const INPUT_CLS = `w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-x
   focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF]
   transition disabled:bg-gray-50 disabled:text-gray-400`
 
+function formatPhone(raw) {
+  const digits = raw.replace(/\D/g, '')
+  if (digits.startsWith('63')) return '+' + digits
+  if (digits.startsWith('0'))  return '+63' + digits.slice(1)
+  return '+63' + digits
+}
+
 export default function RegisterPage() {
   const navigate  = useNavigate()
   const avatarRef = useRef(null)
 
-  const [fullName,      setFullName]      = useState('')
-  const [email,         setEmail]         = useState('')
-  const [password,      setPassword]      = useState('')
-  const [confirmPass,   setConfirmPass]   = useState('')
-  const [showPass,      setShowPass]      = useState(false)
-  const [showConfirm,   setShowConfirm]   = useState(false)
-  const [loading,       setLoading]       = useState(false)
-  const [error,         setError]         = useState(null)
-  const [avatarFile,    setAvatarFile]    = useState(null)
-  const [avatarPreview, setAvatarPreview] = useState(null)
-  const [agreed,        setAgreed]        = useState(false)
-  const [showTerms,     setShowTerms]     = useState(false)
-  const [showPrivacy,   setShowPrivacy]   = useState(false)
+  const [fullName,        setFullName]        = useState('')
+  const [email,           setEmail]           = useState('')
+  const [contactNumber,   setContactNumber]   = useState('')
+  const [password,        setPassword]        = useState('')
+  const [confirmPass,     setConfirmPass]     = useState('')
+  const [showPass,        setShowPass]        = useState(false)
+  const [showConfirm,     setShowConfirm]     = useState(false)
+  const [loading,         setLoading]         = useState(false)
+  const [error,           setError]           = useState(null)
+  const [avatarFile,      setAvatarFile]      = useState(null)
+  const [avatarPreview,   setAvatarPreview]   = useState(null)
+  const [agreed,          setAgreed]          = useState(false)
+  const [showTerms,       setShowTerms]       = useState(false)
+  const [showPrivacy,     setShowPrivacy]     = useState(false)
   const [termsScrolled,   setTermsScrolled]   = useState(false)
   const [privacyScrolled, setPrivacyScrolled] = useState(false)
   const [termsRead,       setTermsRead]       = useState(false)
@@ -126,8 +133,14 @@ export default function RegisterPage() {
   async function handleRegister(e) {
     e.preventDefault()
 
-    if (!fullName.trim() || !email.trim() || !password || !confirmPass) {
+    if (!fullName.trim() || !email.trim() || !contactNumber.trim() || !password || !confirmPass) {
       setError('All fields are required.')
+      return
+    }
+
+    const intlPhone = formatPhone(contactNumber)
+    if (!/^\+639\d{9}$/.test(intlPhone)) {
+      setError('Please enter a valid Philippine mobile number (e.g. 09XXXXXXXXX).')
       return
     }
     if (!allStrong) {
@@ -146,67 +159,30 @@ export default function RegisterPage() {
     setLoading(true)
     setError(null)
 
-    // 1. Create auth user
-    const { data, error: signUpErr } = await supabase.auth.signUp({
-      email:    email.trim(),
-      password,
+    // Send SMS OTP to phone number
+    const { error: otpErr } = await supabase.auth.signInWithOtp({
+      phone: intlPhone,
     })
 
-    if (signUpErr) {
-      setError(signUpErr.message)
+    if (otpErr) {
+      setError(otpErr.message)
       setLoading(false)
       return
     }
 
-    // 2. Upload avatar if selected
-    let avatarUrl = null
-    if (avatarFile && data.user?.id) {
-      try {
-        const fileName = `customer-${data.user.id}.jpg`
-        const { error: uploadErr } = await supabaseAdmin.storage
-          .from('avatars').upload(fileName, avatarFile, { upsert: true })
-        if (!uploadErr) {
-          const { data: urlData } = supabaseAdmin.storage.from('avatars').getPublicUrl(fileName)
-          avatarUrl = urlData.publicUrl
-        }
-      } catch { /* avatar failure won't block registration */ }
-    }
-
-    // 3. Check if profile already exists (handles duplicate registration attempts)
-    const { data: existing } = await supabaseAdmin
-      .from('profiles')
-      .select('id, status')
-      .eq('id', data.user.id)
-      .maybeSingle()
-
-    if (existing) {
-      await supabase.auth.signOut()
-      setError('This email is already registered. Please sign in instead.')
-      setLoading(false)
-      return
-    }
-
-    // 4. Insert profile as pending
-    const { error: profileErr } = await supabaseAdmin.from('profiles').insert({
-      id:         data.user.id,
-      full_name:  fullName.trim(),
-      email:      email.trim(),
-      avatar_url: avatarUrl,
-      role:       'customer',
-      status:     'pending',
+    // Pass all form data to OTP page for final account creation after verification
+    navigate('/verify-otp', {
+      state: {
+        phone: intlPhone,
+        formData: {
+          fullName:      fullName.trim(),
+          email:         email.trim(),
+          contactNumber: intlPhone,
+          password,
+          avatarFile,
+        },
+      },
     })
-
-    if (profileErr) {
-      setError('Profile setup failed. Please contact support.')
-      setLoading(false)
-      return
-    }
-
-    // 4. Sign out — account needs admin approval
-    await supabase.auth.signOut()
-    sessionStorage.setItem('auth_notice',
-      'Account created! Your account is awaiting admin approval.')
-    navigate('/login')
   }
 
   const initials = fullName.trim() ? fullName.trim()[0].toUpperCase() : null
@@ -268,6 +244,19 @@ export default function RegisterPage() {
               <input type="email" value={email} onChange={e => setEmail(e.target.value)}
                 placeholder="you@example.com" disabled={loading}
                 autoComplete="email" className={INPUT_CLS} />
+            </div>
+
+            {/* Phone / Contact Number */}
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                Mobile Number <span className="text-red-400">*</span>
+              </label>
+              <input type="tel" value={contactNumber} onChange={e => setContactNumber(e.target.value)}
+                placeholder="09XXXXXXXXX" disabled={loading}
+                autoComplete="tel" className={INPUT_CLS} />
+              <p className="text-[11px] text-gray-400 mt-1">
+                A verification code will be sent to this number.
+              </p>
             </div>
 
             {/* Password with strength */}
@@ -366,15 +355,15 @@ export default function RegisterPage() {
             </div>
 
             <p className="text-xs text-gray-400 bg-gray-50 rounded-xl px-3.5 py-2.5">
-              After registration you will receive an email verification code.
-              Your account will then await admin approval.
+              After registering, a 6-digit SMS verification code will be sent to your
+              mobile number. Your account will then await admin approval.
             </p>
 
             <button type="submit" disabled={loading || !agreed || !allStrong}
               className="w-full py-3 bg-[#168AFF] text-white font-bold rounded-xl
                 text-sm hover:bg-[#1270DB] active:scale-[0.98] transition-all
                 shadow-sm disabled:opacity-60 disabled:cursor-not-allowed">
-              {loading ? 'Creating Account…' : 'Create Account'}
+              {loading ? 'Sending Code…' : 'Send Verification Code'}
             </button>
           </form>
         </div>
@@ -446,7 +435,7 @@ export default function RegisterPage() {
             </div>
             <div className="overflow-y-auto flex-1 px-6 py-5 space-y-4 text-sm text-gray-600 leading-relaxed"
               onScroll={e => handleDocScroll(e, setPrivacyScrolled)}>
-              <p className="text-xs text-gray-400 italic">Effective date: 2025 · QuickStock Supply, Lubogan, Toril, Davao City</p>
+              <p className="text-xs text-gray-400 italic">Effective date: 2025 · QuickStock Supply, Davao City, Philippines</p>
               <p><strong className="text-gray-800">1. Information We Collect</strong><br />We collect your full name, email, contact number, delivery address, and optional profile photo during registration. We also collect order history and transaction data.</p>
               <p><strong className="text-gray-800">2. Legal Basis (RA 10173)</strong><br />Data collection is governed by the Data Privacy Act of 2012. We only collect information necessary for service operation.</p>
               <p><strong className="text-gray-800">3. How We Use Your Information</strong><br />To process orders, manage deliveries, manage your account and rewards, respond to inquiries, and improve our platform.</p>

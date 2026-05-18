@@ -50,7 +50,7 @@ export default function Login() {
       if (msg.includes('invalid login') || msg.includes('invalid credentials')) {
         toast.error('Incorrect email or password. Please try again.')
       } else if (msg.includes('email not confirmed')) {
-        toast.error('Please verify your email first. Check your inbox for the verification code.')
+        toast.error('Account not confirmed. Please contact admin at contactquickstock@gmail.com.')
       } else {
         toast.error(error.message)
       }

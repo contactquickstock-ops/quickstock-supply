@@ -129,6 +129,8 @@ export default function Rewards() {
   const [loadingH, setLoadingH]         = useState(true)
   const [error, setError]               = useState(null)
   const [histSearch, setHistSearch]     = useState('')
+  const [dateFrom,   setDateFrom]       = useState('')
+  const [dateTo,     setDateTo]         = useState('')
   const [showModal, setShowModal]       = useState(false)
   const [editReward, setEditReward]     = useState(null)
   const [form, setForm]                 = useState(EMPTY_FORM)
@@ -308,11 +310,15 @@ export default function Rewards() {
 
   const filteredHistory = redemptions.filter(rd => {
     const q = histSearch.toLowerCase()
-    return (
+    const matchSearch = (
       (rd.profiles?.full_name ?? '').toLowerCase().includes(q) ||
       (rd.profiles?.email     ?? '').toLowerCase().includes(q) ||
       (rd.rewards?.name       ?? '').toLowerCase().includes(q)
     )
+    const rdDate = new Date(rd.redeemed_at ?? rd.created_at)
+    const matchFrom = !dateFrom || rdDate >= new Date(dateFrom)
+    const matchTo   = !dateTo   || rdDate <= new Date(dateTo + 'T23:59:59')
+    return matchSearch && matchFrom && matchTo
   })
 
   // ── render ──────────────────────────────────────────────────────────────────
@@ -410,8 +416,37 @@ export default function Rewards() {
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
 
             {/* Toolbar */}
-            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between gap-3 flex-wrap">
-              <h3 className="text-gray-700 font-semibold text-base">All Redemptions</h3>
+            <div className="px-5 py-4 border-b border-gray-100 flex flex-wrap items-center gap-3">
+              <h3 className="text-gray-700 font-semibold text-base mr-auto">All Redemptions</h3>
+              {/* Date range */}
+              <div className="flex items-center gap-2">
+                <input
+                  type="date"
+                  value={dateFrom}
+                  onChange={e => setDateFrom(e.target.value)}
+                  className="py-2 px-3 text-sm border border-gray-200 rounded-xl
+                    focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF]
+                    text-gray-600 transition"
+                />
+                <span className="text-gray-400 text-xs font-medium">to</span>
+                <input
+                  type="date"
+                  value={dateTo}
+                  onChange={e => setDateTo(e.target.value)}
+                  className="py-2 px-3 text-sm border border-gray-200 rounded-xl
+                    focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF]
+                    text-gray-600 transition"
+                />
+                {(dateFrom || dateTo) && (
+                  <button
+                    onClick={() => { setDateFrom(''); setDateTo('') }}
+                    className="text-xs text-gray-400 hover:text-red-500 transition font-medium"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
+              {/* Search */}
               <div className="relative">
                 <MdSearch
                   size={16}
@@ -424,7 +459,7 @@ export default function Rewards() {
                   onChange={e => setHistSearch(e.target.value)}
                   className="pl-8 pr-4 py-2 text-sm border border-gray-200 rounded-xl
                     focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF]
-                    w-56 transition"
+                    w-52 transition"
                 />
               </div>
             </div>

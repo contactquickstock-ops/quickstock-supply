@@ -53,13 +53,19 @@ export default function AboutPage() {
                 'Fast same-day delivery by trusted drivers',
                 'Rewards points on every purchase (For Premium Clients)',
                 '₱1,000 annual renewal to stay Premium and continue earning points',
-                'Redeem for free delivery — Priority deliveries for Premium clients',
               ].map(item => (
                 <div key={item} className="flex items-start gap-2.5 text-gray-700 text-sm">
                   <MdCheckCircle size={18} className="text-[#168AFF] shrink-0 mt-0.5" />
                   {item}
                 </div>
               ))}
+            </div>
+            <div className="flex items-center gap-3 bg-blue-50 border border-blue-200
+              rounded-2xl px-4 py-3 mt-1">
+              <MdLocalShipping size={20} className="text-[#168AFF] shrink-0" />
+              <p className="text-[#168AFF] text-sm font-semibold leading-snug">
+                Redeem for free delivery — Priority deliveries for Premium clients.
+              </p>
             </div>
           </div>
           <div className="bg-blue-50 rounded-3xl p-8 flex items-center justify-center border border-blue-100">

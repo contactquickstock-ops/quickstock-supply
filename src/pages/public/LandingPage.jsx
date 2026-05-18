@@ -8,16 +8,16 @@ import {
 import PublicLayout from '../../layouts/PublicLayout'
 
 const FEATURES = [
-  { icon: MdLocalShipping, title: 'Fast Delivery',             desc: 'Same-day delivery right to your store — quick, efficient, and hassle-free.'              },
-  { icon: MdVerified,      title: 'Quality Products',          desc: 'Every item is checked for freshness and quality before it reaches you.'                   },
-  { icon: MdCardGiftcard,  title: 'Rewards & Points',          desc: 'Earn 1 point for every ₱100 spent and redeem them for exciting rewards.'                  },
-  { icon: MdHeadsetMic,    title: 'Quality Customer Service',  desc: 'Our dedicated team is always here to assist you with every concern, every step of the way.' },
+  { icon: MdLocalShipping, title: 'Fast Delivery',                             desc: 'Same-day delivery right to your store — quick, efficient, and hassle-free.'              },
+  { icon: MdVerified,      title: 'Quality Products',                          desc: 'Every item is checked for freshness and quality before it reaches you.'                   },
+  { icon: MdCardGiftcard,  title: 'Rewards & Points (For Premium Members Only)', desc: 'Earn 1 point for every ₱100 spent and redeem them for exclusive rewards.'              },
+  { icon: MdHeadsetMic,    title: 'Quality Customer Service',                  desc: 'Our dedicated team is always here to assist you with every concern, every step of the way.' },
 ]
 
 const STEPS = [
-  { n: '01', title: 'Create Account', desc: 'Register and wait for admin approval to activate your account.'           },
-  { n: '02', title: 'Browse & Order', desc: 'Browse our catalog, add items to your cart, and place your order.'        },
-  { n: '03', title: 'Get Delivered',  desc: 'A driver is assigned and your order arrives directly at your store.'      },
+  { n: '01', title: 'Create Account', desc: 'Register and wait for admin approval to activate your account.'      },
+  { n: '02', title: 'Browse & Order', desc: 'Browse our catalog, add items to your cart, and place your order.'   },
+  { n: '03', title: 'Get Delivered',  desc: 'A driver is assigned and your order arrives directly at your store.' },
 ]
 
 const STATS = [
@@ -25,6 +25,13 @@ const STATS = [
   { icon: MdPeople,        value: '1,000+',   label: 'Happy Partners' },
   { icon: MdLocalShipping, value: 'Same Day', label: 'Delivery'       },
   { icon: MdHeadsetMic,    value: 'Reliable', label: 'Service'        },
+]
+
+const REWARD_CARDS = [
+  { value: '₱500+',        label: 'Free Delivery',  sub: 'Orders ₱500 & above'     },
+  { value: 'Every ₱100',   label: '= 1 Point',      sub: 'Earn as you spend'        },
+  { value: 'Earn Points',  label: 'Redeem Rewards', sub: 'Your points, your choice' },
+  { value: 'Accumulative', label: 'No Expiry',      sub: 'Points never expire'      },
 ]
 
 export default function LandingPage() {
@@ -67,7 +74,7 @@ export default function LandingPage() {
             </div>
             <div className="flex flex-col gap-2 pt-2">
               {[
-                '500+ Products',
+                'Quality Products.',
                 'Same-Day Delivery',
                 'Earn Rewards Points (For Premium Clients Only)',
               ].map(t => (
@@ -85,10 +92,7 @@ export default function LandingPage() {
                 backdrop-blur-sm flex items-center justify-center shadow-2xl overflow-hidden">
                 <video
                   src="/hero-animation.mp4"
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
+                  autoPlay loop muted playsInline
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -128,6 +132,50 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* ── Membership CTA ── */}
+      <section className="py-14 px-4 bg-white">
+        <div className="max-w-5xl mx-auto bg-linear-to-br from-[#168AFF] to-[#0D5FC4]
+          rounded-3xl p-8 sm:p-12 text-white shadow-xl">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+            <div className="space-y-5">
+              <span className="inline-flex items-center gap-2 bg-white/20 text-white
+                text-xs font-bold px-4 py-1.5 rounded-full">
+                <MdCardGiftcard size={14} /> Premium Membership
+              </span>
+              <h2 className="text-3xl font-black text-white leading-tight">
+                Upgrade to Premium.<br />
+                <span className="text-yellow-300">Earn More, Get More.</span>
+              </h2>
+              <p className="text-white/85 text-base leading-relaxed">
+                Join QuickStock Premium and unlock exclusive rewards, earn points on every
+                order, and enjoy priority deliveries — all for just ₱1,500 for 2 years.
+              </p>
+              <Link to="/register"
+                className="inline-flex items-center gap-2 px-7 py-3.5 bg-yellow-400
+                  text-gray-900 font-bold rounded-xl hover:bg-yellow-300
+                  transition shadow-lg text-sm w-fit">
+                Get Premium Access <MdArrowForward size={18} />
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {[
+                { icon: MdStar,          title: 'Earn Points',       desc: '1 pt per ₱100 spent'      },
+                { icon: MdLocalShipping, title: 'Priority Delivery', desc: 'Premium clients first'     },
+                { icon: MdCardGiftcard,  title: 'Exclusive Rewards', desc: 'Redeem for free items'     },
+                { icon: MdVerified,      title: 'Only ₱1,500',       desc: '2-year membership'         },
+              ].map(({ icon: Icon, title, desc }) => (
+                <div key={title}
+                  className="bg-white/10 border border-white/20 rounded-2xl p-4 space-y-2">
+                  <Icon size={22} className="text-yellow-300" />
+                  <p className="text-white font-bold text-sm">{title}</p>
+                  <p className="text-white/70 text-xs">{desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── Why Choose Us ── */}
       <section className="py-14 px-4 bg-gray-50">
         <div className="max-w-7xl mx-auto space-y-10">
@@ -151,7 +199,7 @@ export default function LandingPage() {
                   group-hover:scale-105 transition-all duration-300">
                   <Icon size={26} className="text-white" />
                 </div>
-                <h3 className="font-bold text-gray-800 text-base">{title}</h3>
+                <h3 className="font-bold text-gray-800 text-sm">{title}</h3>
                 <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
               </div>
             ))}
@@ -168,12 +216,10 @@ export default function LandingPage() {
             <p className="text-gray-500 text-sm max-w-sm mx-auto">Ordering from QuickStock is quick and easy.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 relative">
-            <div className="hidden sm:block absolute top-10 left-1/4 right-1/4
-              h-0.5 bg-blue-100 z-0" />
+            <div className="hidden sm:block absolute top-10 left-1/4 right-1/4 h-0.5 bg-blue-100 z-0" />
             {STEPS.map(({ n, title, desc }) => (
               <div key={n} className="relative z-10 flex flex-col items-center text-center gap-4">
-                <div className="w-20 h-20 rounded-2xl bg-[#168AFF] flex items-center
-                  justify-center shadow-lg">
+                <div className="w-20 h-20 rounded-2xl bg-[#168AFF] flex items-center justify-center shadow-lg">
                   <span className="text-white font-black text-2xl">{n}</span>
                 </div>
                 <div className="space-y-1.5">
@@ -209,24 +255,19 @@ export default function LandingPage() {
               Redeem your points for exclusive rewards and discounts.
             </p>
             <Link to="/rewards"
-              className="inline-flex items-center gap-3 px-10 py-4 bg-yellow-400
+              className="flex items-center justify-center gap-3 px-10 py-4 bg-yellow-400
                 text-gray-900 font-black rounded-xl hover:bg-yellow-300
-                transition shadow-xl text-base w-fit">
+                transition shadow-xl text-base w-full sm:w-auto">
               View Rewards <MdArrowForward size={22} />
             </Link>
           </div>
           <div className="hidden lg:grid grid-cols-2 gap-4">
-            {[
-              { pts: '100 pts',  label: 'Free Delivery' },
-              { pts: '200 pts',  label: '₱50 Discount'  },
-              { pts: '500 pts',  label: 'Gift Item'      },
-              { pts: '1000 pts', label: 'Premium Bundle' },
-            ].map(({ pts, label }) => (
+            {REWARD_CARDS.map(({ value, label, sub }) => (
               <div key={label}
-                className="bg-white/10 border border-white/20 rounded-2xl p-5 space-y-2">
-                <p className="text-yellow-300 font-black text-xl">{pts}</p>
-                <p className="text-white font-semibold text-sm">{label}</p>
-                <p className="text-white/60 text-xs">Redeemable reward</p>
+                className="bg-white/10 border border-white/20 rounded-2xl p-5 space-y-1">
+                <p className="text-yellow-300 font-black text-lg leading-tight">{value}</p>
+                <p className="text-white font-bold text-sm">{label}</p>
+                <p className="text-white/60 text-xs">{sub}</p>
               </div>
             ))}
           </div>
@@ -252,8 +293,7 @@ export default function LandingPage() {
           <div className="flex flex-wrap justify-center gap-3">
             <Link to="/register"
               className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#168AFF]
-                text-white font-bold rounded-xl hover:bg-[#1270DB] transition
-                shadow-lg text-sm">
+                text-white font-bold rounded-xl hover:bg-[#1270DB] transition shadow-lg text-sm">
               Create Account <MdArrowForward size={18} />
             </Link>
             <Link to="/contact"

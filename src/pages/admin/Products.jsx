@@ -287,21 +287,38 @@ export default function Products() {
     <AdminLayout pageTitle="Products">
       <div className="space-y-6 max-w-7xl mx-auto">
 
-        {/* Page heading */}
+        {/* Page heading + Search + Add */}
         <div className="flex items-start justify-between gap-4 flex-wrap">
           <div>
             <h2 className="text-xl font-bold text-gray-800">Products</h2>
             <p className="text-gray-400 text-sm mt-0.5">Manage your product catalog</p>
           </div>
-          <button
-            onClick={openAdd}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-xl
-              bg-[#168AFF] text-white text-sm font-semibold
-              hover:bg-[#1270DB] transition shadow-sm"
-          >
-            <MdAdd size={18} />
-            Add Product
-          </button>
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="relative">
+              <MdSearch
+                size={16}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+              />
+              <input
+                type="text"
+                placeholder="Search name or category…"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="pl-8 pr-4 py-2 text-sm border border-gray-200 rounded-xl
+                  focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF]
+                  w-52 transition"
+              />
+            </div>
+            <button
+              onClick={openAdd}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl
+                bg-[#168AFF] text-white text-sm font-semibold
+                hover:bg-[#1270DB] transition shadow-sm"
+            >
+              <MdAdd size={18} />
+              Add Product
+            </button>
+          </div>
         </div>
 
         {/* Summary chips */}
@@ -326,23 +343,6 @@ export default function Products() {
             {error}
           </div>
         )}
-
-        {/* Search */}
-        <div className="relative w-full sm:w-64">
-          <MdSearch
-            size={16}
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
-          />
-          <input
-            type="text"
-            placeholder="Search name or category…"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="w-full pl-8 pr-4 py-2 text-sm border border-gray-200 rounded-xl
-              focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF]
-              transition"
-          />
-        </div>
 
         {/* Product grid */}
         {loading ? (

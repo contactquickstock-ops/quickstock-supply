@@ -128,9 +128,10 @@ export default function Rewards() {
   const [loadingR, setLoadingR]         = useState(true)
   const [loadingH, setLoadingH]         = useState(true)
   const [error, setError]               = useState(null)
-  const [histSearch, setHistSearch]     = useState('')
-  const [dateFrom,   setDateFrom]       = useState('')
-  const [dateTo,     setDateTo]         = useState('')
+  const [rewardSearch, setRewardSearch]  = useState('')
+  const [histSearch,   setHistSearch]   = useState('')
+  const [dateFrom,     setDateFrom]     = useState('')
+  const [dateTo,       setDateTo]       = useState('')
   const [showModal, setShowModal]       = useState(false)
   const [editReward, setEditReward]     = useState(null)
   const [form, setForm]                 = useState(EMPTY_FORM)
@@ -308,6 +309,14 @@ export default function Rewards() {
     inactive: rewards.filter(r => !r.is_active).length,
   }
 
+  const filteredRewards = rewards.filter(r => {
+    const q = rewardSearch.toLowerCase()
+    return (
+      (r.name        ?? '').toLowerCase().includes(q) ||
+      (r.description ?? '').toLowerCase().includes(q)
+    )
+  })
+
   const filteredHistory = redemptions.filter(rd => {
     const q = histSearch.toLowerCase()
     const matchSearch = (
@@ -330,21 +339,38 @@ export default function Rewards() {
         {/* ── Section 1: Reward Catalog ── */}
         <div className="space-y-5">
 
-          {/* Heading + Add button */}
+          {/* Heading + Search + Add button */}
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
               <h2 className="text-xl font-bold text-gray-800">Reward Catalog</h2>
               <p className="text-gray-400 text-sm mt-0.5">Create and manage redeemable rewards</p>
             </div>
-            <button
-              onClick={openAdd}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl
-                bg-[#168AFF] text-white text-sm font-semibold
-                hover:bg-[#1270DB] transition shadow-sm"
-            >
-              <MdAdd size={18} />
-              Add Reward
-            </button>
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="relative">
+                <MdSearch
+                  size={16}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"
+                />
+                <input
+                  type="text"
+                  placeholder="Search rewards…"
+                  value={rewardSearch}
+                  onChange={e => setRewardSearch(e.target.value)}
+                  className="pl-8 pr-4 py-2 text-sm border border-gray-200 rounded-xl
+                    focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF]
+                    w-48 transition"
+                />
+              </div>
+              <button
+                onClick={openAdd}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl
+                  bg-[#168AFF] text-white text-sm font-semibold
+                  hover:bg-[#1270DB] transition shadow-sm"
+              >
+                <MdAdd size={18} />
+                Add Reward
+              </button>
+            </div>
           </div>
 
           {/* Summary chips */}
@@ -375,14 +401,16 @@ export default function Rewards() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
             </div>
-          ) : rewards.length === 0 ? (
+          ) : filteredRewards.length === 0 ? (
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm
               px-5 py-16 text-center text-gray-400 text-sm">
-              No rewards yet. Click "Add Reward" to create one.
+              {rewardSearch
+                ? 'No rewards match your search.'
+                : 'No rewards yet. Click "Add Reward" to create one.'}
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {rewards.map(reward => (
+              {filteredRewards.map(reward => (
                 <RewardCard
                   key={reward.id}
                   reward={reward}

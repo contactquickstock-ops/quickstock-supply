@@ -5,7 +5,7 @@ import PublicLayout from '../../layouts/PublicLayout'
 const VALUES = [
   { icon: MdLocalShipping, title: 'Speed',    desc: 'We deliver same-day so your store or your business never runs out of essentials.'     },
   { icon: MdVerified,      title: 'Quality',  desc: 'We source only fresh, high-quality products for every order.'                         },
-  { icon: MdCardGiftcard,  title: 'Generosity', desc: 'We reward loyalty — every peso you spend earns you points.'                         },
+  { icon: MdCardGiftcard,  title: 'Generosity', desc: 'We reward loyalty — Premium clients earn points on every purchase.'               },
   { icon: MdHeadsetMic,    title: 'Service',  desc: 'Our team is always here to assist you every step of the way.'                         },
 ]
 
@@ -49,10 +49,11 @@ export default function AboutPage() {
             </p>
             <div className="space-y-2.5 pt-2">
               {[
-                'Wide selection of 500+ everyday products',
+                'Wide selection of quality essential products',
                 'Fast same-day delivery by trusted drivers',
-                'Rewards points on every purchase',
-                'Membership program with exclusive benefits',
+                'Rewards points on every purchase (For Premium Clients)',
+                '₱1,000 annual renewal to stay Premium and continue earning points',
+                'Redeem for free delivery — Priority deliveries for Premium clients',
               ].map(item => (
                 <div key={item} className="flex items-start gap-2.5 text-gray-700 text-sm">
                   <MdCheckCircle size={18} className="text-[#168AFF] shrink-0 mt-0.5" />
@@ -111,10 +112,11 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {VALUES.map(({ icon: Icon, title, desc }) => (
               <div key={title}
-                className="bg-gray-50 rounded-2xl border border-gray-100 p-6 space-y-3 text-center
-                  hover:border-[#168AFF] hover:bg-blue-50 transition-all">
-                <div className="w-14 h-14 bg-[#168AFF] rounded-2xl flex items-center
-                  justify-center mx-auto shadow-md">
+                className="group bg-gray-50 rounded-2xl border border-gray-100 p-6 space-y-3 text-center
+                  hover:border-[#5BABFF] hover:bg-blue-50 transition-all duration-300">
+                <div className="w-14 h-14 bg-[#168AFF] group-hover:bg-[#5BABFF] rounded-2xl
+                  flex items-center justify-center mx-auto shadow-md
+                  group-hover:scale-105 transition-all duration-300">
                   <Icon size={26} className="text-white" />
                 </div>
                 <h3 className="font-bold text-gray-800 text-base">{title}</h3>

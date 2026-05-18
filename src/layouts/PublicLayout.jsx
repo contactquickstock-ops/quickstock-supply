@@ -26,27 +26,18 @@ export default function PublicLayout({ children }) {
       {/* ── Announcement bar ── */}
       <div className="bg-[#168AFF] text-white text-xs sm:text-sm text-center
         py-2 px-4 font-medium shrink-0">
-        🚚 FREE delivery on orders ₱500 and above &nbsp;|&nbsp; Open Mon – Sun · 8 AM to 7 PM
+        🚚 FREE delivery on orders ₱500 and above &nbsp;|&nbsp; Open Mon – Sun · 7 AM to 9 PM
       </div>
 
       {/* ── Header ── */}
       <header className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
-          {/* Top row: logo + follow us */}
-          <div className="flex items-center justify-between h-14 border-b border-gray-50">
+          {/* Top row: logo only */}
+          <div className="flex items-center h-14 border-b border-gray-50">
             <Link to="/">
               <img src="/logo.jpg" alt="QuickStock Supply" className="h-10 object-contain" />
             </Link>
-            <div className="hidden sm:flex items-center gap-3">
-              <span className="text-xs text-gray-500 font-medium">Follow us:</span>
-              <a href={FB_URL} target="_blank" rel="noopener noreferrer"
-                className="w-7 h-7 bg-[#1877F2] rounded-full flex items-center
-                  justify-center hover:opacity-90 transition"
-                aria-label="Facebook">
-                <FaFacebookF size={13} className="text-white" />
-              </a>
-            </div>
           </div>
 
           {/* Nav row */}
@@ -193,7 +184,7 @@ export default function PublicLayout({ children }) {
               {[
                 [MdPhone,      '09304453799'                 ],
                 [MdEmail,      'contactquickstock@gmail.com' ],
-                [MdLocationOn, 'Lubogan, Toril Davao City'   ],
+                [MdLocationOn, 'Davao City, Philippines'      ],
               ].map(([Icon, text]) => (
                 <li key={text} className="flex items-start gap-2.5 text-gray-400 text-sm">
                   <Icon size={16} className="text-[#168AFF] shrink-0 mt-0.5" />
@@ -203,7 +194,7 @@ export default function PublicLayout({ children }) {
             </ul>
             <div className="pt-2">
               <p className="text-gray-500 text-xs font-medium mb-1.5">Business Hours</p>
-              <p className="text-gray-400 text-xs">Mon – Sun: 8:00 AM – 7:00 PM</p>
+              <p className="text-gray-400 text-xs">Mon – Sun: 7:00 AM – 9:00 PM</p>
             </div>
           </div>
         </div>

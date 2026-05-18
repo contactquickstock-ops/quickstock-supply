@@ -2,38 +2,29 @@ import { Link } from 'react-router-dom'
 import {
   MdLocalShipping, MdStar, MdArrowForward,
   MdCheckCircle, MdShoppingCart,
-  MdCardGiftcard, MdHeadsetMic, MdStorefront,
-  MdPeople, MdVerified, MdPhone,
+  MdCardGiftcard, MdHeadsetMic,
+  MdPeople, MdVerified,
 } from 'react-icons/md'
 import PublicLayout from '../../layouts/PublicLayout'
 
-const CATEGORIES = [
-  { emoji: '🌾', label: 'Rice & Grains',   available: true  },
-  { emoji: '🥚', label: 'Eggs',            available: true  },
-  { emoji: '🛢️', label: 'Cooking Oil',     available: true  },
-  { emoji: '🥤', label: 'Beverages',       available: true  },
-  { emoji: '🧂', label: 'Condiments',      available: true  },
-  { emoji: '🍜', label: 'Noodles & Pasta', available: false },
-]
-
 const FEATURES = [
-  { icon: MdLocalShipping, title: 'Fast Delivery',             desc: 'Same-day delivery right to your store — quick, efficient, and hassle-free.'         },
-  { icon: MdVerified,      title: 'Quality Products',          desc: 'Every item is checked for freshness and quality before it reaches you.'              },
-  { icon: MdCardGiftcard,  title: 'Rewards & Points',          desc: 'Earn 1 point for every ₱100 spent and redeem them for exciting rewards.'             },
+  { icon: MdLocalShipping, title: 'Fast Delivery',             desc: 'Same-day delivery right to your store — quick, efficient, and hassle-free.'              },
+  { icon: MdVerified,      title: 'Quality Products',          desc: 'Every item is checked for freshness and quality before it reaches you.'                   },
+  { icon: MdCardGiftcard,  title: 'Rewards & Points',          desc: 'Earn 1 point for every ₱100 spent and redeem them for exciting rewards.'                  },
   { icon: MdHeadsetMic,    title: 'Quality Customer Service',  desc: 'Our dedicated team is always here to assist you with every concern, every step of the way.' },
 ]
 
 const STEPS = [
-  { n: '01', title: 'Create Account',  desc: 'Register and wait for admin approval to activate your account.' },
-  { n: '02', title: 'Browse & Order',  desc: 'Browse our catalog, add items to your cart, and place your order.' },
-  { n: '03', title: 'Get Delivered',   desc: 'A driver is assigned and your order arrives directly at your store.' },
+  { n: '01', title: 'Create Account', desc: 'Register and wait for admin approval to activate your account.'           },
+  { n: '02', title: 'Browse & Order', desc: 'Browse our catalog, add items to your cart, and place your order.'        },
+  { n: '03', title: 'Get Delivered',  desc: 'A driver is assigned and your order arrives directly at your store.'      },
 ]
 
 const STATS = [
-  { icon: MdStorefront,    value: '500+',  label: 'Products'        },
-  { icon: MdPeople,        value: '200+',  label: 'Happy Partners'  },
-  { icon: MdLocalShipping, value: '1-Day', label: 'Delivery'        },
-  { icon: MdStar,          value: '4.9★',  label: 'Customer Rating' },
+  { icon: MdVerified,      value: 'Quality',  label: 'Products'       },
+  { icon: MdPeople,        value: '1,000+',   label: 'Happy Partners' },
+  { icon: MdLocalShipping, value: 'Same Day', label: 'Delivery'       },
+  { icon: MdHeadsetMic,    value: 'Reliable', label: 'Service'        },
 ]
 
 export default function LandingPage() {
@@ -74,10 +65,14 @@ export default function LandingPage() {
                 Learn More
               </Link>
             </div>
-            <div className="flex flex-wrap gap-4 pt-2">
-              {['500+ Products', 'Same-Day Delivery', 'Earn Reward Points'].map(t => (
+            <div className="flex flex-col gap-2 pt-2">
+              {[
+                '500+ Products',
+                'Same-Day Delivery',
+                'Earn Rewards Points (For Premium Clients Only)',
+              ].map(t => (
                 <span key={t} className="flex items-center gap-1.5 text-white/90 text-xs font-medium">
-                  <MdCheckCircle size={15} className="text-yellow-300" /> {t}
+                  <MdCheckCircle size={15} className="text-yellow-300 shrink-0" /> {t}
                 </span>
               ))}
             </div>
@@ -104,7 +99,7 @@ export default function LandingPage() {
               </div>
               <div className="absolute -bottom-4 -left-4 bg-white text-[#168AFF]
                 px-4 py-2 rounded-2xl shadow-lg font-bold text-sm">
-                4.9 ★ Rated<br />
+                4.9 <span className="text-yellow-400">★</span> Rated<br />
                 <span className="text-xs text-gray-500 font-medium">by customers</span>
               </div>
             </div>
@@ -133,51 +128,14 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Categories ── */}
-      <section className="py-14 px-4 bg-gray-50">
-        <div className="max-w-7xl mx-auto space-y-8">
-          <div className="text-center space-y-2">
-            <span className="text-[#168AFF] font-bold text-sm uppercase tracking-widest">Browse</span>
-            <h2 className="text-3xl font-black text-gray-800">Shop by Category</h2>
-            <p className="text-gray-500 max-w-md mx-auto text-sm">
-              Find everything your store needs — from grains to everyday essentials.
-            </p>
-          </div>
-          {/* Categories are display-only — no navigation */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-            {CATEGORIES.map(({ emoji, label, available }) => (
-              <div key={label}
-                className="relative bg-white rounded-2xl border border-gray-100 shadow-sm
-                  p-5 flex flex-col items-center gap-3 text-center select-none overflow-hidden">
-                <span className={`text-4xl transition ${!available ? 'opacity-25' : ''}`}>{emoji}</span>
-                <span className={`font-semibold text-sm transition ${!available ? 'text-gray-300' : 'text-gray-700'}`}>{label}</span>
-                {!available && (
-                  <div className="absolute inset-0 backdrop-blur-[1px] flex items-center justify-center rounded-2xl">
-                    <span className="text-[10px] font-bold text-gray-500 bg-white/90 border border-gray-200
-                      px-3 py-1 rounded-full shadow-sm">
-                      Available Soon
-                    </span>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-          <div className="text-center">
-            <Link to="/products"
-              className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#168AFF]
-                text-white font-bold rounded-xl hover:bg-[#1270DB] transition text-sm shadow-sm">
-              View All Products <MdArrowForward size={16} />
-            </Link>
-          </div>
-        </div>
-      </section>
-
       {/* ── Why Choose Us ── */}
-      <section className="py-14 px-4 bg-white">
+      <section className="py-14 px-4 bg-gray-50">
         <div className="max-w-7xl mx-auto space-y-10">
           <div className="text-center space-y-2">
             <span className="text-[#168AFF] font-bold text-sm uppercase tracking-widest">Why Us</span>
-            <h2 className="text-3xl font-black text-gray-800">Why Choose QuickStock?</h2>
+            <h2 className="text-3xl font-black text-gray-800">
+              Why Choose Quick<span className="text-yellow-400">Stock</span>?
+            </h2>
             <p className="text-gray-500 max-w-md mx-auto text-sm">
               We make restocking easy, fast, and rewarding for your business.
             </p>
@@ -185,11 +143,12 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {FEATURES.map(({ icon: Icon, title, desc }) => (
               <div key={title}
-                className="group bg-gray-50 rounded-2xl border border-gray-100 p-6
-                  hover:border-[#168AFF] hover:bg-blue-50 transition-all duration-200
+                className="group bg-white rounded-2xl border border-gray-100 p-6
+                  hover:border-[#168AFF] hover:bg-blue-50 transition-all duration-300
                   space-y-3 text-center">
-                <div className="w-14 h-14 bg-[#168AFF] rounded-2xl flex items-center
-                  justify-center mx-auto shadow-md group-hover:scale-105 transition-transform">
+                <div className="w-14 h-14 bg-[#168AFF] group-hover:bg-[#5BABFF] rounded-2xl
+                  flex items-center justify-center mx-auto shadow-md
+                  group-hover:scale-105 transition-all duration-300">
                   <Icon size={26} className="text-white" />
                 </div>
                 <h3 className="font-bold text-gray-800 text-base">{title}</h3>
@@ -201,7 +160,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── How It Works ── */}
-      <section className="py-14 px-4 bg-gray-50">
+      <section className="py-14 px-4 bg-white">
         <div className="max-w-5xl mx-auto space-y-10">
           <div className="text-center space-y-2">
             <span className="text-[#168AFF] font-bold text-sm uppercase tracking-widest">Simple Steps</span>
@@ -233,36 +192,35 @@ export default function LandingPage() {
           <div className="space-y-5">
             <span className="inline-flex items-center gap-2 bg-white/20 text-white
               text-xs font-bold px-4 py-1.5 rounded-full">
-              <MdStar size={14} className="text-yellow-300" /> Loyalty Rewards
+              <MdStar size={14} className="text-yellow-400" /> Loyalty Rewards
             </span>
-            <h2 className="text-3xl sm:text-4xl font-black text-white leading-tight">
-              Earn Points on<br />Every Order!
-            </h2>
+            <div className="space-y-3">
+              <h2 className="text-3xl sm:text-4xl font-black text-white leading-tight">
+                Earn Points on<br />Every Order!
+              </h2>
+              <span className="inline-flex items-center gap-1.5 bg-yellow-400/20
+                text-yellow-300 text-xs font-bold px-3 py-1.5 rounded-full
+                border border-yellow-400/30">
+                <MdStar size={12} className="text-yellow-400" /> For Premium Members Only
+              </span>
+            </div>
             <p className="text-white/85 text-base leading-relaxed max-w-md">
               Get <strong className="text-yellow-300">1 point for every ₱100</strong> you spend.
               Redeem your points for exclusive rewards and discounts.
             </p>
-            <div className="flex flex-wrap gap-3">
-              {['Free Delivery Voucher', 'Discount Coupons', 'Gift Items'].map(r => (
-                <span key={r} className="flex items-center gap-2 bg-white/15 px-4 py-2
-                  rounded-xl text-white font-medium text-sm border border-white/20">
-                  <MdStar size={14} className="text-yellow-300" /> {r}
-                </span>
-              ))}
-            </div>
             <Link to="/rewards"
-              className="inline-flex items-center gap-2 px-7 py-3.5 bg-yellow-400
-                text-gray-900 font-bold rounded-xl hover:bg-yellow-300
-                transition shadow-lg text-sm w-fit">
-              View Rewards <MdArrowForward size={18} />
+              className="inline-flex items-center gap-3 px-10 py-4 bg-yellow-400
+                text-gray-900 font-black rounded-xl hover:bg-yellow-300
+                transition shadow-xl text-base w-fit">
+              View Rewards <MdArrowForward size={22} />
             </Link>
           </div>
           <div className="hidden lg:grid grid-cols-2 gap-4">
             {[
-              { pts: '100 pts',  label: 'Free Delivery'  },
-              { pts: '200 pts',  label: '₱50 Discount'   },
-              { pts: '500 pts',  label: 'Gift Item'       },
-              { pts: '1000 pts', label: 'Premium Bundle'  },
+              { pts: '100 pts',  label: 'Free Delivery' },
+              { pts: '200 pts',  label: '₱50 Discount'  },
+              { pts: '500 pts',  label: 'Gift Item'      },
+              { pts: '1000 pts', label: 'Premium Bundle' },
             ].map(({ pts, label }) => (
               <div key={label}
                 className="bg-white/10 border border-white/20 rounded-2xl p-5 space-y-2">
@@ -275,81 +233,35 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Free Delivery Banner ── */}
-      <section className="py-12 px-4 bg-gray-50">
-        <div className="max-w-4xl mx-auto bg-white rounded-3xl border border-gray-100
-          shadow-sm p-8 sm:p-12 text-center space-y-5">
-          <span className="text-4xl">🚚</span>
-          <h2 className="text-2xl sm:text-3xl font-black text-gray-800">
-            Get <span className="text-[#168AFF]">FREE Delivery</span> on Orders ₱500+
-          </h2>
-          <p className="text-gray-500 text-sm max-w-sm mx-auto">
-            Sign up today and enjoy free delivery on your qualifying orders. No promo code needed.
-          </p>
-          <Link to="/register"
-            className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#168AFF]
-              text-white font-bold rounded-xl hover:bg-[#1270DB] transition shadow-md text-sm">
-            Sign Up for Free <MdArrowForward size={18} />
-          </Link>
-        </div>
-      </section>
-
       {/* ── Call to Action ── */}
-      <section className="py-16 px-4 bg-gray-900">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-
-          {/* Left: headline */}
-          <div className="space-y-5">
-            <span className="inline-flex items-center gap-2 bg-[#168AFF]/20 text-[#168AFF]
-              text-xs font-bold px-4 py-1.5 rounded-full">
-              <MdShoppingCart size={14} /> Get Started Today
-            </span>
-            <h2 className="text-3xl sm:text-4xl font-black text-white leading-tight">
-              Ready to Stock Up<br />
-              <span className="text-yellow-300">Your Business?</span>
-            </h2>
-            <p className="text-gray-400 text-base leading-relaxed">
-              Join QuickStock and experience fast, reliable supply delivery for your
-              sari-sari store, restaurant, or small business. Register now and get
-              your first order delivered today.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Link to="/register"
-                className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#168AFF]
-                  text-white font-bold rounded-xl hover:bg-[#1270DB] transition
-                  shadow-lg text-sm">
-                Create Account <MdArrowForward size={18} />
-              </Link>
-              <Link to="/contact"
-                className="inline-flex items-center gap-2 px-7 py-3.5 bg-white/10
-                  text-white font-bold rounded-xl hover:bg-white/20 transition
-                  border border-white/20 text-sm">
-                Contact Us
-              </Link>
-            </div>
-          </div>
-
-          {/* Right: quick info cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {[
-              { icon: MdPhone,        label: 'Call Us',       value: '09304453799'               },
-              { icon: MdLocalShipping, label: 'Delivery',     value: 'Same-Day'                  },
-              { icon: MdStar,          label: 'Earn Points',  value: '1 pt per ₱100'             },
-              { icon: MdStorefront,    label: 'Open',         value: 'Mon – Sun, 8AM – 7PM'      },
-            ].map(({ icon: Icon, label, value }) => (
-              <div key={label}
-                className="bg-white/5 border border-white/10 rounded-2xl p-4
-                  flex items-center gap-3">
-                <div className="w-10 h-10 bg-[#168AFF]/20 rounded-xl flex items-center
-                  justify-center shrink-0">
-                  <Icon size={20} className="text-[#168AFF]" />
-                </div>
-                <div>
-                  <p className="text-gray-400 text-xs">{label}</p>
-                  <p className="text-white font-bold text-sm">{value}</p>
-                </div>
-              </div>
-            ))}
+      <section className="py-14 px-4 bg-gray-900">
+        <div className="max-w-3xl mx-auto text-center space-y-6">
+          <span className="inline-flex items-center gap-2 bg-[#168AFF]/20 text-[#168AFF]
+            text-xs font-bold px-4 py-1.5 rounded-full">
+            <MdShoppingCart size={14} /> Get Started Today
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-black text-white leading-tight">
+            Ready to Stock Up<br />
+            <span className="text-yellow-300">Your Business?</span>
+          </h2>
+          <p className="text-gray-400 text-base leading-relaxed">
+            Join QuickStock and experience fast, reliable supply delivery for your
+            sari-sari store, restaurant, or small business. Register now and get
+            your first order delivered today.
+          </p>
+          <div className="flex flex-wrap justify-center gap-3">
+            <Link to="/register"
+              className="inline-flex items-center gap-2 px-7 py-3.5 bg-[#168AFF]
+                text-white font-bold rounded-xl hover:bg-[#1270DB] transition
+                shadow-lg text-sm">
+              Create Account <MdArrowForward size={18} />
+            </Link>
+            <Link to="/contact"
+              className="inline-flex items-center gap-2 px-7 py-3.5 bg-white/10
+                text-white font-bold rounded-xl hover:bg-white/20 transition
+                border border-white/20 text-sm">
+              Contact Us
+            </Link>
           </div>
         </div>
       </section>

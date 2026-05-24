@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import {
   MdSearch, MdCheckCircle, MdBlock, MdPeople,
-  MdDelete, MdClose, MdRefresh, MdSelectAll,
+  MdDelete, MdClose, MdRefresh,
 } from 'react-icons/md'
 import AdminLayout from '../../layouts/AdminLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
@@ -13,10 +13,9 @@ const STATUS_CFG = {
   pending:  { label: 'Pending',  badge: 'bg-yellow-100 text-yellow-700' },
   rejected: { label: 'Rejected', badge: 'bg-red-100 text-red-700'      },
   disabled: { label: 'Disabled', badge: 'bg-orange-100 text-orange-700' },
-  deleted:  { label: 'Deleted',  badge: 'bg-gray-100 text-gray-500'    },
 }
 
-const FILTER_TABS = ['all', 'pending', 'approved', 'rejected', 'disabled', 'deleted']
+const FILTER_TABS = ['all', 'pending', 'approved', 'rejected', 'disabled']
 
 // ── Skeleton ──────────────────────────────────────────────────────────────────
 
@@ -92,20 +91,28 @@ function DeleteModal({ target, bulkCount, onConfirm, onClose, submitting }) {
       onClick={e => { if (e.target === e.currentTarget && !submitting) onClose() }}>
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
-          <h3 className="font-bold text-gray-800 text-base">
-            {isBulk ? `Delete ${bulkCount} Accounts` : 'Delete Account'}
-          </h3>
+          <div>
+            <h3 className="font-bold text-gray-800 text-base">
+              {isBulk ? `Permanently Delete ${bulkCount} Accounts` : 'Permanently Delete Account'}
+            </h3>
+            {!isBulk && target && (
+              <p className="text-gray-400 text-xs mt-0.5">{target.full_name} · {target.email}</p>
+            )}
+          </div>
           <button onClick={onClose} disabled={submitting}
             className="p-1 text-gray-400 hover:text-gray-600 transition disabled:opacity-50">
             <MdClose size={20} />
           </button>
         </div>
-        <div className="px-6 py-5 space-y-4">
-          <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-sm text-red-700 leading-relaxed">
+        <div className="px-6 py-5 space-y-3">
+          <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700 leading-relaxed">
             {isBulk
-              ? `You are about to delete ${bulkCount} selected account${bulkCount > 1 ? 's' : ''}. This action marks them as deleted and blocks all future logins.`
-              : `You are about to delete the account of "${target?.full_name}". This will block their login immediately.`}
-            <span className="block mt-2 font-semibold">This action can be reviewed later by the admin.</span>
+              ? `You are about to permanently delete ${bulkCount} selected account${bulkCount > 1 ? 's' : ''}. Their login access, profile data, and account history will be removed from the system.`
+              : `You are about to permanently delete the account of "${target?.full_name}". Their login access and profile data will be removed immediately.`}
+          </div>
+          <div className="flex items-start gap-2 text-xs text-gray-500 bg-gray-50 rounded-xl px-4 py-3">
+            <span className="text-red-500 font-bold mt-0.5">!</span>
+            <span>This action is <strong className="text-gray-700">irreversible</strong>. The account cannot be recovered once deleted.</span>
           </div>
         </div>
         <div className="px-6 pb-6 flex gap-3">
@@ -117,7 +124,12 @@ function DeleteModal({ target, bulkCount, onConfirm, onClose, submitting }) {
           <button onClick={onConfirm} disabled={submitting}
             className="flex-1 px-4 py-2.5 text-sm font-semibold text-white
               bg-red-600 rounded-xl hover:bg-red-700 transition disabled:opacity-60 disabled:cursor-not-allowed">
-            {submitting ? 'Deleting…' : 'Confirm Delete'}
+            {submitting
+              ? <span className="flex items-center justify-center gap-2">
+                  <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Deleting…
+                </span>
+              : 'Permanently Delete'}
           </button>
         </div>
       </div>
@@ -180,42 +192,24 @@ export default function Customers() {
     setSubmitting(false)
   }
 
-  async function softDelete(id) {
+  async function hardDelete(id) {
     setSubmitting(true)
-    await supabase.from('profiles')
-      .update({ status: 'deleted', deleted_at: new Date().toISOString() })
-      .eq('id', id)
-    setCustomers(prev => prev.map(c =>
-      c.id === id ? { ...c, status: 'deleted', deleted_at: new Date().toISOString() } : c
-    ))
+    await supabase.auth.admin.deleteUser(id)
+    await supabase.from('profiles').delete().eq('id', id)
+    setCustomers(prev => prev.filter(c => c.id !== id))
     setDeleteTarget(null)
     setSubmitting(false)
   }
 
-  async function bulkSoftDelete() {
+  async function bulkHardDelete() {
     setSubmitting(true)
     const ids = [...selected]
-    const now = new Date().toISOString()
-    await supabase.from('profiles')
-      .update({ status: 'deleted', deleted_at: now })
-      .in('id', ids)
-    setCustomers(prev => prev.map(c =>
-      ids.includes(c.id) ? { ...c, status: 'deleted', deleted_at: now } : c
-    ))
+    await Promise.all(ids.map(id => supabase.auth.admin.deleteUser(id)))
+    await supabase.from('profiles').delete().in('id', ids)
+    setCustomers(prev => prev.filter(c => !ids.includes(c.id)))
     setSelected(new Set())
     setShowBulkDel(false)
     setSubmitting(false)
-  }
-
-  async function restoreCustomer(id) {
-    setUpdating(id)
-    await supabase.from('profiles')
-      .update({ status: 'pending', deleted_at: null })
-      .eq('id', id)
-    setCustomers(prev => prev.map(c =>
-      c.id === id ? { ...c, status: 'pending', deleted_at: null } : c
-    ))
-    setUpdating(null)
   }
 
   // ── Selection helpers ────────────────────────────────────────────────────────
@@ -488,29 +482,15 @@ export default function Customers() {
                             </button>
                           )}
 
-                          {/* Restore (deleted only) */}
-                          {status === 'deleted' && (
-                            <button onClick={() => restoreCustomer(customer.id)}
-                              disabled={isBusy}
-                              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg
-                                bg-blue-50 text-blue-600 hover:bg-blue-100
-                                text-[11px] font-semibold transition disabled:opacity-50">
-                              <MdRefresh size={13} />
-                              {isBusy ? '…' : 'Restore'}
-                            </button>
-                          )}
-
-                          {/* Delete (all except already deleted) */}
-                          {status !== 'deleted' && (
-                            <button onClick={() => setDeleteTarget(customer)}
-                              disabled={isBusy}
-                              className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg
-                                bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-600
-                                text-[11px] font-semibold transition disabled:opacity-50">
-                              <MdDelete size={13} />
-                              Delete
-                            </button>
-                          )}
+                          {/* Delete (all statuses) */}
+                          <button onClick={() => setDeleteTarget(customer)}
+                            disabled={isBusy}
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg
+                              bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-600
+                              text-[11px] font-semibold transition disabled:opacity-50">
+                            <MdDelete size={13} />
+                            Delete
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -551,7 +531,7 @@ export default function Customers() {
         <DeleteModal
           target={deleteTarget}
           bulkCount={0}
-          onConfirm={() => softDelete(deleteTarget.id)}
+          onConfirm={() => hardDelete(deleteTarget.id)}
           onClose={() => setDeleteTarget(null)}
           submitting={submitting}
         />
@@ -562,7 +542,7 @@ export default function Customers() {
         <DeleteModal
           target={null}
           bulkCount={selected.size}
-          onConfirm={bulkSoftDelete}
+          onConfirm={bulkHardDelete}
           onClose={() => setShowBulkDel(false)}
           submitting={submitting}
         />

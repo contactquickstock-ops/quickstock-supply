@@ -26,25 +26,37 @@ export default function PublicLayout({ children }) {
       {/* ── Announcement bar ── */}
       <div className="bg-[#168AFF] text-white text-xs sm:text-sm text-center
         py-2 px-4 font-medium shrink-0">
-        🚚 FREE delivery on orders ₱500 and above &nbsp;|&nbsp; Open Mon – Sun · 7 AM to 9 PM
+        🚚 FREE delivery on orders ₱500 and above &nbsp;|&nbsp; Open Mon – Sun · 8:00 AM – 8:00 PM
       </div>
 
       {/* ── Header ── */}
       <header className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
-          {/* Top row: logo only */}
-          <div className="flex items-center h-14 border-b border-gray-50">
+          {/* Mobile: single row — logo + hamburger */}
+          {/* Desktop: two rows — logo row + nav row */}
+
+          {/* Logo row (always visible) */}
+          <div className="flex items-center justify-between h-16 md:h-14 md:border-b md:border-gray-50">
             <Link to="/">
-              <img src="/logo.jpg" alt="QuickStock Supply" className="h-10 object-contain" />
+              <img src="/logo.jpg" alt="QuickStock Supply"
+                className="h-14 md:h-10 object-contain" />
             </Link>
+
+            {/* Hamburger — mobile only */}
+            <button
+              className="md:hidden p-2 text-gray-600 hover:text-[#168AFF] transition"
+              onClick={() => setMenuOpen(v => !v)}
+              aria-label="Toggle menu">
+              {menuOpen ? <MdClose size={26} /> : <MdMenu size={26} />}
+            </button>
           </div>
 
-          {/* Nav row */}
-          <div className="flex items-center justify-between h-12">
+          {/* Nav row — desktop only */}
+          <div className="hidden md:flex items-center justify-between h-12">
 
             {/* Desktop nav */}
-            <nav className="hidden md:flex items-center gap-7">
+            <nav className="flex items-center gap-7">
               {NAV.map(({ label, path }) => {
                 const active = pathname === path
                 return (
@@ -59,26 +71,20 @@ export default function PublicLayout({ children }) {
               })}
             </nav>
 
-            {/* Auth + hamburger */}
-            <div className="flex items-center gap-2 ml-auto md:ml-0">
+            {/* Auth buttons */}
+            <div className="flex items-center gap-2">
               <Link to="/login"
-                className="hidden sm:inline-flex px-4 py-1.5 text-sm font-semibold
+                className="px-4 py-1.5 text-sm font-semibold
                   text-[#168AFF] border border-[#168AFF] rounded-lg
                   hover:bg-blue-50 transition">
                 Login
               </Link>
               <Link to="/register"
-                className="hidden sm:inline-flex px-4 py-1.5 text-sm font-semibold
+                className="px-4 py-1.5 text-sm font-semibold
                   text-white bg-[#168AFF] rounded-lg hover:bg-[#1270DB]
                   transition shadow-sm">
                 Sign Up
               </Link>
-              <button
-                className="md:hidden p-2 text-gray-600 hover:text-[#168AFF] transition"
-                onClick={() => setMenuOpen(v => !v)}
-                aria-label="Toggle menu">
-                {menuOpen ? <MdClose size={26} /> : <MdMenu size={26} />}
-              </button>
             </div>
           </div>
         </div>
@@ -194,7 +200,7 @@ export default function PublicLayout({ children }) {
             </ul>
             <div className="pt-2">
               <p className="text-gray-500 text-xs font-medium mb-1.5">Business Hours</p>
-              <p className="text-gray-400 text-xs">Mon – Sun: 7:00 AM – 9:00 PM</p>
+              <p className="text-gray-400 text-xs">Mon – Sun: 8:00 AM – 8:00 PM</p>
             </div>
           </div>
         </div>

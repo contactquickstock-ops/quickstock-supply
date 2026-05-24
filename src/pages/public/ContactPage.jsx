@@ -72,7 +72,7 @@ export default function ContactPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             {[
-              { icon: MdPhone,      label: 'Phone',   value: '09304453799',                 sub: 'Mon–Sun, 8AM–7PM'   },
+              { icon: MdPhone,      label: 'Phone',   value: '09304453799',                 sub: 'Mon–Sun, 8:00AM–8:00PM' },
               { icon: MdEmail,      label: 'Email',   value: 'contactquickstock@gmail.com',  sub: 'We reply within 24h' },
               { icon: MdLocationOn, label: 'Address', value: 'Lubogan, Toril Davao City',   sub: 'Service area'        },
             ].map(({ icon: Icon, label, value, sub }) => (
@@ -101,9 +101,9 @@ export default function ContactPage() {
               </div>
               <div className="space-y-2">
                 {[
-                  ['Monday – Friday', '8:00 AM – 7:00 PM'],
-                  ['Saturday',        '8:00 AM – 7:00 PM'],
-                  ['Sunday',          '8:00 AM – 7:00 PM'],
+                  ['Monday – Friday', '8:00 AM – 8:00 PM'],
+                  ['Saturday',        '8:00 AM – 8:00 PM'],
+                  ['Sunday',          '8:00 AM – 8:00 PM'],
                 ].map(([day, hours]) => (
                   <div key={day} className="flex justify-between text-sm">
                     <span className="text-gray-600 font-medium">{day}</span>

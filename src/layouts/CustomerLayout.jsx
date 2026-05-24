@@ -211,16 +211,32 @@ export default function CustomerLayout({ children }) {
           <div className="md:hidden border-t border-gray-100 bg-white px-4 py-3 space-y-1">
 
             {/* Profile summary (mobile) */}
-            <div className="flex items-center gap-3 px-3 py-3 mb-1">
-              <div className="w-10 h-10 rounded-full bg-[#168AFF] flex items-center justify-center
+            <div className="flex items-start gap-3 px-3 py-3 mb-1">
+              <div className="w-11 h-11 rounded-full bg-[#168AFF] flex items-center justify-center
                 text-white font-bold text-sm shrink-0 overflow-hidden">
                 {profile?.avatar_url
                   ? <img src={profile.avatar_url} alt="avatar" className="w-full h-full object-cover" />
                   : initials}
               </div>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <p className="text-sm font-bold text-gray-800 truncate">{profile?.full_name ?? '—'}</p>
                 <p className="text-xs text-gray-400 truncate">{profile?.email ?? '—'}</p>
+                {profile?.contact_number && (
+                  <p className="text-xs text-gray-400 mt-0.5 flex items-center gap-1">
+                    <MdPhone size={11} className="shrink-0" />
+                    {profile.contact_number}
+                  </p>
+                )}
+                <div className="flex items-center gap-2 mt-1.5 flex-wrap">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5
+                    bg-[#168AFF]/10 text-[#168AFF] text-[10px] font-bold rounded-full capitalize">
+                    <MdVerified size={10} /> {profile?.role ?? 'Customer'}
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5
+                    bg-green-100 text-green-700 text-[10px] font-bold rounded-full">
+                    <MdVerified size={10} /> {profile?.status ?? 'Active'}
+                  </span>
+                </div>
               </div>
             </div>
 

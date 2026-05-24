@@ -12,6 +12,7 @@ import { supabase } from '../services/supabase'
 const NAV_ITEMS = [
   { label: 'Browse',     icon: MdStorefront,    path: '/customer/dashboard'  },
   { label: 'My Orders',  icon: MdReceipt,       path: '/customer/orders'     },
+  { label: 'Rewards',    icon: MdStar,          path: '/customer/rewards'    },
   { label: 'Membership', icon: MdCardMembership, path: '/customer/membership' },
 ]
 

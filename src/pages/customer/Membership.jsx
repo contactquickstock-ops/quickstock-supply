@@ -196,10 +196,11 @@ function ApplyForm({ onSubmitted }) {
 
     try {
       // 1. Upload payment proof to storage
-      const fileName = `${Date.now()}-${imageFile.name}`
+      const ext      = imageFile.type.split('/')[1] || 'jpg'
+      const fileName = `proof-${user.id}-${Date.now()}.${ext}`
       const { error: uploadErr } = await supabase.storage
         .from('memberships')
-        .upload(fileName, imageFile)
+        .upload(fileName, imageFile, { contentType: imageFile.type, upsert: false })
       if (uploadErr) throw new Error(uploadErr.message)
 
       const { data: urlData } = supabase.storage

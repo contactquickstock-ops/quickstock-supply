@@ -34,7 +34,7 @@ export default function DriverProfile() {
 
       const { error: uploadErr } = await supabase.storage
         .from('avatars')
-        .upload(fileName, file, { upsert: true })
+        .upload(fileName, file, { upsert: true, contentType: file.type })
       if (uploadErr) throw new Error(uploadErr.message)
 
       const { data: urlData } = supabase.storage

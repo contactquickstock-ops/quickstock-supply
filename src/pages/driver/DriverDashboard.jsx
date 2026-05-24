@@ -235,10 +235,11 @@ function DeliverModal({ order, onClose, onConfirm, confirming }) {
 
     try {
       // 1. Upload delivery image to storage
-      const fileName = `delivery-${order.id}-${Date.now()}.jpg`
+      const ext      = file.type.split('/')[1] || 'jpg'
+      const fileName = `delivery-${order.id}-${Date.now()}.${ext}`
       const { error: uploadErr } = await supabase.storage
         .from('deliveries')
-        .upload(fileName, file)
+        .upload(fileName, file, { contentType: file.type })
       if (uploadErr) throw new Error(uploadErr.message)
 
       const { data: imgData } = supabase.storage

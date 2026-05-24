@@ -10,9 +10,10 @@ const STATUS_BADGE = {
   pending:  'bg-yellow-100 text-yellow-700',
   active:   'bg-green-100  text-green-700',
   rejected: 'bg-red-100    text-red-700',
+  expired:  'bg-gray-100   text-gray-500',
 }
 
-const FILTERS = ['all', 'pending', 'active', 'rejected']
+const FILTERS = ['all', 'pending', 'active', 'expired', 'rejected']
 
 function SkeletonRows({ cols = 6, rows = 5 }) {
   return Array.from({ length: rows }, (_, i) => (
@@ -123,6 +124,7 @@ export default function Memberships() {
     total:    memberships.length,
     pending:  memberships.filter(m => m.status === 'pending').length,
     active:   memberships.filter(m => m.status === 'active').length,
+    expired:  memberships.filter(m => m.status === 'expired').length,
     rejected: memberships.filter(m => m.status === 'rejected').length,
   }
 
@@ -144,6 +146,7 @@ export default function Memberships() {
             { label: 'Total',    value: counts.total,    color: 'bg-gray-100   text-gray-600'   },
             { label: 'Pending',  value: counts.pending,  color: 'bg-yellow-100 text-yellow-700' },
             { label: 'Active',   value: counts.active,   color: 'bg-green-100  text-green-700'  },
+            { label: 'Expired',  value: counts.expired,  color: 'bg-gray-100   text-gray-500'   },
             { label: 'Rejected', value: counts.rejected, color: 'bg-red-100    text-red-700'    },
           ].map(({ label, value, color }) => (
             <span

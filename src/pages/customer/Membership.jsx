@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from 'react'
 import {
   MdCardMembership, MdCheckCircle, MdPending,
-  MdCancel, MdImage, MdStar, MdUpload,
+  MdCancel, MdImage, MdStar, MdUpload, MdWarning,
 } from 'react-icons/md'
 import CustomerLayout from '../../layouts/CustomerLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
@@ -165,9 +165,54 @@ function RejectedCard({ onReapply }) {
   )
 }
 
+// ── Expired State ─────────────────────────────────────────────────────────────
+
+function ExpiredCard({ membership, onRenew }) {
+  const expiredDate = membership?.expiry_date
+    ? new Date(membership.expiry_date).toLocaleDateString('en-PH', {
+        month: 'long', day: 'numeric', year: 'numeric',
+      })
+    : null
+
+  return (
+    <div className="max-w-lg mx-auto space-y-4">
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-8
+        flex flex-col items-center text-center gap-4">
+        <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
+          <MdCardMembership size={32} className="text-gray-400" />
+        </div>
+        <div>
+          <h3 className="text-gray-800 font-bold text-lg">Membership Expired</h3>
+          {expiredDate && (
+            <p className="text-gray-400 text-xs mt-1">Expired on {expiredDate}</p>
+          )}
+          <p className="text-gray-500 text-sm mt-3 leading-relaxed">
+            Your membership has expired. You can no longer earn reward points on new orders,
+            but your existing points are still valid — you can still redeem them for rewards.
+          </p>
+        </div>
+        <div className="w-full bg-[#168AFF]/5 border border-[#168AFF]/20 rounded-2xl px-5 py-4 text-left">
+          <p className="text-[#168AFF] font-bold text-sm">Renew Membership — ₱1,000</p>
+          <p className="text-gray-500 text-xs mt-1 leading-relaxed">
+            Pay the ₱1,000 renewal fee and upload your proof of payment.
+            Once approved by admin, you'll start earning points again.
+          </p>
+        </div>
+        <button
+          onClick={onRenew}
+          className="w-full py-3 bg-[#168AFF] text-white rounded-xl
+            font-bold text-sm hover:bg-[#1270DB] transition shadow-sm"
+        >
+          Renew Membership
+        </button>
+      </div>
+    </div>
+  )
+}
+
 // ── Apply Form ────────────────────────────────────────────────────────────────
 
-function ApplyForm({ onSubmitted }) {
+function ApplyForm({ onSubmitted, isRenewal = false }) {
   const { user }           = useAuth()
   const [imageFile, setImageFile]     = useState(null)
   const [imagePreview, setImagePreview] = useState(null)
@@ -248,11 +293,13 @@ function ApplyForm({ onSubmitted }) {
 
       {/* Application form */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-        <h3 className="text-gray-800 font-bold text-base mb-1">Apply for Membership</h3>
+        <h3 className="text-gray-800 font-bold text-base mb-1">
+          {isRenewal ? 'Renew Membership' : 'Apply for Membership'}
+        </h3>
         <p className="text-gray-400 text-xs mb-5">
-          Upload your payment proof to start your application. This should be a
-          clear photo of your official receipt, or a screenshot of your GCash
-          payment confirmation.
+          {isRenewal
+            ? 'Pay the ₱1,000 renewal fee and upload your proof of payment (receipt photo or GCash screenshot). Once approved, your membership will be reactivated and you\'ll start earning points again.'
+            : 'Upload your payment proof to start your application. This should be a clear photo of your official receipt, or a screenshot of your GCash payment confirmation.'}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -340,10 +387,13 @@ function ApplyForm({ onSubmitted }) {
 
 export default function Membership() {
   const { user, profile }               = useAuth()
-  const [membership, setMembership]     = useState(undefined) // undefined = loading
-  const [showApply, setShowApply]       = useState(false)     // for rejected → reapply flow
+  const [membership, setMembership]     = useState(undefined)
+  const [showApply, setShowApply]       = useState(false)
+  const [isRenewal, setIsRenewal]       = useState(false)
+  const [localExpired, setLocalExpired] = useState(false)
 
-  useEffect(() => {
+  // ── Fetch latest membership record ─────────────────────────────────────────
+  function fetchMembership() {
     if (!user) return
     supabase
       .from('memberships')
@@ -353,15 +403,49 @@ export default function Membership() {
       .limit(1)
       .maybeSingle()
       .then(({ data }) => setMembership(data ?? null))
-  }, [user])
+  }
 
-  // Determine which view to show
-  const isActive  = profile?.membership_status === 'active'
-  const isPending = !isActive && membership?.status === 'pending'
-  const isRejected = !isActive && membership?.status === 'rejected' && !showApply
-  const showForm  = !isActive && !isPending && !isRejected
+  useEffect(() => { fetchMembership() }, [user]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  const loading = membership === undefined
+  // ── Lazy expiry: if active membership has passed its expiry_date, expire it ─
+  useEffect(() => {
+    if (!membership || !user) return
+    if (membership.status !== 'active' || !membership.expiry_date) return
+
+    const today  = new Date(); today.setHours(0, 0, 0, 0)
+    const expiry = new Date(membership.expiry_date)
+
+    if (today > expiry) {
+      setLocalExpired(true)
+      setMembership(prev => ({ ...prev, status: 'expired' }))
+      supabase.from('memberships').update({ status: 'expired' }).eq('id', membership.id)
+      supabase.from('profiles').update({ membership_status: null }).eq('id', user.id)
+    }
+  }, [membership?.id, membership?.status]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Derived state ───────────────────────────────────────────────────────────
+  const expiryDate     = membership?.expiry_date ? new Date(membership.expiry_date) : null
+  const todayMidnight  = (() => { const d = new Date(); d.setHours(0,0,0,0); return d })()
+  const isExpiredByDate = expiryDate && todayMidnight > expiryDate
+
+  const isActive      = profile?.membership_status === 'active' && !isExpiredByDate && !localExpired
+  const isExpired     = (membership?.status === 'expired' || isExpiredByDate || localExpired) && !showApply
+  const isPending     = !isActive && !isExpired && membership?.status === 'pending'
+  const isRejected    = !isActive && !isExpired && membership?.status === 'rejected' && !showApply
+  const loading       = membership === undefined
+
+  // Days until expiry — for warning banner when still active
+  const msPerDay      = 1000 * 60 * 60 * 24
+  const daysUntilExp  = isActive && expiryDate
+    ? Math.ceil((expiryDate - new Date()) / msPerDay)
+    : null
+  const expiringSoon  = daysUntilExp !== null && daysUntilExp >= 0 && daysUntilExp <= 3
+
+  function handleSubmitted() {
+    setShowApply(false)
+    setIsRenewal(false)
+    fetchMembership()
+  }
 
   return (
     <CustomerLayout>
@@ -381,27 +465,42 @@ export default function Membership() {
             <div className="h-44 bg-white rounded-2xl border border-gray-100 animate-pulse" />
             <div className="h-48 bg-white rounded-2xl border border-gray-100 animate-pulse" />
           </div>
+
         ) : isActive ? (
-          <ActiveCard membership={membership} profile={profile} />
+          <div className="space-y-4">
+            {/* 3-day expiry warning */}
+            {expiringSoon && (
+              <div className="max-w-lg mx-auto bg-amber-50 border border-amber-200
+                rounded-2xl px-5 py-4 flex items-start gap-3">
+                <MdWarning size={20} className="text-amber-500 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-amber-800 font-bold text-sm">Membership Expiring Soon</p>
+                  <p className="text-amber-700 text-xs mt-0.5 leading-relaxed">
+                    {daysUntilExp === 0
+                      ? 'Your membership expires today!'
+                      : `Your membership expires in ${daysUntilExp} day${daysUntilExp !== 1 ? 's' : ''}.`}
+                    {' '}Renew before it expires to keep earning points and enjoying member benefits.
+                  </p>
+                </div>
+              </div>
+            )}
+            <ActiveCard membership={membership} profile={profile} />
+          </div>
+
+        ) : isExpired ? (
+          <ExpiredCard
+            membership={membership}
+            onRenew={() => { setIsRenewal(true); setShowApply(true) }}
+          />
+
         ) : isPending ? (
           <PendingCard membership={membership} />
+
         ) : isRejected ? (
-          <RejectedCard onReapply={() => setShowApply(true)} />
+          <RejectedCard onReapply={() => { setIsRenewal(false); setShowApply(true) }} />
+
         ) : (
-          <ApplyForm
-            onSubmitted={() => {
-              setShowApply(false)
-              // Refetch the latest membership record to show pending state
-              supabase
-                .from('memberships')
-                .select('*')
-                .eq('user_id', user.id)
-                .order('created_at', { ascending: false })
-                .limit(1)
-                .maybeSingle()
-                .then(({ data }) => setMembership(data ?? null))
-            }}
-          />
+          <ApplyForm isRenewal={isRenewal} onSubmitted={handleSubmitted} />
         )}
       </div>
     </CustomerLayout>

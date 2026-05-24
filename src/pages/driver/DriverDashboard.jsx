@@ -530,7 +530,7 @@ export default function DriverDashboard() {
     setError(null)
     const { data, error: err } = await supabase
       .from('orders')
-      .select('*, customer:profiles!orders_customer_id_fkey(contact_number), order_items(quantity, products(name, unit_type)), rewards(id, name, points_required)')
+      .select('*, customer:profiles!orders_customer_id_fkey(contact_number, membership_status), order_items(quantity, products(name, unit_type)), rewards(id, name, points_required)')
       .eq('driver_id', user.id)
       .in('status', ['assigned', 'on_the_way'])
       .order('created_at', { ascending: false })
@@ -579,11 +579,12 @@ export default function DriverDashboard() {
 
       let balance = currentPts?.total_points ?? 0
 
-      // 3. Award points earned from this order (₱100 = 1 pt)
-      const pointsEarned = Math.floor((order.total ?? 0) / 100)
-      balance += pointsEarned
+      // 3. Award points only if customer is an active member
+      const isMember    = order.customer?.membership_status === 'active'
+      const pointsEarned = isMember ? Math.floor((order.total ?? 0) / 100) : 0
+      if (isMember) balance += pointsEarned
 
-      // 4. Deduct reward points if a reward was applied
+      // 4. Deduct reward points if a reward was applied (regardless of membership)
       const reward = order.rewards
       let rewardMsg = ''
       if (reward?.id) {
@@ -609,7 +610,11 @@ export default function DriverDashboard() {
       // 6. Remove from active list
       setOrders(prev => prev.filter(o => o.id !== order.id))
       setDeliverTarget(null)
-      toast.success(`Delivered! +${pointsEarned} pts earned${rewardMsg}.`)
+      toast.success(
+        isMember
+          ? `Delivered! +${pointsEarned} pts earned${rewardMsg}.`
+          : `Delivered!${rewardMsg || ''}`
+      )
     } catch (err) {
       toast.error('Failed to confirm delivery: ' + err.message)
     } finally {

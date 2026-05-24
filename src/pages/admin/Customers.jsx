@@ -193,13 +193,32 @@ export default function Customers() {
     setSubmitting(false)
   }
 
+  async function cleanupCustomerRefs(ids) {
+    // Nullify orders (preserve order history, just remove customer link)
+    await supabase.from('orders').update({ customer_id: null }).in('customer_id', ids)
+    // Delete all records that belong to the customer and have no business value after deletion
+    await supabase.from('memberships').delete().in('customer_id', ids)
+  }
+
   async function hardDelete(id) {
     setSubmitting(true)
 
-    // Step 1 — nullify FK references in related tables so profile can be deleted
-    await supabase.from('orders').update({ customer_id: null }).eq('customer_id', id)
+    // Step 1 — remove all FK-referencing records for this customer
+    const { error: cleanErr } = await (async () => {
+      try {
+        await cleanupCustomerRefs([id])
+        return {}
+      } catch (e) {
+        return { error: e }
+      }
+    })()
+    if (cleanErr) {
+      toast.error('Cleanup failed: ' + cleanErr.message)
+      setSubmitting(false)
+      return
+    }
 
-    // Step 2 — delete profile (FK to auth.users is now the only remaining constraint)
+    // Step 2 — delete profile
     const { error: profileErr } = await supabase.from('profiles').delete().eq('id', id)
     if (profileErr) {
       toast.error('Could not remove profile: ' + profileErr.message)
@@ -224,8 +243,8 @@ export default function Customers() {
     setSubmitting(true)
     const ids = [...selected]
 
-    // Step 1 — nullify FK references for all selected customers
-    await supabase.from('orders').update({ customer_id: null }).in('customer_id', ids)
+    // Step 1 — remove all FK-referencing records
+    await cleanupCustomerRefs(ids)
 
     // Step 2 — delete profiles
     await supabase.from('profiles').delete().in('id', ids)

@@ -194,10 +194,11 @@ export default function Customers() {
   }
 
   async function cleanupCustomerRefs(ids) {
-    // Nullify orders (preserve order history, just remove customer link)
+    // Nullify orders — preserve order history, just remove the customer link
     await supabase.from('orders').update({ customer_id: null }).in('customer_id', ids)
-    // Delete all records that belong to the customer and have no business value after deletion
-    await supabase.from('memberships').delete().in('customer_id', ids)
+    // Delete customer-owned records (memberships uses user_id, redeemed_rewards uses customer_id)
+    await supabase.from('memberships').delete().in('user_id', ids)
+    await supabase.from('redeemed_rewards').delete().in('customer_id', ids)
   }
 
   async function hardDelete(id) {

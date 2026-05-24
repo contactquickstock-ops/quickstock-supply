@@ -5,6 +5,7 @@ import {
 } from 'react-icons/md'
 import AdminLayout from '../../layouts/AdminLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
+import toast, { Toaster } from 'react-hot-toast'
 
 // ── Status config ─────────────────────────────────────────────────────────────
 
@@ -194,8 +195,21 @@ export default function Customers() {
 
   async function hardDelete(id) {
     setSubmitting(true)
-    await supabase.auth.admin.deleteUser(id)
-    await supabase.from('profiles').delete().eq('id', id)
+
+    const { error: authErr } = await supabase.auth.admin.deleteUser(id)
+    if (authErr) {
+      toast.error('Failed to delete user account: ' + authErr.message)
+      setSubmitting(false)
+      return
+    }
+
+    const { error: profileErr } = await supabase.from('profiles').delete().eq('id', id)
+    if (profileErr) {
+      toast.error('Auth user deleted but profile removal failed: ' + profileErr.message)
+    } else {
+      toast.success('Account permanently deleted.')
+    }
+
     setCustomers(prev => prev.filter(c => c.id !== id))
     setDeleteTarget(null)
     setSubmitting(false)
@@ -204,9 +218,22 @@ export default function Customers() {
   async function bulkHardDelete() {
     setSubmitting(true)
     const ids = [...selected]
-    await Promise.all(ids.map(id => supabase.auth.admin.deleteUser(id)))
-    await supabase.from('profiles').delete().in('id', ids)
-    setCustomers(prev => prev.filter(c => !ids.includes(c.id)))
+
+    const results = await Promise.all(
+      ids.map(id => supabase.auth.admin.deleteUser(id))
+    )
+    const failed = results.filter(r => r.error)
+    if (failed.length > 0) {
+      toast.error(`${failed.length} account(s) could not be deleted from auth.`)
+    }
+
+    const deletedIds = ids.filter((_, i) => !results[i].error)
+    if (deletedIds.length > 0) {
+      await supabase.from('profiles').delete().in('id', deletedIds)
+      setCustomers(prev => prev.filter(c => !deletedIds.includes(c.id)))
+      toast.success(`${deletedIds.length} account(s) permanently deleted.`)
+    }
+
     setSelected(new Set())
     setShowBulkDel(false)
     setSubmitting(false)
@@ -253,6 +280,7 @@ export default function Customers() {
 
   return (
     <AdminLayout pageTitle="Customers">
+      <Toaster position="top-right" />
       <div className="space-y-6 max-w-7xl mx-auto">
 
         {/* Heading */}

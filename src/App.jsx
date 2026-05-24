@@ -6,7 +6,6 @@ import LandingPage   from './pages/public/LandingPage'
 import LoginPage       from './pages/public/Login'
 import RegisterPage    from './pages/public/Register'
 import AuthCallback    from './pages/public/AuthCallback'
-import OtpVerification from './pages/public/OtpVerification'
 import ForgotPassword  from './pages/public/ForgotPassword'
 import AboutPage     from './pages/public/AboutPage'
 import ProductsPage  from './pages/public/ProductsPage'
@@ -47,8 +46,7 @@ export default function App() {
         <Route path="/rewards"       element={<RewardsPage />} />
         <Route path="/contact"       element={<ContactPage />} />
         <Route path="/login"          element={<LoginPage />} />
-        <Route path="/register"       element={<RegisterPage />} />
-        <Route path="/verify-otp"     element={<OtpVerification />} />
+        <Route path="/register"        element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/auth/callback"  element={<AuthCallback />} />
 

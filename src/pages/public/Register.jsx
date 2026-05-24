@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { MdVisibility, MdVisibilityOff, MdCameraAlt, MdCheckCircle } from 'react-icons/md'
 import { supabase } from '../../services/supabase'
+import { supabaseAdmin } from '../../services/supabaseAdmin'
 
 // ── Password strength checker ─────────────────────────────────────────────────
 function checkStrength(pw) {
@@ -91,7 +92,6 @@ function formatPhone(raw) {
 }
 
 export default function RegisterPage() {
-  const navigate  = useNavigate()
   const avatarRef = useRef(null)
 
   const [fullName,        setFullName]        = useState('')
@@ -103,6 +103,7 @@ export default function RegisterPage() {
   const [showConfirm,     setShowConfirm]     = useState(false)
   const [loading,         setLoading]         = useState(false)
   const [error,           setError]           = useState(null)
+  const [emailSent,       setEmailSent]       = useState(false)
   const [avatarFile,      setAvatarFile]      = useState(null)
   const [avatarPreview,   setAvatarPreview]   = useState(null)
   const [agreed,          setAgreed]          = useState(false)
@@ -137,7 +138,6 @@ export default function RegisterPage() {
       setError('All fields are required.')
       return
     }
-
     const intlPhone = formatPhone(contactNumber)
     if (!/^\+639\d{9}$/.test(intlPhone)) {
       setError('Please enter a valid Philippine mobile number (e.g. 09XXXXXXXXX).')
@@ -159,30 +159,56 @@ export default function RegisterPage() {
     setLoading(true)
     setError(null)
 
-    // Send SMS OTP to phone number
-    const { error: otpErr } = await supabase.auth.signInWithOtp({
-      phone: intlPhone,
+    // Sign up — Supabase sends a confirmation email with a link to /auth/callback
+    const { data, error: signUpErr } = await supabase.auth.signUp({
+      email:    email.trim(),
+      password,
+      options: {
+        emailRedirectTo: window.location.origin + '/auth/callback',
+        data: {
+          full_name:      fullName.trim(),
+          contact_number: intlPhone,
+        },
+      },
     })
 
-    if (otpErr) {
-      setError(otpErr.message)
+    if (signUpErr) {
+      setError(signUpErr.message)
       setLoading(false)
       return
     }
 
-    // Pass all form data to OTP page for final account creation after verification
-    navigate('/verify-otp', {
-      state: {
-        phone: intlPhone,
-        formData: {
-          fullName:      fullName.trim(),
-          email:         email.trim(),
-          contactNumber: intlPhone,
-          password,
-          avatarFile,
-        },
-      },
-    })
+    // Supabase returns identities: [] when the email is already registered
+    if (data.user?.identities?.length === 0) {
+      setError('This email is already registered. Please sign in instead.')
+      setLoading(false)
+      return
+    }
+
+    // Upload avatar and attach URL to user metadata so AuthCallback can save it
+    if (avatarFile && data.user?.id) {
+      try {
+        const fileName = `customer-${data.user.id}.jpg`
+        const { error: uploadErr } = await supabaseAdmin.storage
+          .from('avatars').upload(fileName, avatarFile, { upsert: true })
+        if (!uploadErr) {
+          const { data: urlData } = supabaseAdmin.storage.from('avatars').getPublicUrl(fileName)
+          await supabaseAdmin.auth.admin.updateUserById(data.user.id, {
+            user_metadata: {
+              full_name:      fullName.trim(),
+              contact_number: intlPhone,
+              avatar_url:     urlData.publicUrl,
+            },
+          })
+        }
+      } catch { /* avatar upload is non-fatal */ }
+    }
+
+    // Sign out any session signUp may have created (only happens if email confirm is OFF)
+    await supabase.auth.signOut()
+
+    setEmailSent(true)
+    setLoading(false)
   }
 
   const initials = fullName.trim() ? fullName.trim()[0].toUpperCase() : null
@@ -197,6 +223,35 @@ export default function RegisterPage() {
         </div>
 
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+
+          {/* ── Email sent success screen ── */}
+          {emailSent ? (
+            <div className="text-center space-y-4 py-4">
+              <div className="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center mx-auto">
+                <span className="text-3xl">✉️</span>
+              </div>
+              <h2 className="font-bold text-gray-800 text-xl">Check Your Email</h2>
+              <p className="text-gray-500 text-sm leading-relaxed">
+                We sent a confirmation link to:
+              </p>
+              <p className="text-[#168AFF] font-bold text-sm break-all">{email}</p>
+              <p className="text-gray-400 text-xs leading-relaxed">
+                Click the link in your email to confirm your account.
+                Once confirmed, your account will be reviewed and approved by our admin
+                before you can sign in.
+              </p>
+              <div className="bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3 text-xs text-yellow-700 text-left">
+                <strong>Didn't receive it?</strong> Check your spam/junk folder.
+                The email is sent from QuickStock Supply.
+              </div>
+              <Link to="/login"
+                className="block w-full py-2.5 bg-[#168AFF] text-white font-bold
+                  rounded-xl text-sm hover:bg-[#1270DB] transition text-center">
+                Back to Login
+              </Link>
+            </div>
+          ) : (
+
           <form onSubmit={handleRegister} className="space-y-4">
 
             {error && (
@@ -355,17 +410,22 @@ export default function RegisterPage() {
             </div>
 
             <p className="text-xs text-gray-400 bg-gray-50 rounded-xl px-3.5 py-2.5">
-              After registering, a 6-digit SMS verification code will be sent to your
-              mobile number. Your account will then await admin approval.
+              After registering, a confirmation email will be sent to your inbox.
+              Click the link to confirm, then wait for admin approval before signing in.
             </p>
 
             <button type="submit" disabled={loading || !agreed || !allStrong}
               className="w-full py-3 bg-[#168AFF] text-white font-bold rounded-xl
                 text-sm hover:bg-[#1270DB] active:scale-[0.98] transition-all
-                shadow-sm disabled:opacity-60 disabled:cursor-not-allowed">
-              {loading ? 'Sending Code…' : 'Send Verification Code'}
+                shadow-sm disabled:opacity-60 disabled:cursor-not-allowed
+                flex items-center justify-center gap-2">
+              {loading
+                ? <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Creating Account…</>
+                : 'Create Account'}
             </button>
           </form>
+
+          )} {/* end emailSent ternary */}
         </div>
 
         <p className="text-center text-sm text-gray-400 mt-5">

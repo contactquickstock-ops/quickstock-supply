@@ -86,8 +86,8 @@ export default function AuthCallback() {
           id:             user.id,
           full_name:      fullName,
           email:          user.email,
-          contact_number: '',
-          address:        '',
+          contact_number: user.user_metadata?.contact_number ?? '',
+          avatar_url:     user.user_metadata?.avatar_url ?? null,
           role:           'customer',
           status:         'pending',
         })

@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import {
   MdSearch, MdCheckCircle, MdBlock, MdPeople,
   MdDelete, MdClose, MdRefresh,
+  MdEmail, MdPhone, MdCalendarToday, MdLocationOn, MdPerson,
 } from 'react-icons/md'
 import AdminLayout from '../../layouts/AdminLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
@@ -138,6 +139,116 @@ function DeleteModal({ target, bulkCount, onConfirm, onClose, submitting }) {
   )
 }
 
+// ── Customer View Modal ───────────────────────────────────────────────────────
+
+function CustomerViewModal({ customer, onClose, onApprove, onReject, onDisable, onEnable, onDelete, updating }) {
+  const status   = customer.status ?? 'pending'
+  const cfg      = STATUS_CFG[status] ?? STATUS_CFG.pending
+  const initials = (customer.full_name ?? '?')[0].toUpperCase()
+  const joined   = new Date(customer.created_at).toLocaleDateString('en-PH', {
+    month: 'long', day: 'numeric', year: 'numeric',
+  })
+  const isBusy = updating === customer.id
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      onClick={e => { if (e.target === e.currentTarget) onClose() }}>
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm">
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <h3 className="font-bold text-gray-800 text-base">Customer Details</h3>
+          <button onClick={onClose}
+            className="p-1 text-gray-400 hover:text-gray-600 transition rounded-lg hover:bg-gray-100">
+            <MdClose size={20} />
+          </button>
+        </div>
+
+        {/* Avatar + name */}
+        <div className="flex flex-col items-center pt-6 pb-4 px-6 gap-3">
+          <div className="w-20 h-20 rounded-full overflow-hidden shrink-0
+            bg-[#168AFF]/10 text-[#168AFF] flex items-center justify-center font-black text-2xl border-4 border-white shadow-md">
+            {customer.avatar_url
+              ? <img src={customer.avatar_url} alt={customer.full_name} className="w-full h-full object-cover" />
+              : initials}
+          </div>
+          <div className="text-center">
+            <p className="font-bold text-gray-800 text-lg leading-tight">{customer.full_name ?? '—'}</p>
+            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold mt-1.5 ${cfg.badge}`}>
+              {cfg.label}
+            </span>
+          </div>
+        </div>
+
+        {/* Info rows */}
+        <div className="px-6 pb-4 space-y-3">
+          {[
+            { icon: MdEmail,        label: 'Email',   value: customer.email           },
+            { icon: MdPhone,        label: 'Mobile',  value: customer.contact_number  },
+            { icon: MdCalendarToday,label: 'Joined',  value: joined                   },
+            { icon: MdLocationOn,   label: 'Address', value: customer.address         },
+          ].filter(r => r.value).map(({ icon: Icon, label, value }) => (
+            <div key={label} className="flex items-start gap-3">
+              <div className="w-7 h-7 rounded-lg bg-gray-50 flex items-center justify-center shrink-0 mt-0.5">
+                <Icon size={14} className="text-[#168AFF]" />
+              </div>
+              <div>
+                <p className="text-[10px] text-gray-400 font-medium uppercase tracking-wide">{label}</p>
+                <p className="text-sm text-gray-700 font-medium">{value}</p>
+              </div>
+            </div>
+          ))}
+
+          {/* Rejection reason */}
+          {status === 'rejected' && customer.rejected_reason && (
+            <div className="bg-red-50 border border-red-100 rounded-xl px-4 py-3 text-xs text-red-600 leading-relaxed">
+              <span className="font-bold block mb-0.5">Rejection Reason</span>
+              {customer.rejected_reason}
+            </div>
+          )}
+        </div>
+
+        {/* Action buttons */}
+        <div className="px-6 pb-6 pt-2 border-t border-gray-50 flex flex-wrap gap-2">
+          {['pending', 'rejected'].includes(status) && (
+            <button onClick={() => { onApprove(customer.id); onClose() }} disabled={isBusy}
+              className="flex-1 py-2 bg-green-500 hover:bg-green-600 text-white text-xs
+                font-bold rounded-xl transition disabled:opacity-50 flex items-center justify-center gap-1">
+              <MdCheckCircle size={14} /> Approve
+            </button>
+          )}
+          {status === 'pending' && (
+            <button onClick={() => { onClose(); onReject(customer) }} disabled={isBusy}
+              className="flex-1 py-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs
+                font-bold rounded-xl border border-red-100 transition disabled:opacity-50 flex items-center justify-center gap-1">
+              <MdClose size={14} /> Reject
+            </button>
+          )}
+          {status === 'approved' && (
+            <button onClick={() => { onDisable(customer.id, 'disabled'); onClose() }} disabled={isBusy}
+              className="flex-1 py-2 bg-orange-50 hover:bg-orange-100 text-orange-600 text-xs
+                font-bold rounded-xl border border-orange-100 transition disabled:opacity-50 flex items-center justify-center gap-1">
+              <MdBlock size={14} /> Disable
+            </button>
+          )}
+          {status === 'disabled' && (
+            <button onClick={() => { onEnable(customer.id, 'approved'); onClose() }} disabled={isBusy}
+              className="flex-1 py-2 bg-green-50 hover:bg-green-100 text-green-700 text-xs
+                font-bold rounded-xl border border-green-100 transition disabled:opacity-50 flex items-center justify-center gap-1">
+              <MdCheckCircle size={14} /> Enable
+            </button>
+          )}
+          <button onClick={() => { onClose(); onDelete(customer) }} disabled={isBusy}
+            className="py-2 px-3 bg-gray-100 hover:bg-red-50 hover:text-red-600 text-gray-500 text-xs
+              font-bold rounded-xl transition disabled:opacity-50 flex items-center justify-center gap-1">
+            <MdDelete size={14} /> Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
 export default function Customers() {
@@ -154,6 +265,7 @@ export default function Customers() {
   const [rejectTarget,  setRejectTarget]  = useState(null)
   const [deleteTarget,  setDeleteTarget]  = useState(null)  // null = bulk
   const [showBulkDel,   setShowBulkDel]   = useState(false)
+  const [viewCustomer,  setViewCustomer]  = useState(null)
 
   // ── Fetch ────────────────────────────────────────────────────────────────────
 
@@ -443,8 +555,8 @@ export default function Customers() {
                         </button>
                       </td>
 
-                      {/* Name + avatar */}
-                      <td className="px-4 py-4">
+                      {/* Name + avatar — click to open detail modal */}
+                      <td className="px-4 py-4 cursor-pointer" onClick={() => setViewCustomer(customer)}>
                         <div className="flex items-center gap-3">
                           <div className="w-8 h-8 rounded-full overflow-hidden shrink-0
                             bg-[#168AFF]/10 text-[#168AFF] flex items-center justify-center font-bold text-sm">
@@ -603,6 +715,20 @@ export default function Customers() {
           onConfirm={bulkHardDelete}
           onClose={() => setShowBulkDel(false)}
           submitting={submitting}
+        />
+      )}
+
+      {/* ── Customer View Modal ── */}
+      {viewCustomer && (
+        <CustomerViewModal
+          customer={viewCustomer}
+          onClose={() => setViewCustomer(null)}
+          onApprove={id        => setStatus(id, 'approved')}
+          onReject={c          => setRejectTarget(c)}
+          onDisable={(id, st)  => setStatus(id, st)}
+          onEnable={(id, st)   => setStatus(id, st)}
+          onDelete={c          => setDeleteTarget(c)}
+          updating={updating}
         />
       )}
     </AdminLayout>

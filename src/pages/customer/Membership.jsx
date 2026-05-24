@@ -249,7 +249,9 @@ function ApplyForm({ onSubmitted }) {
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
         <h3 className="text-gray-800 font-bold text-base mb-1">Apply for Membership</h3>
         <p className="text-gray-400 text-xs mb-5">
-          Upload your payment proof to start your application.
+          Upload your payment proof to start your application. This should be a
+          clear photo of your official receipt, or a screenshot of your GCash
+          payment confirmation.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -265,6 +267,9 @@ function ApplyForm({ onSubmitted }) {
           <div>
             <label className="block text-xs font-semibold text-gray-600 mb-1.5">
               Payment Proof <span className="text-red-500">*</span>
+              <span className="text-gray-400 font-normal ml-1">
+                (receipt photo or GCash screenshot)
+              </span>
             </label>
             <div
               onClick={() => !submitting && fileInputRef.current?.click()}
@@ -292,14 +297,16 @@ function ApplyForm({ onSubmitted }) {
                   </div>
                 </>
               ) : (
-                <div className="flex flex-col items-center gap-2 text-gray-300 select-none">
+                <div className="flex flex-col items-center gap-2 text-gray-300 select-none px-4 text-center">
                   <MdImage size={36} />
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-gray-500 font-medium">
                     Click to upload payment proof
                   </span>
-                  <span className="text-[10px] text-gray-300">
-                    JPG, PNG, or WEBP
+                  <span className="text-[11px] text-gray-400 leading-relaxed">
+                    Take a photo of your <strong className="text-gray-500">official receipt</strong>, or
+                    upload a <strong className="text-gray-500">GCash payment screenshot</strong>
                   </span>
+                  <span className="text-[10px] text-gray-300">JPG, PNG, or WEBP</span>
                 </div>
               )}
             </div>

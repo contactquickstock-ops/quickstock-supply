@@ -24,23 +24,23 @@ export default function PublicLayout({ children }) {
     <div className="min-h-screen bg-white flex flex-col">
 
       {/* ── Announcement bar ── */}
-      <div className="bg-[#168AFF] text-white text-xs sm:text-sm text-center
-        py-2 px-4 font-medium shrink-0">
-        🚚 FREE delivery on orders ₱500 and above &nbsp;|&nbsp; Open Mon – Sun · 8:00 AM – 8:00 PM
+      <div className="bg-[#168AFF] text-white text-center py-1.5 px-4 font-medium shrink-0">
+        <span className="hidden sm:inline text-sm">
+          🚚 FREE delivery on orders ₱500 and above &nbsp;|&nbsp; Open Mon – Sun · 8:00 AM – 8:00 PM
+        </span>
+        <span className="sm:hidden text-xs">🚚 Free delivery on ₱500+ &nbsp;·&nbsp; Mon–Sun 8AM–8PM</span>
       </div>
 
       {/* ── Header ── */}
       <header className="bg-white border-b border-gray-100 shadow-sm sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
-          {/* Mobile: single row — logo + hamburger */}
-          {/* Desktop: two rows — logo row + nav row */}
-
-          {/* Logo row (always visible) */}
-          <div className="flex items-center justify-between h-16 md:h-14 md:border-b md:border-gray-50">
+          {/* Logo row — on mobile: logo + hamburger in one compact row
+                       on desktop: logo only, nav below */}
+          <div className="flex items-center justify-between h-14 md:border-b md:border-gray-50">
             <Link to="/">
               <img src="/logo.jpg" alt="QuickStock Supply"
-                className="h-14 md:h-10 object-contain" />
+                className="h-12 sm:h-10 object-contain" />
             </Link>
 
             {/* Hamburger — mobile only */}
@@ -48,7 +48,7 @@ export default function PublicLayout({ children }) {
               className="md:hidden p-2 text-gray-600 hover:text-[#168AFF] transition"
               onClick={() => setMenuOpen(v => !v)}
               aria-label="Toggle menu">
-              {menuOpen ? <MdClose size={26} /> : <MdMenu size={26} />}
+              {menuOpen ? <MdClose size={24} /> : <MdMenu size={24} />}
             </button>
           </div>
 

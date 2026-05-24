@@ -100,16 +100,10 @@ export default function ContactPage() {
                 <h3 className="font-bold text-gray-800 text-base">Business Hours</h3>
               </div>
               <div className="space-y-2">
-                {[
-                  ['Monday – Friday', '8:00 AM – 8:00 PM'],
-                  ['Saturday',        '8:00 AM – 8:00 PM'],
-                  ['Sunday',          '8:00 AM – 8:00 PM'],
-                ].map(([day, hours]) => (
-                  <div key={day} className="flex justify-between text-sm">
-                    <span className="text-gray-600 font-medium">{day}</span>
-                    <span className="text-gray-800 font-semibold">{hours}</span>
-                  </div>
-                ))}
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600 font-medium">Monday – Sunday</span>
+                  <span className="text-gray-800 font-semibold">8:00 AM – 8:00 PM</span>
+                </div>
               </div>
             </div>
 

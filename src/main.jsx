@@ -13,7 +13,7 @@ createRoot(document.getElementById('root')).render(
         <App />
         <Toaster
           position="top-center"
-          toastOptions={{ duration: 3000 }}
+          toastOptions={{ duration: 2000 }}
         />
       </CartProvider>
     </AuthProvider>

@@ -94,7 +94,7 @@ export default function Checkout() {
 
       // 3. Clear cart → toast → redirect
       clearCart()
-      toast.success('Order placed successfully!', { duration: 3000 })
+      toast.success('Order placed successfully!')
       navigate('/customer/orders')
     } catch (err) {
       setError(err.message)

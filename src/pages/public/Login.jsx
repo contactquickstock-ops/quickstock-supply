@@ -33,8 +33,8 @@ export default function Login() {
   useEffect(() => {
     const notice = sessionStorage.getItem('auth_notice')
     const error  = sessionStorage.getItem('auth_error')
-    if (notice) { toast.success(notice, { duration: 7000 }); sessionStorage.removeItem('auth_notice') }
-    if (error)  { toast.error(error,   { duration: 7000 }); sessionStorage.removeItem('auth_error')  }
+    if (notice) { toast.success(notice, { duration: 2000 }); sessionStorage.removeItem('auth_notice') }
+    if (error)  { toast.error(error,   { duration: 2000 }); sessionStorage.removeItem('auth_error')  }
   }, [])
 
   async function handleLogin(e) {

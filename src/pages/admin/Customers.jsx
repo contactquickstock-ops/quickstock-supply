@@ -196,16 +196,18 @@ export default function Customers() {
   async function hardDelete(id) {
     setSubmitting(true)
 
-    const { error: authErr } = await supabase.auth.admin.deleteUser(id)
-    if (authErr) {
-      toast.error('Failed to delete user account: ' + authErr.message)
+    // Delete profile first — removes the FK reference to auth.users
+    // so that auth.admin.deleteUser won't get blocked by the constraint
+    const { error: profileErr } = await supabase.from('profiles').delete().eq('id', id)
+    if (profileErr) {
+      toast.error('Could not remove profile: ' + profileErr.message)
       setSubmitting(false)
       return
     }
 
-    const { error: profileErr } = await supabase.from('profiles').delete().eq('id', id)
-    if (profileErr) {
-      toast.error('Auth user deleted but profile removal failed: ' + profileErr.message)
+    const { error: authErr } = await supabase.auth.admin.deleteUser(id)
+    if (authErr) {
+      toast.error('Profile removed but auth user deletion failed: ' + authErr.message)
     } else {
       toast.success('Account permanently deleted.')
     }
@@ -219,21 +221,20 @@ export default function Customers() {
     setSubmitting(true)
     const ids = [...selected]
 
+    // Delete all profiles first, then delete auth users
+    await supabase.from('profiles').delete().in('id', ids)
+
     const results = await Promise.all(
       ids.map(id => supabase.auth.admin.deleteUser(id))
     )
-    const failed = results.filter(r => r.error)
-    if (failed.length > 0) {
-      toast.error(`${failed.length} account(s) could not be deleted from auth.`)
+    const failed = results.filter(r => r.error).length
+    if (failed > 0) {
+      toast.error(`${failed} auth account(s) could not be fully deleted.`)
+    } else {
+      toast.success(`${ids.length} account(s) permanently deleted.`)
     }
 
-    const deletedIds = ids.filter((_, i) => !results[i].error)
-    if (deletedIds.length > 0) {
-      await supabase.from('profiles').delete().in('id', deletedIds)
-      setCustomers(prev => prev.filter(c => !deletedIds.includes(c.id)))
-      toast.success(`${deletedIds.length} account(s) permanently deleted.`)
-    }
-
+    setCustomers(prev => prev.filter(c => !ids.includes(c.id)))
     setSelected(new Set())
     setShowBulkDel(false)
     setSubmitting(false)

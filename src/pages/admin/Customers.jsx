@@ -6,6 +6,7 @@ import {
 } from 'react-icons/md'
 import AdminLayout from '../../layouts/AdminLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
+import { sendApprovalEmail, sendRejectionEmail } from '../../services/emailService'
 import toast, { Toaster } from 'react-hot-toast'
 
 // ── Status config ─────────────────────────────────────────────────────────────
@@ -290,6 +291,12 @@ export default function Customers() {
     setUpdating(id)
     await supabase.from('profiles').update({ status }).eq('id', id)
     setCustomers(prev => prev.map(c => c.id === id ? { ...c, status } : c))
+
+    if (status === 'approved') {
+      const customer = customers.find(c => c.id === id)
+      if (customer) sendApprovalEmail(customer).catch(() => {})
+    }
+
     setUpdating(null)
   }
 
@@ -298,9 +305,14 @@ export default function Customers() {
     await supabase.from('profiles')
       .update({ status: 'rejected', rejected_reason: reason || null })
       .eq('id', id)
+
+    const customer = customers.find(c => c.id === id)
     setCustomers(prev => prev.map(c =>
       c.id === id ? { ...c, status: 'rejected', rejected_reason: reason || null } : c
     ))
+
+    if (customer) sendRejectionEmail(customer, reason).catch(() => {})
+
     setRejectTarget(null)
     setSubmitting(false)
   }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
+import { MdVisibility, MdVisibilityOff, MdArrowBack } from 'react-icons/md'
 import { supabase } from '../../services/supabase'
 import toast from 'react-hot-toast'
 
@@ -104,6 +104,14 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+
+      {/* Back to landing */}
+      <Link to="/"
+        className="absolute top-4 left-4 flex items-center gap-1.5 text-sm text-gray-500
+          hover:text-[#168AFF] transition font-medium">
+        <MdArrowBack size={18} />
+        Back
+      </Link>
 
       <div className="w-full max-w-md">
 

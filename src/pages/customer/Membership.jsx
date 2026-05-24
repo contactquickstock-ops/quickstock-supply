@@ -14,7 +14,7 @@ const BENEFITS = [
   'Exclusive member-only discounts',
   'Priority order processing',
   'Earn and redeem reward points',
-  'Free delivery on orders ₱300 and above',
+  'Free delivery on orders ₱500 and above',
   'Access to member-exclusive products',
   'Dedicated customer support',
 ]

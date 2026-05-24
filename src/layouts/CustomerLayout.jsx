@@ -59,12 +59,8 @@ export default function CustomerLayout({ children }) {
 
           {/* Logo */}
           <Link to="/customer/dashboard" className="flex items-center gap-2 shrink-0">
-            <div className="w-7 h-7 bg-[#168AFF] rounded-lg flex items-center justify-center shadow-sm">
-              <span className="text-white font-extrabold text-xs leading-none">Q</span>
-            </div>
-            <span className="text-gray-800 font-bold text-base tracking-tight hidden sm:block">
-              QuickStock
-            </span>
+            <img src="/logo.jpg" alt="QuickStock Supply"
+              className="h-9 object-contain" />
           </Link>
 
           {/* Desktop nav */}

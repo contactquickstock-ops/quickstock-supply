@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { MdVisibility, MdVisibilityOff } from 'react-icons/md'
 import { supabase } from '../../services/supabase'
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 
 const STATUS_MESSAGES = {
   pending:  { bg: 'bg-yellow-50 border-yellow-200', text: 'text-yellow-800', icon: '⏳',
@@ -33,8 +33,8 @@ export default function Login() {
   useEffect(() => {
     const notice = sessionStorage.getItem('auth_notice')
     const error  = sessionStorage.getItem('auth_error')
-    if (notice) { toast.success(notice, { duration: 2000 }); sessionStorage.removeItem('auth_notice') }
-    if (error)  { toast.error(error,   { duration: 2000 }); sessionStorage.removeItem('auth_error')  }
+    if (notice) { toast.success(notice); sessionStorage.removeItem('auth_notice') }
+    if (error)  { toast.error(error);   sessionStorage.removeItem('auth_error')  }
   }, [])
 
   async function handleLogin(e) {
@@ -104,7 +104,6 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <Toaster position="top-center" />
 
       <div className="w-full max-w-md">
 

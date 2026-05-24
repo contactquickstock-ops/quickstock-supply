@@ -7,7 +7,7 @@ import {
 import AdminLayout from '../../layouts/AdminLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
 import { sendApprovalEmail, sendRejectionEmail } from '../../services/emailService'
-import toast, { Toaster } from 'react-hot-toast'
+import toast from 'react-hot-toast'
 
 // ── Status config ─────────────────────────────────────────────────────────────
 
@@ -434,7 +434,6 @@ export default function Customers() {
 
   return (
     <AdminLayout pageTitle="Customers">
-      <Toaster position="top-right" />
       <div className="space-y-6 max-w-7xl mx-auto">
 
         {/* Heading */}

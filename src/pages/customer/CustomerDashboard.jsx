@@ -129,7 +129,7 @@ export default function CustomerDashboard() {
   function handleAddToCart(product) {
     setAddingId(product.id)
     addToCart(product)
-    toast.success(`${product.name} added to cart!`, { duration: 2000 })
+    toast.success(`${product.name} added to cart!`)
     setTimeout(() => setAddingId(null), 700)
   }
 

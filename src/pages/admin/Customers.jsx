@@ -196,8 +196,10 @@ export default function Customers() {
   async function hardDelete(id) {
     setSubmitting(true)
 
-    // Delete profile first — removes the FK reference to auth.users
-    // so that auth.admin.deleteUser won't get blocked by the constraint
+    // Step 1 — nullify FK references in related tables so profile can be deleted
+    await supabase.from('orders').update({ customer_id: null }).eq('customer_id', id)
+
+    // Step 2 — delete profile (FK to auth.users is now the only remaining constraint)
     const { error: profileErr } = await supabase.from('profiles').delete().eq('id', id)
     if (profileErr) {
       toast.error('Could not remove profile: ' + profileErr.message)
@@ -205,9 +207,10 @@ export default function Customers() {
       return
     }
 
+    // Step 3 — delete auth user
     const { error: authErr } = await supabase.auth.admin.deleteUser(id)
     if (authErr) {
-      toast.error('Profile removed but auth user deletion failed: ' + authErr.message)
+      toast.error('Profile removed but auth deletion failed: ' + authErr.message)
     } else {
       toast.success('Account permanently deleted.')
     }
@@ -221,9 +224,13 @@ export default function Customers() {
     setSubmitting(true)
     const ids = [...selected]
 
-    // Delete all profiles first, then delete auth users
+    // Step 1 — nullify FK references for all selected customers
+    await supabase.from('orders').update({ customer_id: null }).in('customer_id', ids)
+
+    // Step 2 — delete profiles
     await supabase.from('profiles').delete().in('id', ids)
 
+    // Step 3 — delete auth users
     const results = await Promise.all(
       ids.map(id => supabase.auth.admin.deleteUser(id))
     )

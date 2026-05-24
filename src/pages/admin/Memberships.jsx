@@ -282,15 +282,15 @@ export default function Memberships() {
                           {m.payment_proof ? (
                             <button
                               onClick={() => setLightbox(m.payment_proof)}
-                              className="w-12 h-12 rounded-xl overflow-hidden border border-gray-100
-                                hover:border-[#168AFF] hover:ring-2 hover:ring-[#168AFF]/20
+                              className="w-16 h-16 rounded-xl overflow-hidden border border-gray-100
+                                bg-gray-50 hover:border-[#168AFF] hover:ring-2 hover:ring-[#168AFF]/20
                                 transition block shrink-0"
                               title="View payment proof"
                             >
                               <img
                                 src={m.payment_proof}
                                 alt="Payment proof"
-                                className="w-full h-full object-cover"
+                                className="w-full h-full object-contain p-1"
                               />
                             </button>
                           ) : (

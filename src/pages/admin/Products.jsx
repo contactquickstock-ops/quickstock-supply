@@ -48,7 +48,7 @@ function ProductCard({ product, toggling, onEdit, onToggle }) {
           <img
             src={product.image_url}
             alt={product.name}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain p-2"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-200">
@@ -433,7 +433,7 @@ export default function Products() {
                         <img
                           src={form.imagePreview}
                           alt="Preview"
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain p-2"
                         />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30
                           transition-colors flex items-center justify-center">

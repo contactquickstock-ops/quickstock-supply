@@ -44,7 +44,7 @@ function CartItem({ item, onRemove, onIncrease, onDecrease }) {
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex gap-4">
       <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-50 shrink-0">
         {product.image_url ? (
-          <img src={product.image_url} alt={product.name} className="w-full h-full object-cover" />
+          <img src={product.image_url} alt={product.name} className="w-full h-full object-contain p-1" />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-gray-200">
             <MdShoppingCart size={22} />
@@ -178,7 +178,7 @@ function OrderSummary({ subtotal, itemCount, myPoints, rewards, selectedReward, 
                   >
                     <div className="w-8 h-8 rounded-lg overflow-hidden bg-gray-100 shrink-0">
                       {reward.image_url
-                        ? <img src={reward.image_url} alt={reward.name} className="w-full h-full object-cover" />
+                        ? <img src={reward.image_url} alt={reward.name} className="w-full h-full object-contain p-0.5" />
                         : <div className="w-full h-full flex items-center justify-center">
                             <MdStar size={16} className="text-yellow-400" />
                           </div>

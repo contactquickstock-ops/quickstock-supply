@@ -173,7 +173,7 @@ export default function RewardsPage() {
                     <div className="w-14 h-14 rounded-2xl overflow-hidden bg-blue-50
                       border border-gray-100 flex items-center justify-center shrink-0">
                       {reward.image_url ? (
-                        <img src={reward.image_url} alt={reward.name} className="w-full h-full object-cover" />
+                        <img src={reward.image_url} alt={reward.name} className="w-full h-full object-contain p-1" />
                       ) : (
                         <MdImage size={28} className="text-gray-200" />
                       )}

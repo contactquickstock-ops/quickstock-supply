@@ -230,8 +230,8 @@ function OrderDetailModal({ order, items, loadingItems, onClose }) {
               <img
                 src={order.delivery_image}
                 alt="Delivery proof"
-                className="w-full rounded-xl object-cover max-h-60
-                  border border-gray-100 shadow-sm"
+                className="w-full rounded-xl object-contain max-h-72
+                  border border-gray-100 shadow-sm bg-gray-50"
               />
             </div>
           )}

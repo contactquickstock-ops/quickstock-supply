@@ -216,7 +216,7 @@ export default function Checkout() {
                         <img
                           src={product.image_url}
                           alt={product.name}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain p-1"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center text-gray-200">
@@ -247,7 +247,7 @@ export default function Checkout() {
                   rounded-xl border border-[#168AFF]/20">
                   <div className="w-8 h-8 rounded-lg overflow-hidden bg-white border border-[#168AFF]/20 shrink-0">
                     {selectedReward.image_url
-                      ? <img src={selectedReward.image_url} alt={selectedReward.name} className="w-full h-full object-cover" />
+                      ? <img src={selectedReward.image_url} alt={selectedReward.name} className="w-full h-full object-contain p-0.5" />
                       : <div className="w-full h-full flex items-center justify-center">
                           <MdStar size={16} className="text-yellow-400" />
                         </div>

@@ -128,7 +128,7 @@ function OrderDetailModal({ order, items, loadingItems, onClose }) {
                         <img
                           src={item.products.image_url}
                           alt={item.products.name}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-contain p-1"
                         />
                       ) : (
                         <div className="w-full h-full flex items-center
@@ -219,8 +219,8 @@ function OrderDetailModal({ order, items, loadingItems, onClose }) {
               <img
                 src={order.delivery_image}
                 alt="Delivery proof"
-                className="w-full rounded-xl object-cover max-h-52
-                  border border-gray-100 shadow-sm"
+                className="w-full rounded-xl object-contain max-h-64
+                  border border-gray-100 shadow-sm bg-gray-50"
               />
             </div>
           )}

@@ -36,12 +36,42 @@ const FAQS = [
   },
 ]
 
-export default function ContactPage() {
-  const [sent, setSent] = useState(false)
-  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
+const WEB3FORMS_KEY = 'YOUR_WEB3FORMS_KEY'
 
-  function handleSubmit() {
-    setSent(true)
+export default function ContactPage() {
+  const [sent,      setSent]      = useState(false)
+  const [sending,   setSending]   = useState(false)
+  const [sendError, setSendError] = useState(null)
+  const [form,      setForm]      = useState({ name: '', email: '', subject: '', message: '' })
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    setSending(true)
+    setSendError(null)
+    try {
+      const res  = await fetch('https://api.web3forms.com/submit', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_KEY,
+          from_name:  form.name,
+          email:      form.email,
+          subject:    `[QuickStock Contact] ${form.subject}`,
+          message:    form.message,
+          botcheck:   '',
+        }),
+      })
+      const data = await res.json()
+      if (data.success) {
+        setSent(true)
+      } else {
+        throw new Error(data.message || 'Failed to send. Please try again.')
+      }
+    } catch (err) {
+      setSendError(err.message)
+    } finally {
+      setSending(false)
+    }
   }
 
   return (
@@ -146,59 +176,60 @@ export default function ContactPage() {
               </button>
             </div>
           ) : (
-            <>
-              <iframe name="formsubmit_contact" title="form" className="hidden" />
-              <form
-                action="https://formsubmit.co/contactquickstock@gmail.com"
-                method="POST"
-                target="formsubmit_contact"
-                onSubmit={handleSubmit}
-                className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8 space-y-5">
-                <input type="hidden" name="_captcha" value="false" />
-                <input type="hidden" name="_template" value="table" />
-                <input type="hidden" name="_subject" value={`[QuickStock Contact] ${form.subject}`} />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-600 mb-1.5">Full Name *</label>
-                    <input type="text" name="name" required value={form.name}
-                      onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                      placeholder="Juan Dela Cruz"
-                      className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-                        focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF] transition" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-gray-600 mb-1.5">Email Address *</label>
-                    <input type="email" name="email" required value={form.email}
-                      onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
-                      placeholder="you@example.com"
-                      className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-                        focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF] transition" />
-                  </div>
+            <form onSubmit={handleSubmit}
+              className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8 space-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">Full Name *</label>
+                  <input type="text" required value={form.name}
+                    onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                    placeholder="Juan Dela Cruz"
+                    className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
+                      focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30
+                      focus:border-[#168AFF] transition" />
                 </div>
                 <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">Subject *</label>
-                  <input type="text" name="subject" required value={form.subject}
-                    onChange={e => setForm(f => ({ ...f, subject: e.target.value }))}
-                    placeholder="How can we help you?"
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">Email Address *</label>
+                  <input type="email" required value={form.email}
+                    onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                    placeholder="you@example.com"
                     className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-                      focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF] transition" />
+                      focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30
+                      focus:border-[#168AFF] transition" />
                 </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">Message *</label>
-                  <textarea name="message" required rows={5} value={form.message}
-                    onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
-                    placeholder="Write your message here…"
-                    className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-                      focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF] transition resize-none" />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 mb-1.5">Subject *</label>
+                <input type="text" required value={form.subject}
+                  onChange={e => setForm(f => ({ ...f, subject: e.target.value }))}
+                  placeholder="How can we help you?"
+                  className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
+                    focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30
+                    focus:border-[#168AFF] transition" />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 mb-1.5">Message *</label>
+                <textarea required rows={5} value={form.message}
+                  onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
+                  placeholder="Write your message here…"
+                  className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
+                    focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30
+                    focus:border-[#168AFF] transition resize-none" />
+              </div>
+              {sendError && (
+                <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
+                  {sendError}
                 </div>
-                <button type="submit"
-                  className="w-full py-3 bg-[#168AFF] text-white font-bold rounded-xl
-                    hover:bg-[#1270DB] transition shadow-sm flex items-center
-                    justify-center gap-2 text-sm">
-                  <MdSend size={16} /> Send Message
-                </button>
-              </form>
-            </>
+              )}
+              <button type="submit" disabled={sending}
+                className="w-full py-3 bg-[#168AFF] text-white font-bold rounded-xl
+                  hover:bg-[#1270DB] transition shadow-sm flex items-center
+                  justify-center gap-2 text-sm disabled:opacity-60 disabled:cursor-not-allowed">
+                {sending
+                  ? <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Sending…</>
+                  : <><MdSend size={16} /> Send Message</>}
+              </button>
+            </form>
           )}
         </div>
       </section>

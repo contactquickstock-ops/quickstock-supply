@@ -71,8 +71,8 @@ function OrderStepper({ status }) {
           return (
             <div key={step} className="flex-1 flex flex-col items-center gap-1.5">
               <div
-                className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 bg-white
-                  ${done ? 'border-[#168AFF] bg-[#168AFF]' : 'border-gray-200'}`}
+                className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0
+                  ${done ? 'border-[#168AFF] bg-[#168AFF]' : 'border-gray-200 bg-white'}`}
               >
                 {done && <Checkmark />}
               </div>

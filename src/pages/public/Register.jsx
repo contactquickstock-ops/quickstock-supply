@@ -97,6 +97,8 @@ export default function RegisterPage() {
   const [fullName,        setFullName]        = useState('')
   const [email,           setEmail]           = useState('')
   const [contactNumber,   setContactNumber]   = useState('')
+  const [storeName,       setStoreName]       = useState('')
+  const [storeAddress,    setStoreAddress]    = useState('')
   const [password,        setPassword]        = useState('')
   const [confirmPass,     setConfirmPass]     = useState('')
   const [showPass,        setShowPass]        = useState(false)
@@ -134,7 +136,8 @@ export default function RegisterPage() {
   async function handleRegister(e) {
     e.preventDefault()
 
-    if (!fullName.trim() || !email.trim() || !contactNumber.trim() || !password || !confirmPass) {
+    if (!fullName.trim() || !email.trim() || !contactNumber.trim() ||
+        !storeName.trim() || !storeAddress.trim() || !password || !confirmPass) {
       setError('All fields are required.')
       return
     }
@@ -168,6 +171,8 @@ export default function RegisterPage() {
         data: {
           full_name:      fullName.trim(),
           contact_number: intlPhone,
+          store_name:     storeName.trim(),
+          store_address:  storeAddress.trim(),
         },
       },
     })
@@ -197,6 +202,8 @@ export default function RegisterPage() {
             user_metadata: {
               full_name:      fullName.trim(),
               contact_number: intlPhone,
+              store_name:     storeName.trim(),
+              store_address:  storeAddress.trim(),
               avatar_url:     urlData.publicUrl,
             },
           })
@@ -310,8 +317,29 @@ export default function RegisterPage() {
                 placeholder="09XXXXXXXXX" disabled={loading}
                 autoComplete="tel" className={INPUT_CLS} />
               <p className="text-[11px] text-gray-400 mt-1">
-                A verification code will be sent to this number.
+                Drivers will use this to contact you during delivery.
               </p>
+            </div>
+
+            {/* Store Name */}
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                Store / Business Name <span className="text-red-400">*</span>
+              </label>
+              <input type="text" value={storeName} onChange={e => setStoreName(e.target.value)}
+                placeholder="e.g. Aling Nena's Sari-Sari Store" disabled={loading}
+                className={INPUT_CLS} />
+            </div>
+
+            {/* Store Address */}
+            <div>
+              <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                Store / Delivery Address <span className="text-red-400">*</span>
+              </label>
+              <textarea value={storeAddress} onChange={e => setStoreAddress(e.target.value)}
+                placeholder="Complete address where deliveries will be sent…"
+                rows={3} disabled={loading}
+                className={`${INPUT_CLS} resize-none`} />
             </div>
 
             {/* Password with strength */}

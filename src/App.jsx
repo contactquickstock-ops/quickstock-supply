@@ -28,6 +28,7 @@ import CustomerCheckout   from './pages/customer/Checkout'
 import CustomerOrders     from './pages/customer/Orders'
 import CustomerRewards    from './pages/customer/Rewards'
 import CustomerMembership from './pages/customer/Membership'
+import CustomerProfile    from './pages/customer/CustomerProfile'
 
 // Driver
 import DriverDashboard from './pages/driver/Dashboard'
@@ -66,6 +67,7 @@ export default function App() {
         <Route path="/customer/orders"     element={<ProtectedRoute allowedRoles={['customer']}><CustomerOrders /></ProtectedRoute>} />
         <Route path="/customer/rewards"    element={<ProtectedRoute allowedRoles={['customer']}><CustomerRewards /></ProtectedRoute>} />
         <Route path="/customer/membership" element={<ProtectedRoute allowedRoles={['customer']}><CustomerMembership /></ProtectedRoute>} />
+        <Route path="/customer/profile"    element={<ProtectedRoute allowedRoles={['customer']}><CustomerProfile /></ProtectedRoute>} />
 
         {/* ── Driver ── */}
         <Route path="/driver/dashboard" element={<ProtectedRoute allowedRoles={['driver']}><DriverDashboard /></ProtectedRoute>} />

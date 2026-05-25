@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import {
   MdStorefront, MdShoppingCart, MdReceipt,
   MdCardMembership, MdMenu, MdClose, MdLogout,
-  MdStar, MdEmail, MdVerified, MdPhone,
+  MdStar, MdEmail, MdVerified, MdPhone, MdPerson,
 } from 'react-icons/md'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
@@ -17,6 +17,7 @@ const NAV_ITEMS = [
 ]
 
 const PROFILE_LINKS = [
+  { label: 'My Profile',  icon: MdPerson,         path: '/customer/profile'    },
   { label: 'My Orders',   icon: MdReceipt,        path: '/customer/orders'     },
   { label: 'Rewards',     icon: MdStar,           path: '/customer/rewards'    },
   { label: 'Membership',  icon: MdCardMembership, path: '/customer/membership' },
@@ -250,6 +251,19 @@ export default function CustomerLayout({ children }) {
                   </Link>
                 )
               })}
+            </div>
+
+            <div className="border-t border-gray-100 pt-2">
+              <Link to="/customer/profile"
+                onClick={() => setMenuOpen(false)}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl
+                  text-sm font-medium transition
+                  ${location.pathname.startsWith('/customer/profile')
+                    ? 'bg-[#168AFF]/10 text-[#168AFF]'
+                    : 'text-gray-600 hover:bg-gray-100'}`}>
+                <MdPerson size={18} />
+                My Profile
+              </Link>
             </div>
 
             <div className="border-t border-gray-100 pt-2">

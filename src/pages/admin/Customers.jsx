@@ -184,10 +184,11 @@ function CustomerViewModal({ customer, onClose, onApprove, onReject, onDisable, 
         {/* Info rows */}
         <div className="px-6 pb-4 space-y-3">
           {[
-            { icon: MdEmail,        label: 'Email',   value: customer.email           },
-            { icon: MdPhone,        label: 'Mobile',  value: customer.contact_number  },
-            { icon: MdCalendarToday,label: 'Joined',  value: joined                   },
-            { icon: MdLocationOn,   label: 'Address', value: customer.address         },
+            { icon: MdEmail,        label: 'Email',         value: customer.email           },
+            { icon: MdPhone,        label: 'Mobile',        value: customer.contact_number  },
+            { icon: MdCalendarToday,label: 'Joined',        value: joined                   },
+            { icon: MdPerson,       label: 'Store Name',    value: customer.store_name      },
+            { icon: MdLocationOn,   label: 'Store Address', value: customer.store_address   },
           ].filter(r => r.value).map(({ icon: Icon, label, value }) => (
             <div key={label} className="flex items-start gap-3">
               <div className="w-7 h-7 rounded-lg bg-gray-50 flex items-center justify-center shrink-0 mt-0.5">

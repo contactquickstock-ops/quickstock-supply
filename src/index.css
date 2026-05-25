@@ -1,1 +1,8 @@
 @import "tailwindcss";
+
+/* Slightly larger base font on mobile for readability */
+@media (max-width: 640px) {
+  html {
+    font-size: 15.5px;
+  }
+}

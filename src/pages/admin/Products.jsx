@@ -6,14 +6,14 @@ import {
 import AdminLayout from '../../layouts/AdminLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
 
-const UNIT_TYPES = ['kg', 'g', 'L', 'mL', 'piece', 'dozen', 'box', 'pack', 'bottle', 'can', 'bag', 'sack']
+const UNIT_SUGGESTIONS = ['kg', 'g', 'L', 'mL', 'piece', 'dozen', 'box', 'pack', 'bottle', 'can', 'bag', 'sack', 'tray', 'bundle', 'roll', 'pair', 'set', 'per tray', 'per sack', 'per box']
 
 const EMPTY_FORM = {
   name: '',
   description: '',
   category: '',
   price: '',
-  unitType: 'kg',
+  unitType: '',
   isAvailable: true,
   imageFile: null,
   imagePreview: null,
@@ -152,7 +152,7 @@ export default function Products() {
       description: product.description ?? '',
       category: product.category ?? '',
       price: product.price ?? '',
-      unitType: product.unit_type ?? 'kg',
+      unitType: product.unit_type ?? '',
       isAvailable: product.is_available ?? true,
       imageFile: null,
       imagePreview: product.image_url ?? null,
@@ -541,16 +541,20 @@ export default function Products() {
                     <label className="block text-xs font-semibold text-gray-600 mb-1.5">
                       Unit Type
                     </label>
-                    <select
+                    <input
+                      type="text"
+                      list="unit-type-suggestions"
+                      placeholder="e.g. kg, tray, sack…"
                       value={form.unitType}
                       onChange={e => setForm(f => ({ ...f, unitType: e.target.value }))}
                       disabled={saving}
                       className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
                         focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF]
                         transition disabled:bg-gray-50 disabled:text-gray-400"
-                    >
-                      {UNIT_TYPES.map(u => <option key={u} value={u}>{u}</option>)}
-                    </select>
+                    />
+                    <datalist id="unit-type-suggestions">
+                      {UNIT_SUGGESTIONS.map(u => <option key={u} value={u} />)}
+                    </datalist>
                   </div>
                 </div>
 

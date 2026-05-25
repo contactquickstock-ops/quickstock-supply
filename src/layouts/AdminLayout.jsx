@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { supabaseAdmin } from '../services/supabaseAdmin'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { supabase } from '../services/supabase'
@@ -36,6 +37,15 @@ export default function AdminLayout({ children, pageTitle = 'Dashboard' }) {
     if (profileOpen) document.addEventListener('mousedown', onOutside)
     return () => document.removeEventListener('mousedown', onOutside)
   }, [profileOpen])
+
+  const [pendingOrders, setPendingOrders] = useState(0)
+  useEffect(() => {
+    supabaseAdmin
+      .from('orders')
+      .select('id', { count: 'exact', head: true })
+      .in('status', ['pending', 'confirmed'])
+      .then(({ count }) => setPendingOrders(count ?? 0))
+  }, [])
 
   async function handleLogout() {
     await supabase.auth.signOut()
@@ -88,6 +98,12 @@ export default function AdminLayout({ children, pageTitle = 'Dashboard' }) {
                 `}>
                 <Icon size={19} />
                 {label}
+                {label === 'Orders' && pendingOrders > 0 && (
+                  <span className="ml-auto min-w-4.5 h-4.5 px-1 bg-red-500 text-white
+                    text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
+                    {pendingOrders > 99 ? '99+' : pendingOrders}
+                  </span>
+                )}
               </Link>
             )
           })}

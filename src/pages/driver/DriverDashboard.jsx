@@ -45,9 +45,10 @@ function SkeletonCard() {
 
 // ── Customer Profile Popup ────────────────────────────────────────────────────
 
-function CustomerProfilePopup({ customer, onClose }) {
-  if (!customer) return null
-  const initials = (customer.full_name ?? '?')[0].toUpperCase()
+function CustomerProfilePopup({ customer, fallbackName, onClose }) {
+  if (!customer && !fallbackName) return null
+  const displayName = customer?.full_name ?? fallbackName ?? '?'
+  const initials = displayName[0].toUpperCase()
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
@@ -66,13 +67,13 @@ function CustomerProfilePopup({ customer, onClose }) {
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 rounded-full overflow-hidden bg-[#168AFF]/10 flex items-center
             justify-center font-bold text-2xl text-[#168AFF] shrink-0 border-2 border-[#168AFF]/20">
-            {customer.avatar_url
-              ? <img src={customer.avatar_url} alt={customer.full_name} className="w-full h-full object-cover" />
+            {customer?.avatar_url
+              ? <img src={customer.avatar_url} alt={displayName} className="w-full h-full object-cover" />
               : initials}
           </div>
           <div className="min-w-0">
-            <p className="font-bold text-gray-800 text-sm truncate">{customer.full_name ?? '—'}</p>
-            {customer.contact_number && (
+            <p className="font-bold text-gray-800 text-sm truncate">{displayName}</p>
+            {customer?.contact_number && (
               <a
                 href={`tel:${customer.contact_number}`}
                 className="flex items-center gap-1.5 text-[#168AFF] text-xs mt-1 hover:underline"
@@ -81,7 +82,7 @@ function CustomerProfilePopup({ customer, onClose }) {
                 {customer.contact_number}
               </a>
             )}
-            {customer.store_name && (
+            {customer?.store_name && (
               <div className="flex items-center gap-1.5 text-gray-400 text-xs mt-1">
                 <MdStorefront size={12} />
                 <span className="truncate">{customer.store_name}</span>
@@ -272,8 +273,12 @@ function DeliveryCard({ order, onAccept, onDeliver, onReport, busy, chatOpen, on
         </div>
       )}
     </div>
-    {showProfile && customer && (
-      <CustomerProfilePopup customer={customer} onClose={() => setShowProfile(false)} />
+    {showProfile && (
+      <CustomerProfilePopup
+        customer={customer}
+        fallbackName={order.customer_name}
+        onClose={() => setShowProfile(false)}
+      />
     )}
     </>
   )

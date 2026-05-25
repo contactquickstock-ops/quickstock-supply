@@ -13,6 +13,188 @@ const STATUS_BADGE = {
   expired:  'bg-gray-100   text-gray-500',
 }
 
+function MembershipDetailModal({ m, onClose, onApprove, onReject, acting }) {
+  const isBusy      = acting === m.id
+  const status      = m.status ?? 'pending'
+  const name        = m.profiles?.full_name ?? '—'
+  const initials    = (m.profiles?.full_name ?? '?')[0].toUpperCase()
+  const applied     = new Date(m.created_at).toLocaleDateString('en-PH', {
+    month: 'long', day: 'numeric', year: 'numeric',
+  })
+  const [proofOpen, setProofOpen] = useState(false)
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-2xl shadow-xl w-full max-w-md"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+          <div>
+            <h3 className="text-gray-800 font-bold text-base">Membership Details</h3>
+            <p className="text-gray-400 text-xs mt-0.5">Application overview</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-1 text-gray-400 hover:text-gray-600 transition"
+            aria-label="Close"
+          >
+            <MdClose size={20} />
+          </button>
+        </div>
+
+        {/* Body */}
+        <div className="px-6 py-5 space-y-5">
+
+          {/* Avatar + name */}
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-full overflow-hidden bg-[#168AFF]/10 text-[#168AFF]
+              flex items-center justify-center font-bold text-2xl shrink-0 border-2 border-[#168AFF]/20">
+              {m.profiles?.avatar_url
+                ? <img src={m.profiles.avatar_url} alt={name} className="w-full h-full object-cover" />
+                : initials}
+            </div>
+            <div className="min-w-0">
+              <p className="font-bold text-gray-800 text-base truncate">{name}</p>
+              <p className="text-gray-400 text-xs truncate mt-0.5">{m.profiles?.email ?? '—'}</p>
+              <span className={`inline-flex items-center mt-1.5 px-2.5 py-0.5 rounded-full
+                text-xs font-medium capitalize ${STATUS_BADGE[status] ?? 'bg-gray-100 text-gray-600'}`}>
+                {status}
+              </span>
+            </div>
+          </div>
+
+          {/* Details grid */}
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            {m.profiles?.contact_number && (
+              <div className="bg-gray-50 rounded-xl px-4 py-3">
+                <p className="text-gray-400 text-[10px] font-semibold uppercase tracking-wider mb-0.5">Contact</p>
+                <p className="text-gray-700 font-medium">{m.profiles.contact_number}</p>
+              </div>
+            )}
+            {m.profiles?.store_name && (
+              <div className="bg-gray-50 rounded-xl px-4 py-3">
+                <p className="text-gray-400 text-[10px] font-semibold uppercase tracking-wider mb-0.5">Store</p>
+                <p className="text-gray-700 font-medium truncate">{m.profiles.store_name}</p>
+              </div>
+            )}
+            <div className="bg-gray-50 rounded-xl px-4 py-3">
+              <p className="text-gray-400 text-[10px] font-semibold uppercase tracking-wider mb-0.5">Applied</p>
+              <p className="text-gray-700 font-medium">{applied}</p>
+            </div>
+            {status === 'active' && m.expiry_date && (
+              <div className="bg-gray-50 rounded-xl px-4 py-3">
+                <p className="text-gray-400 text-[10px] font-semibold uppercase tracking-wider mb-0.5">Expires</p>
+                <p className="text-gray-700 font-medium">
+                  {new Date(m.expiry_date).toLocaleDateString('en-PH', {
+                    month: 'short', day: 'numeric', year: 'numeric',
+                  })}
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Payment proof */}
+          {m.payment_proof && (
+            <div>
+              <p className="text-xs font-semibold text-gray-500 mb-2">Payment Proof</p>
+              <button
+                onClick={() => setProofOpen(true)}
+                className="w-full h-40 rounded-xl overflow-hidden border border-gray-100
+                  bg-gray-50 hover:border-[#168AFF] hover:ring-2 hover:ring-[#168AFF]/20
+                  transition block"
+                title="Click to view full size"
+              >
+                <img
+                  src={m.payment_proof}
+                  alt="Payment proof"
+                  className="w-full h-full object-contain p-2"
+                />
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Footer actions */}
+        {status === 'pending' && (
+          <div className="px-6 pb-6 flex gap-3">
+            <button
+              onClick={() => { onReject(m); onClose() }}
+              disabled={isBusy}
+              className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl
+                bg-red-50 text-red-600 hover:bg-red-100
+                text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <MdCancel size={16} />
+              {isBusy ? 'Rejecting…' : 'Reject'}
+            </button>
+            <button
+              onClick={() => { onApprove(m); onClose() }}
+              disabled={isBusy}
+              className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl
+                bg-green-50 text-green-700 hover:bg-green-100
+                text-sm font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <MdCheckCircle size={16} />
+              {isBusy ? 'Approving…' : 'Approve'}
+            </button>
+          </div>
+        )}
+        {status !== 'pending' && (
+          <div className="px-6 pb-6">
+            <button
+              onClick={onClose}
+              className="w-full py-2.5 text-sm font-semibold text-gray-600
+                border border-gray-200 rounded-xl hover:bg-gray-50 transition"
+            >
+              Close
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Proof lightbox */}
+      {proofOpen && (
+        <div
+          className="fixed inset-0 z-60 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4"
+          onClick={() => setProofOpen(false)}
+        >
+          <button
+            onClick={() => setProofOpen(false)}
+            className="absolute top-4 right-4 p-2 rounded-full bg-white/10
+              hover:bg-white/20 text-white transition"
+            aria-label="Close"
+          >
+            <MdClose size={22} />
+          </button>
+          <img
+            src={m.payment_proof}
+            alt="Payment proof"
+            className="max-w-full max-h-[82vh] rounded-2xl shadow-2xl object-contain"
+            onClick={e => e.stopPropagation()}
+          />
+          <a
+            href={m.payment_proof}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={e => e.stopPropagation()}
+            className="absolute bottom-6 inline-flex items-center gap-2 px-4 py-2
+              bg-white/10 hover:bg-white/20 text-white text-sm font-medium
+              rounded-xl transition backdrop-blur-sm"
+          >
+            <MdOpenInNew size={15} />
+            Open full size
+          </a>
+        </div>
+      )}
+    </div>
+  )
+}
+
 const FILTERS = ['all', 'pending', 'active', 'expired', 'rejected']
 
 function SkeletonRows({ cols = 6, rows = 5 }) {
@@ -35,13 +217,14 @@ export default function Memberships() {
   const [error, setError]             = useState(null)
   const [acting, setActing]           = useState(null)
   const [lightbox, setLightbox]       = useState(null)
+  const [detailItem, setDetailItem]   = useState(null)
 
   const fetchMemberships = useCallback(async () => {
     setLoading(true)
     setError(null)
     const { data, error: err } = await supabase
       .from('memberships')
-      .select('*, profiles(full_name, email)')
+      .select('*, profiles(full_name, email, avatar_url, contact_number, store_name)')
       .order('created_at', { ascending: false })
     if (err) {
       setError('Failed to load memberships.')
@@ -242,16 +425,17 @@ export default function Memberships() {
                     return (
                       <tr
                         key={m.id}
-                        className="border-b border-gray-50 hover:bg-gray-50/70 transition-colors"
+                        onClick={() => setDetailItem(m)}
+                        className="border-b border-gray-50 hover:bg-gray-50/70 transition-colors cursor-pointer"
                       >
                         {/* Customer */}
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-3">
-                            <div
-                              className="w-8 h-8 rounded-full bg-[#168AFF]/10 text-[#168AFF]
-                                flex items-center justify-center font-bold text-sm shrink-0"
-                            >
-                              {initials}
+                            <div className="w-8 h-8 rounded-full overflow-hidden bg-[#168AFF]/10 text-[#168AFF]
+                              flex items-center justify-center font-bold text-sm shrink-0">
+                              {m.profiles?.avatar_url
+                                ? <img src={m.profiles.avatar_url} alt={name} className="w-full h-full object-cover" />
+                                : initials}
                             </div>
                             <span className="text-gray-700 font-medium whitespace-nowrap">
                               {name}
@@ -281,7 +465,7 @@ export default function Memberships() {
                         </td>
 
                         {/* Payment proof */}
-                        <td className="px-5 py-4">
+                        <td className="px-5 py-4" onClick={e => e.stopPropagation()}>
                           {m.payment_proof ? (
                             <button
                               onClick={() => setLightbox(m.payment_proof)}
@@ -305,7 +489,7 @@ export default function Memberships() {
                         </td>
 
                         {/* Actions */}
-                        <td className="px-5 py-4">
+                        <td className="px-5 py-4" onClick={e => e.stopPropagation()}>
                           {status === 'pending' && (
                             <div className="flex items-center gap-2">
                               <button
@@ -364,6 +548,17 @@ export default function Memberships() {
           )}
         </div>
       </div>
+
+      {/* ── Membership Detail Modal ── */}
+      {detailItem && (
+        <MembershipDetailModal
+          m={detailItem}
+          onClose={() => setDetailItem(null)}
+          onApprove={approve}
+          onReject={reject}
+          acting={acting}
+        />
+      )}
 
       {/* ── Payment Proof Lightbox ── */}
       {lightbox && (

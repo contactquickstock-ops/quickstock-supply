@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import {
   MdSearch, MdCheckCircle, MdBlock, MdDirectionsCar,
   MdAdd, MdClose, MdVisibility, MdVisibilityOff, MdCameraAlt,
+  MdEdit, MdDelete,
 } from 'react-icons/md'
 import AdminLayout from '../../layouts/AdminLayout'
 import { supabaseAdmin } from '../../services/supabaseAdmin'
@@ -13,6 +14,121 @@ const STATUS_BADGE = {
 }
 
 const EMPTY_FORM = { fullName: '', email: '', password: '', contact: '' }
+
+function EditDriverModal({ driver, onClose, onSaved }) {
+  const [fullName, setFullName]   = useState(driver.full_name ?? '')
+  const [contact, setContact]     = useState(driver.contact_number ?? '')
+  const [saving, setSaving]       = useState(false)
+  const [formError, setFormError] = useState(null)
+
+  async function handleSave(e) {
+    e.preventDefault()
+    if (!fullName.trim() || !contact.trim()) {
+      setFormError('Full name and contact are required.')
+      return
+    }
+    setSaving(true)
+    setFormError(null)
+    const { error: err } = await supabase
+      .from('profiles')
+      .update({ full_name: fullName.trim(), contact_number: contact.trim() })
+      .eq('id', driver.id)
+    if (err) {
+      setFormError(err.message)
+      setSaving(false)
+      return
+    }
+    onSaved({ ...driver, full_name: fullName.trim(), contact_number: contact.trim() })
+    onClose()
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+      onClick={e => { if (e.target === e.currentTarget && !saving) onClose() }}
+    >
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+
+        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+          <div>
+            <h3 className="text-gray-800 font-bold text-base">Edit Driver</h3>
+            <p className="text-gray-400 text-xs mt-0.5">Update driver details</p>
+          </div>
+          <button
+            onClick={onClose}
+            disabled={saving}
+            className="p-1 text-gray-400 hover:text-gray-600 transition disabled:opacity-50"
+            aria-label="Close"
+          >
+            <MdClose size={20} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSave} className="px-6 py-5 space-y-4">
+          {formError && (
+            <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
+              {formError}
+            </div>
+          )}
+
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+              Full Name
+            </label>
+            <input
+              type="text"
+              placeholder="e.g. Juan Dela Cruz"
+              value={fullName}
+              onChange={e => setFullName(e.target.value)}
+              disabled={saving}
+              className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
+                focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF]
+                transition disabled:bg-gray-50 disabled:text-gray-400"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+              Contact Number
+            </label>
+            <input
+              type="tel"
+              placeholder="e.g. 09171234567"
+              value={contact}
+              onChange={e => setContact(e.target.value)}
+              disabled={saving}
+              className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
+                focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF]
+                transition disabled:bg-gray-50 disabled:text-gray-400"
+            />
+          </div>
+
+          <div className="flex gap-3 pt-1">
+            <button
+              type="button"
+              onClick={onClose}
+              disabled={saving}
+              className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-600
+                border border-gray-200 rounded-xl hover:bg-gray-50
+                transition disabled:opacity-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={saving}
+              className="flex-1 px-4 py-2.5 text-sm font-semibold text-white
+                bg-[#168AFF] rounded-xl hover:bg-[#1270DB]
+                transition disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {saving ? 'Saving…' : 'Save Changes'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
 
 function SkeletonRows({ cols = 6, rows = 6 }) {
   return Array.from({ length: rows }, (_, i) => (
@@ -33,6 +149,7 @@ export default function Drivers() {
   const [updating, setUpdating]   = useState(null)
   const [error, setError]         = useState(null)
   const [showModal, setShowModal]   = useState(false)
+  const [editDriver, setEditDriver] = useState(null)
   const [form, setForm]             = useState(EMPTY_FORM)
   const [formError, setFormError]   = useState(null)
   const [creating, setCreating]     = useState(false)
@@ -82,6 +199,18 @@ export default function Drivers() {
       )
     }
     setUpdating(null)
+  }
+
+  async function deleteDriver(driver) {
+    if (!window.confirm(`Delete driver "${driver.full_name ?? driver.email}"? This cannot be undone.`)) return
+    setError(null)
+    const { error: authErr } = await supabase.auth.admin.deleteUser(driver.id)
+    if (authErr) {
+      setError('Failed to delete driver: ' + authErr.message)
+      return
+    }
+    await supabase.from('profiles').delete().eq('id', driver.id)
+    setDrivers(prev => prev.filter(d => d.id !== driver.id))
   }
 
   function openModal() {
@@ -329,30 +458,50 @@ export default function Drivers() {
 
                         {/* Actions */}
                         <td className="px-5 py-4">
-                          {status === 'approved' && (
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            {status === 'approved' && (
+                              <button
+                                onClick={() => updateStatus(driver.id, 'disabled')}
+                                disabled={isBusy}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg
+                                  bg-red-50 text-red-600 hover:bg-red-100
+                                  text-xs font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                <MdBlock size={14} />
+                                {isBusy ? 'Disabling…' : 'Disable'}
+                              </button>
+                            )}
+                            {status === 'disabled' && (
+                              <button
+                                onClick={() => updateStatus(driver.id, 'approved')}
+                                disabled={isBusy}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg
+                                  bg-green-50 text-green-700 hover:bg-green-100
+                                  text-xs font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
+                              >
+                                <MdCheckCircle size={14} />
+                                {isBusy ? 'Enabling…' : 'Enable'}
+                              </button>
+                            )}
                             <button
-                              onClick={() => updateStatus(driver.id, 'disabled')}
-                              disabled={isBusy}
+                              onClick={() => setEditDriver(driver)}
                               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg
-                                bg-red-50 text-red-600 hover:bg-red-100
-                                text-xs font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                bg-[#168AFF]/10 text-[#168AFF] hover:bg-[#168AFF]/20
+                                text-xs font-medium transition"
                             >
-                              <MdBlock size={14} />
-                              {isBusy ? 'Disabling…' : 'Disable'}
+                              <MdEdit size={14} />
+                              Edit
                             </button>
-                          )}
-                          {status === 'disabled' && (
                             <button
-                              onClick={() => updateStatus(driver.id, 'approved')}
-                              disabled={isBusy}
+                              onClick={() => deleteDriver(driver)}
                               className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg
-                                bg-green-50 text-green-700 hover:bg-green-100
-                                text-xs font-medium transition disabled:opacity-50 disabled:cursor-not-allowed"
+                                bg-gray-100 text-gray-500 hover:bg-red-50 hover:text-red-600
+                                text-xs font-medium transition"
                             >
-                              <MdCheckCircle size={14} />
-                              {isBusy ? 'Enabling…' : 'Enable'}
+                              <MdDelete size={14} />
+                              Delete
                             </button>
-                          )}
+                          </div>
                         </td>
                       </tr>
                     )
@@ -370,6 +519,18 @@ export default function Drivers() {
           )}
         </div>
       </div>
+
+      {/* ── Edit Driver Modal ── */}
+      {editDriver && (
+        <EditDriverModal
+          driver={editDriver}
+          onClose={() => setEditDriver(null)}
+          onSaved={updated => {
+            setDrivers(prev => prev.map(d => d.id === updated.id ? updated : d))
+            setEditDriver(null)
+          }}
+        />
+      )}
 
       {/* ── Add Driver Modal ── */}
       {showModal && (

@@ -40,8 +40,10 @@ export default function DriverLayout({ children }) {
               <p className="text-white/60 text-[10px]">Driver</p>
             </div>
             <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center
-              text-white font-bold text-sm shrink-0">
-              {initials}
+              text-white font-bold text-sm shrink-0 overflow-hidden">
+              {profile?.avatar_url
+                ? <img src={profile.avatar_url} alt={profile?.full_name} className="w-full h-full object-cover" />
+                : initials}
             </div>
             <button
               onClick={handleLogout}

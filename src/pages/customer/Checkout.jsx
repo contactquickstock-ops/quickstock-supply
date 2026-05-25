@@ -10,8 +10,8 @@ import { useAuth } from '../../context/AuthContext'
 import { useCart } from '../../context/CartContext'
 import toast from 'react-hot-toast'
 
-function calcFees(subtotal) {
-  const deliveryFee = subtotal >= 500 ? 0 : 25
+function calcFees(subtotal, isMember) {
+  const deliveryFee = (isMember || subtotal >= 500) ? 0 : 25
   const total       = subtotal + deliveryFee
   return { deliveryFee, total }
 }
@@ -43,7 +43,8 @@ export default function Checkout() {
   }
 
   const subtotal                  = totalAmount
-  const { deliveryFee, total }    = calcFees(subtotal)
+  const isMember                  = profile?.membership_status === 'active'
+  const { deliveryFee, total }    = calcFees(subtotal, isMember)
 
   async function handlePlaceOrder(e) {
     e.preventDefault()
@@ -287,9 +288,13 @@ export default function Checkout() {
                 </div>
                 <div className="flex justify-between text-gray-500">
                   <span>Delivery Fee</span>
-                  {deliveryFee === 0
-                    ? <span className="text-green-600 font-bold">FREE</span>
-                    : <span>₱{deliveryFee.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>}
+                  <span className="text-right">
+                    {deliveryFee === 0
+                      ? <span className="text-green-600 font-bold">
+                          FREE{isMember && subtotal < 500 ? ' (member)' : ''}
+                        </span>
+                      : <span>₱{deliveryFee.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>}
+                  </span>
                 </div>
               </div>
 

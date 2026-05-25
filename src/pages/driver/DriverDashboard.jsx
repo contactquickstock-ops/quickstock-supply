@@ -637,51 +637,49 @@ export default function DriverDashboard() {
         .eq('id', order.id)
       if (orderErr) throw new Error(orderErr.message)
 
-      // 2. Get current customer points
-      const { data: currentPts } = await supabase
+      // 2. Get current points balance (null → customer has no row yet, treat as 0)
+      const { data: currentPts, error: ptsErr } = await supabase
         .from('customer_points')
         .select('total_points')
         .eq('customer_id', order.customer_id)
         .maybeSingle()
+      if (ptsErr) throw new Error(ptsErr.message)
 
       let balance = currentPts?.total_points ?? 0
 
-      // 3. Award points only if customer is an active member
-      const isMember    = order.customer?.membership_status === 'active'
-      const pointsEarned = isMember ? Math.floor((order.total ?? 0) / 100) : 0
-      if (isMember) balance += pointsEarned
+      // 3. Award points — all customers earn 1 pt per ₱100 spent
+      const pointsEarned = Math.floor((order.total ?? 0) / 100)
+      balance += pointsEarned
 
-      // 4. Deduct reward points if a reward was applied (regardless of membership)
+      // 4. Deduct reward points if a reward was applied
       const reward = order.rewards
       let rewardMsg = ''
       if (reward?.id) {
         balance = Math.max(0, balance - (reward.points_required ?? 0))
-        await supabase
+        const { error: redeemErr } = await supabase
           .from('redeemed_rewards')
           .insert({
             customer_id: order.customer_id,
             reward_id:   reward.id,
             redeemed_at: new Date().toISOString(),
           })
+        if (redeemErr) throw new Error(redeemErr.message)
         rewardMsg = ` · "${reward.name}" redeemed`
       }
 
-      // 5. Save final points balance
-      await supabase
+      // 5. Save final balance (insert row for first-time earners, update otherwise)
+      const { error: upsertErr } = await supabase
         .from('customer_points')
         .upsert(
           { customer_id: order.customer_id, total_points: balance },
           { onConflict: 'customer_id' }
         )
+      if (upsertErr) throw new Error(upsertErr.message)
 
       // 6. Remove from active list
       setOrders(prev => prev.filter(o => o.id !== order.id))
       setDeliverTarget(null)
-      toast.success(
-        isMember
-          ? `Delivered! +${pointsEarned} pts earned${rewardMsg}.`
-          : `Delivered!${rewardMsg || ''}`
-      )
+      toast.success(`Delivered! +${pointsEarned} pts earned${rewardMsg}.`)
     } catch (err) {
       toast.error('Failed to confirm delivery: ' + err.message)
     } finally {

@@ -24,7 +24,12 @@ export default function Checkout() {
 
   const selectedReward = location.state?.selectedReward ?? null
 
-  const [address,  setAddress]  = useState(profile?.store_address ?? '')
+  function buildAddress(p) {
+    return [p?.address_house_no, p?.address_street, p?.address_city, p?.address_province, p?.address_country]
+      .filter(Boolean).join(', ')
+  }
+
+  const [address,  setAddress]  = useState(() => buildAddress(profile))
   const [landmark, setLandmark] = useState('')
   const [notes,    setNotes]    = useState('')
   const [placing,  setPlacing]  = useState(false)
@@ -32,10 +37,9 @@ export default function Checkout() {
 
   // Pre-fill address once profile is available (if it loaded after mount)
   useEffect(() => {
-    if (profile?.store_address && !address) {
-      setAddress(profile.store_address)
-    }
-  }, [profile?.store_address])   // eslint-disable-line react-hooks/exhaustive-deps
+    const composed = buildAddress(profile)
+    if (composed && !address) setAddress(composed)
+  }, [profile?.address_street])   // eslint-disable-line react-hooks/exhaustive-deps
 
   // Guard: empty cart should never reach checkout
   if (cartItems.length === 0) {

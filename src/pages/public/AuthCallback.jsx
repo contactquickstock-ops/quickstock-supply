@@ -83,15 +83,19 @@ export default function AuthCallback() {
           'User'
 
         const { error: insertErr } = await supabaseAdmin.from('profiles').insert({
-          id:             user.id,
-          full_name:      fullName,
-          email:          user.email,
-          contact_number: user.user_metadata?.contact_number ?? '',
-          store_name:     user.user_metadata?.store_name    ?? '',
-          store_address:  user.user_metadata?.store_address ?? '',
-          avatar_url:     user.user_metadata?.avatar_url    ?? null,
-          role:           'customer',
-          status:         'pending',
+          id:               user.id,
+          full_name:        fullName,
+          email:            user.email,
+          contact_number:   user.user_metadata?.contact_number ?? '',
+          store_name:       user.user_metadata?.store_name     ?? '',
+          address_house_no: user.user_metadata?.addr_house_no  ?? '',
+          address_street:   user.user_metadata?.addr_street    ?? '',
+          address_city:     user.user_metadata?.addr_city      ?? '',
+          address_province: user.user_metadata?.addr_province  ?? '',
+          address_country:  user.user_metadata?.addr_country   ?? 'Philippines',
+          avatar_url:       user.user_metadata?.avatar_url     ?? null,
+          role:             'customer',
+          status:           'pending',
         })
 
         await supabase.auth.signOut()

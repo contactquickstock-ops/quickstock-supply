@@ -13,32 +13,61 @@ const STATUS_BADGE = {
   disabled: 'bg-red-100 text-red-700',
 }
 
-const EMPTY_FORM = { fullName: '', email: '', password: '', contact: '' }
+const INPUT = `w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
+  focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF]
+  transition disabled:bg-gray-50 disabled:text-gray-400`
+
+const EMPTY_FORM = {
+  fullName: '', email: '', password: '', contact: '',
+  addrHouseNo: '', addrStreet: '', addrCity: '', addrProvince: '', addrCountry: 'Philippines',
+}
 
 function EditDriverModal({ driver, onClose, onSaved }) {
-  const [fullName, setFullName]   = useState(driver.full_name ?? '')
-  const [contact, setContact]     = useState(driver.contact_number ?? '')
-  const [saving, setSaving]       = useState(false)
-  const [formError, setFormError] = useState(null)
+  const [fullName,    setFullName]    = useState(driver.full_name      ?? '')
+  const [contact,     setContact]     = useState(driver.contact_number ?? '')
+  const [addrHouseNo, setAddrHouseNo] = useState(driver.address_house_no ?? '')
+  const [addrStreet,  setAddrStreet]  = useState(driver.address_street   ?? '')
+  const [addrCity,    setAddrCity]    = useState(driver.address_city     ?? '')
+  const [addrProvince,setAddrProvince]= useState(driver.address_province ?? '')
+  const [addrCountry, setAddrCountry] = useState(driver.address_country  ?? 'Philippines')
+  const [saving,      setSaving]      = useState(false)
+  const [formError,   setFormError]   = useState(null)
 
   async function handleSave(e) {
     e.preventDefault()
-    if (!fullName.trim() || !contact.trim()) {
-      setFormError('Full name and contact are required.')
+    if (!fullName.trim() || !contact.trim() || !addrStreet.trim() || !addrCity.trim() || !addrProvince.trim()) {
+      setFormError('Full name, contact, and complete address are required.')
       return
     }
     setSaving(true)
     setFormError(null)
     const { error: err } = await supabase
       .from('profiles')
-      .update({ full_name: fullName.trim(), contact_number: contact.trim() })
+      .update({
+        full_name:        fullName.trim(),
+        contact_number:   contact.trim(),
+        address_house_no: addrHouseNo.trim(),
+        address_street:   addrStreet.trim(),
+        address_city:     addrCity.trim(),
+        address_province: addrProvince.trim(),
+        address_country:  addrCountry.trim(),
+      })
       .eq('id', driver.id)
     if (err) {
       setFormError(err.message)
       setSaving(false)
       return
     }
-    onSaved({ ...driver, full_name: fullName.trim(), contact_number: contact.trim() })
+    onSaved({
+      ...driver,
+      full_name:        fullName.trim(),
+      contact_number:   contact.trim(),
+      address_house_no: addrHouseNo.trim(),
+      address_street:   addrStreet.trim(),
+      address_city:     addrCity.trim(),
+      address_province: addrProvince.trim(),
+      address_country:  addrCountry.trim(),
+    })
     onClose()
   }
 
@@ -47,24 +76,20 @@ function EditDriverModal({ driver, onClose, onSaved }) {
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
       onClick={e => { if (e.target === e.currentTarget && !saving) onClose() }}
     >
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] flex flex-col">
 
-        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+        <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 shrink-0">
           <div>
             <h3 className="text-gray-800 font-bold text-base">Edit Driver</h3>
             <p className="text-gray-400 text-xs mt-0.5">Update driver details</p>
           </div>
-          <button
-            onClick={onClose}
-            disabled={saving}
-            className="p-1 text-gray-400 hover:text-gray-600 transition disabled:opacity-50"
-            aria-label="Close"
-          >
+          <button onClick={onClose} disabled={saving}
+            className="p-1 text-gray-400 hover:text-gray-600 transition disabled:opacity-50" aria-label="Close">
             <MdClose size={20} />
           </button>
         </div>
 
-        <form onSubmit={handleSave} className="px-6 py-5 space-y-4">
+        <form onSubmit={handleSave} className="px-6 py-5 space-y-4 overflow-y-auto flex-1">
           {formError && (
             <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
               {formError}
@@ -72,55 +97,45 @@ function EditDriverModal({ driver, onClose, onSaved }) {
           )}
 
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1.5">
-              Full Name
-            </label>
-            <input
-              type="text"
-              placeholder="e.g. Juan Dela Cruz"
-              value={fullName}
-              onChange={e => setFullName(e.target.value)}
-              disabled={saving}
-              className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-                focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF]
-                transition disabled:bg-gray-50 disabled:text-gray-400"
-            />
+            <label className="block text-xs font-semibold text-gray-600 mb-1.5">Full Name</label>
+            <input type="text" placeholder="e.g. Juan Dela Cruz" value={fullName}
+              onChange={e => setFullName(e.target.value)} disabled={saving} className={INPUT} />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-600 mb-1.5">
-              Contact Number
-            </label>
-            <input
-              type="tel"
-              placeholder="e.g. 09171234567"
-              value={contact}
-              onChange={e => setContact(e.target.value)}
-              disabled={saving}
-              className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-                focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF]
-                transition disabled:bg-gray-50 disabled:text-gray-400"
-            />
+            <label className="block text-xs font-semibold text-gray-600 mb-1.5">Contact Number</label>
+            <input type="tel" placeholder="e.g. 09171234567" value={contact}
+              onChange={e => setContact(e.target.value)} disabled={saving} className={INPUT} />
+          </div>
+
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1.5">Address</label>
+            <div className="space-y-2">
+              <input type="text" placeholder="House / Unit No. (optional)" value={addrHouseNo}
+                onChange={e => setAddrHouseNo(e.target.value)} disabled={saving} className={INPUT} />
+              <input type="text" placeholder="Street / Barangay *" value={addrStreet}
+                onChange={e => setAddrStreet(e.target.value)} disabled={saving} className={INPUT} />
+              <div className="grid grid-cols-2 gap-2">
+                <input type="text" placeholder="City *" value={addrCity}
+                  onChange={e => setAddrCity(e.target.value)} disabled={saving} className={INPUT} />
+                <input type="text" placeholder="Province *" value={addrProvince}
+                  onChange={e => setAddrProvince(e.target.value)} disabled={saving} className={INPUT} />
+              </div>
+              <input type="text" placeholder="Country" value={addrCountry}
+                onChange={e => setAddrCountry(e.target.value)} disabled={saving} className={INPUT} />
+            </div>
           </div>
 
           <div className="flex gap-3 pt-1">
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={saving}
+            <button type="button" onClick={onClose} disabled={saving}
               className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-600
-                border border-gray-200 rounded-xl hover:bg-gray-50
-                transition disabled:opacity-50"
-            >
+                border border-gray-200 rounded-xl hover:bg-gray-50 transition disabled:opacity-50">
               Cancel
             </button>
-            <button
-              type="submit"
-              disabled={saving}
+            <button type="submit" disabled={saving}
               className="flex-1 px-4 py-2.5 text-sm font-semibold text-white
                 bg-[#168AFF] rounded-xl hover:bg-[#1270DB]
-                transition disabled:opacity-50 disabled:cursor-not-allowed"
-            >
+                transition disabled:opacity-50 disabled:cursor-not-allowed">
               {saving ? 'Saving…' : 'Save Changes'}
             </button>
           </div>
@@ -229,9 +244,10 @@ export default function Drivers() {
 
   async function handleCreate(e) {
     e.preventDefault()
-    const { fullName, email, password, contact } = form
+    const { fullName, email, password, contact, addrStreet, addrCity, addrProvince } = form
 
-    if (!fullName.trim() || !email.trim() || !password || !contact.trim()) {
+    if (!fullName.trim() || !email.trim() || !password || !contact.trim() ||
+        !addrStreet.trim() || !addrCity.trim() || !addrProvince.trim()) {
       setFormError('All fields are required.')
       return
     }
@@ -272,13 +288,18 @@ export default function Drivers() {
     const { data: profileData, error: profileErr } = await supabase
       .from('profiles')
       .insert({
-        id:             authData.user.id,
-        full_name:      fullName.trim(),
-        email:          email.trim(),
-        contact_number: contact.trim(),
-        avatar_url:     avatarUrl,
-        role:           'driver',
-        status:         'approved',
+        id:               authData.user.id,
+        full_name:        form.fullName.trim(),
+        email:            form.email.trim(),
+        contact_number:   form.contact.trim(),
+        address_house_no: form.addrHouseNo.trim(),
+        address_street:   form.addrStreet.trim(),
+        address_city:     form.addrCity.trim(),
+        address_province: form.addrProvince.trim(),
+        address_country:  form.addrCountry.trim(),
+        avatar_url:       avatarUrl,
+        role:             'driver',
+        status:           'approved',
       })
       .select()
       .single()
@@ -538,10 +559,10 @@ export default function Drivers() {
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
           onClick={e => { if (e.target === e.currentTarget) closeModal() }}
         >
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-md max-h-[90vh] flex flex-col">
 
             {/* Modal header */}
-            <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
+            <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100 shrink-0">
               <div>
                 <h3 className="text-gray-800 font-bold text-base">Add New Driver</h3>
                 <p className="text-gray-400 text-xs mt-0.5">Account will be active immediately</p>
@@ -557,7 +578,7 @@ export default function Drivers() {
             </div>
 
             {/* Modal form */}
-            <form onSubmit={handleCreate} className="px-6 py-5 space-y-4">
+            <form onSubmit={handleCreate} className="px-6 py-5 space-y-4 overflow-y-auto flex-1">
 
               {formError && (
                 <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
@@ -654,16 +675,32 @@ export default function Drivers() {
                 <label className="block text-xs font-semibold text-gray-600 mb-1.5">
                   Contact Number
                 </label>
-                <input
-                  type="tel"
-                  placeholder="e.g. 09171234567"
-                  value={form.contact}
-                  onChange={e => setForm(f => ({ ...f, contact: e.target.value }))}
-                  disabled={creating}
-                  className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-                    focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30 focus:border-[#168AFF]
-                    transition disabled:bg-gray-50 disabled:text-gray-400"
-                />
+                <input type="tel" placeholder="e.g. 09171234567"
+                  value={form.contact} onChange={e => setForm(f => ({ ...f, contact: e.target.value }))}
+                  disabled={creating} className={INPUT} />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-600 mb-1.5">Address</label>
+                <div className="space-y-2">
+                  <input type="text" placeholder="House / Unit No. (optional)"
+                    value={form.addrHouseNo} onChange={e => setForm(f => ({ ...f, addrHouseNo: e.target.value }))}
+                    disabled={creating} className={INPUT} />
+                  <input type="text" placeholder="Street / Barangay *"
+                    value={form.addrStreet} onChange={e => setForm(f => ({ ...f, addrStreet: e.target.value }))}
+                    disabled={creating} className={INPUT} />
+                  <div className="grid grid-cols-2 gap-2">
+                    <input type="text" placeholder="City *"
+                      value={form.addrCity} onChange={e => setForm(f => ({ ...f, addrCity: e.target.value }))}
+                      disabled={creating} className={INPUT} />
+                    <input type="text" placeholder="Province *"
+                      value={form.addrProvince} onChange={e => setForm(f => ({ ...f, addrProvince: e.target.value }))}
+                      disabled={creating} className={INPUT} />
+                  </div>
+                  <input type="text" placeholder="Country"
+                    value={form.addrCountry} onChange={e => setForm(f => ({ ...f, addrCountry: e.target.value }))}
+                    disabled={creating} className={INPUT} />
+                </div>
               </div>
 
               <div className="flex gap-3 pt-1">

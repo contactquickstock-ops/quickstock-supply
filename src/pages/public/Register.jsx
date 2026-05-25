@@ -98,7 +98,11 @@ export default function RegisterPage() {
   const [email,           setEmail]           = useState('')
   const [contactNumber,   setContactNumber]   = useState('')
   const [storeName,       setStoreName]       = useState('')
-  const [storeAddress,    setStoreAddress]    = useState('')
+  const [addrHouseNo,     setAddrHouseNo]     = useState('')
+  const [addrStreet,      setAddrStreet]      = useState('')
+  const [addrCity,        setAddrCity]        = useState('')
+  const [addrProvince,    setAddrProvince]    = useState('')
+  const [addrCountry,     setAddrCountry]     = useState('Philippines')
   const [password,        setPassword]        = useState('')
   const [confirmPass,     setConfirmPass]     = useState('')
   const [showPass,        setShowPass]        = useState(false)
@@ -137,7 +141,8 @@ export default function RegisterPage() {
     e.preventDefault()
 
     if (!fullName.trim() || !email.trim() || !contactNumber.trim() ||
-        !storeName.trim() || !storeAddress.trim() || !password || !confirmPass) {
+        !storeName.trim() || !addrStreet.trim() || !addrCity.trim() ||
+        !addrProvince.trim() || !addrCountry.trim() || !password || !confirmPass) {
       setError('All fields are required.')
       return
     }
@@ -169,10 +174,14 @@ export default function RegisterPage() {
       options: {
         emailRedirectTo: window.location.origin + '/auth/callback',
         data: {
-          full_name:      fullName.trim(),
-          contact_number: intlPhone,
-          store_name:     storeName.trim(),
-          store_address:  storeAddress.trim(),
+          full_name:       fullName.trim(),
+          contact_number:  intlPhone,
+          store_name:      storeName.trim(),
+          addr_house_no:   addrHouseNo.trim(),
+          addr_street:     addrStreet.trim(),
+          addr_city:       addrCity.trim(),
+          addr_province:   addrProvince.trim(),
+          addr_country:    addrCountry.trim(),
         },
       },
     })
@@ -203,7 +212,11 @@ export default function RegisterPage() {
               full_name:      fullName.trim(),
               contact_number: intlPhone,
               store_name:     storeName.trim(),
-              store_address:  storeAddress.trim(),
+              addr_house_no:  addrHouseNo.trim(),
+              addr_street:    addrStreet.trim(),
+              addr_city:      addrCity.trim(),
+              addr_province:  addrProvince.trim(),
+              addr_country:   addrCountry.trim(),
               avatar_url:     urlData.publicUrl,
             },
           })
@@ -331,15 +344,25 @@ export default function RegisterPage() {
                 className={INPUT_CLS} />
             </div>
 
-            {/* Store Address */}
+            {/* Delivery Address */}
             <div>
               <label className="block text-xs font-semibold text-gray-600 mb-1.5">
                 Store / Delivery Address <span className="text-red-400">*</span>
               </label>
-              <textarea value={storeAddress} onChange={e => setStoreAddress(e.target.value)}
-                placeholder="Complete address where deliveries will be sent…"
-                rows={3} disabled={loading}
-                className={`${INPUT_CLS} resize-none`} />
+              <div className="space-y-2">
+                <input type="text" value={addrHouseNo} onChange={e => setAddrHouseNo(e.target.value)}
+                  placeholder="House / Unit No. (optional)" disabled={loading} className={INPUT_CLS} />
+                <input type="text" value={addrStreet} onChange={e => setAddrStreet(e.target.value)}
+                  placeholder="Street / Barangay *" disabled={loading} className={INPUT_CLS} />
+                <div className="grid grid-cols-2 gap-2">
+                  <input type="text" value={addrCity} onChange={e => setAddrCity(e.target.value)}
+                    placeholder="City / Municipality *" disabled={loading} className={INPUT_CLS} />
+                  <input type="text" value={addrProvince} onChange={e => setAddrProvince(e.target.value)}
+                    placeholder="Province *" disabled={loading} className={INPUT_CLS} />
+                </div>
+                <input type="text" value={addrCountry} onChange={e => setAddrCountry(e.target.value)}
+                  placeholder="Country *" disabled={loading} className={INPUT_CLS} />
+              </div>
             </div>
 
             {/* Password with strength */}

@@ -22,26 +22,38 @@ export default function CustomerProfile() {
   const [avatarPreview,setAvatarPreview]= useState(null)
 
   const [form, setForm] = useState({
-    contact_number: '',
-    store_name:     '',
-    store_address:  '',
+    contact_number:   '',
+    store_name:       '',
+    address_house_no: '',
+    address_street:   '',
+    address_city:     '',
+    address_province: '',
+    address_country:  'Philippines',
   })
 
   useEffect(() => {
     if (profile) {
       setForm({
-        contact_number: profile.contact_number ?? '',
-        store_name:     profile.store_name     ?? '',
-        store_address:  profile.store_address  ?? '',
+        contact_number:   profile.contact_number   ?? '',
+        store_name:       profile.store_name       ?? '',
+        address_house_no: profile.address_house_no ?? '',
+        address_street:   profile.address_street   ?? '',
+        address_city:     profile.address_city     ?? '',
+        address_province: profile.address_province ?? '',
+        address_country:  profile.address_country  ?? 'Philippines',
       })
     }
   }, [profile])
 
   function startEdit() {
     setForm({
-      contact_number: profile?.contact_number ?? '',
-      store_name:     profile?.store_name     ?? '',
-      store_address:  profile?.store_address  ?? '',
+      contact_number:   profile?.contact_number   ?? '',
+      store_name:       profile?.store_name       ?? '',
+      address_house_no: profile?.address_house_no ?? '',
+      address_street:   profile?.address_street   ?? '',
+      address_city:     profile?.address_city     ?? '',
+      address_province: profile?.address_province ?? '',
+      address_country:  profile?.address_country  ?? 'Philippines',
     })
     setAvatarFile(null)
     setAvatarPreview(null)
@@ -64,8 +76,8 @@ export default function CustomerProfile() {
 
   async function handleSave(e) {
     e.preventDefault()
-    if (!form.store_name.trim() || !form.store_address.trim()) {
-      toast.error('Store name and address are required.')
+    if (!form.store_name.trim() || !form.address_street.trim() || !form.address_city.trim() || !form.address_province.trim()) {
+      toast.error('Store name and full address are required.')
       return
     }
 
@@ -85,9 +97,13 @@ export default function CustomerProfile() {
       }
 
       const updates = {
-        contact_number: form.contact_number.trim(),
-        store_name:     form.store_name.trim(),
-        store_address:  form.store_address.trim(),
+        contact_number:   form.contact_number.trim(),
+        store_name:       form.store_name.trim(),
+        address_house_no: form.address_house_no.trim(),
+        address_street:   form.address_street.trim(),
+        address_city:     form.address_city.trim(),
+        address_province: form.address_province.trim(),
+        address_country:  form.address_country.trim(),
         ...(avatarUrl !== profile?.avatar_url && { avatar_url: avatarUrl }),
       }
 
@@ -246,24 +262,46 @@ export default function CustomerProfile() {
               )}
             </div>
 
-            {/* Editable: Store Address */}
+            {/* Editable: Delivery Address */}
             <div>
               <label className="flex items-center gap-2 text-xs font-semibold text-gray-500 mb-1.5 uppercase tracking-wide">
                 <MdLocationOn size={13} className="text-[#168AFF]" /> Store / Delivery Address
               </label>
               {editing ? (
-                <textarea
-                  value={form.store_address}
-                  onChange={e => setForm(f => ({ ...f, store_address: e.target.value }))}
-                  placeholder="Complete delivery address…"
-                  rows={3}
-                  disabled={saving}
-                  className={`${INPUT_CLS} resize-none`}
-                />
+                <div className="space-y-2">
+                  <input type="text" value={form.address_house_no}
+                    onChange={e => setForm(f => ({ ...f, address_house_no: e.target.value }))}
+                    placeholder="House / Unit No. (optional)" disabled={saving} className={INPUT_CLS} />
+                  <input type="text" value={form.address_street}
+                    onChange={e => setForm(f => ({ ...f, address_street: e.target.value }))}
+                    placeholder="Street / Barangay *" disabled={saving} className={INPUT_CLS} />
+                  <div className="grid grid-cols-2 gap-2">
+                    <input type="text" value={form.address_city}
+                      onChange={e => setForm(f => ({ ...f, address_city: e.target.value }))}
+                      placeholder="City / Municipality *" disabled={saving} className={INPUT_CLS} />
+                    <input type="text" value={form.address_province}
+                      onChange={e => setForm(f => ({ ...f, address_province: e.target.value }))}
+                      placeholder="Province *" disabled={saving} className={INPUT_CLS} />
+                  </div>
+                  <input type="text" value={form.address_country}
+                    onChange={e => setForm(f => ({ ...f, address_country: e.target.value }))}
+                    placeholder="Country *" disabled={saving} className={INPUT_CLS} />
+                </div>
               ) : (
-                <p className="text-sm text-gray-700 font-medium px-3.5 py-2.5 bg-gray-50 rounded-xl border border-gray-100 leading-relaxed whitespace-pre-wrap">
-                  {profile?.store_address || <span className="text-gray-400 italic">Not set</span>}
-                </p>
+                <div className="text-sm text-gray-700 font-medium px-3.5 py-2.5 bg-gray-50 rounded-xl border border-gray-100 leading-relaxed space-y-0.5">
+                  {profile?.address_street || profile?.address_city || profile?.address_province ? (
+                    <>
+                      {profile?.address_house_no && <p>{profile.address_house_no}</p>}
+                      {profile?.address_street   && <p>{profile.address_street}</p>}
+                      <p>
+                        {[profile?.address_city, profile?.address_province, profile?.address_country]
+                          .filter(Boolean).join(', ')}
+                      </p>
+                    </>
+                  ) : (
+                    <span className="text-gray-400 italic">Not set</span>
+                  )}
+                </div>
               )}
             </div>
 

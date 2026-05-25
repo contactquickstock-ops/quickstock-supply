@@ -37,12 +37,35 @@ const FAQS = [
 ]
 
 export default function ContactPage() {
-  const [sent, setSent] = useState(false)
-  const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' })
+  const [sent,     setSent]     = useState(false)
+  const [sending,  setSending]  = useState(false)
+  const [sendError,setSendError]= useState(null)
+  const [form,     setForm]     = useState({ name: '', email: '', subject: '', message: '' })
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault()
-    setSent(true)
+    setSending(true)
+    setSendError(null)
+    try {
+      const res = await fetch('https://formsubmit.co/ajax/contactquickstock@gmail.com', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          name:    form.name,
+          email:   form.email,
+          subject: form.subject,
+          message: form.message,
+          _replyto: form.email,
+          _subject: `[QuickStock] ${form.subject}`,
+        }),
+      })
+      if (!res.ok) throw new Error('Failed to send. Please try again.')
+      setSent(true)
+    } catch (err) {
+      setSendError(err.message)
+    } finally {
+      setSending(false)
+    }
   }
 
   return (
@@ -187,11 +210,18 @@ export default function ContactPage() {
                     focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30
                     focus:border-[#168AFF] transition resize-none" />
               </div>
-              <button type="submit"
+              {sendError && (
+                <div className="bg-red-50 border border-red-200 text-red-700 text-sm px-4 py-3 rounded-xl">
+                  {sendError}
+                </div>
+              )}
+              <button type="submit" disabled={sending}
                 className="w-full py-3 bg-[#168AFF] text-white font-bold rounded-xl
                   hover:bg-[#1270DB] transition shadow-sm flex items-center
-                  justify-center gap-2 text-sm">
-                <MdSend size={16} /> Send Message
+                  justify-center gap-2 text-sm disabled:opacity-60 disabled:cursor-not-allowed">
+                {sending
+                  ? <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />Sending…</>
+                  : <><MdSend size={16} /> Send Message</>}
               </button>
             </form>
           )}

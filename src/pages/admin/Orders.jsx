@@ -265,6 +265,23 @@ function OrderDetailModal({ order, items, loadingItems, onClose }) {
 function AssignModal({ order, drivers, onClose, onAssign, assigning }) {
   const [driverId, setDriverId] = useState('')
 
+  // Parse province from order.address (last structured field before country, or just search)
+  const orderProvince = (order.address ?? '').split(',').map(s => s.trim()).find(
+    s => s.length > 0 && !['Philippines'].includes(s)
+  ) ?? ''
+
+  // Sort: same province first, then same city, then rest
+  const sorted = [...drivers].sort((a, b) => {
+    const ap = (a.address_province ?? '').toLowerCase()
+    const bp = (b.address_province ?? '').toLowerCase()
+    const op = orderProvince.toLowerCase()
+    const aMatch = ap && op && ap.includes(op.substring(0, 4))
+    const bMatch = bp && op && bp.includes(op.substring(0, 4))
+    if (aMatch && !bMatch) return -1
+    if (!aMatch && bMatch) return 1
+    return (a.full_name ?? '').localeCompare(b.full_name ?? '')
+  })
+
   return (
     <div
       className="fixed inset-0 z-60 flex items-center justify-center p-4
@@ -277,62 +294,87 @@ function AssignModal({ order, drivers, onClose, onAssign, assigning }) {
           <div>
             <h3 className="text-gray-800 font-bold text-base">Assign Driver</h3>
             <p className="text-gray-400 text-xs mt-0.5">
-              Order #{String(order.id).padStart(6,'0')}
+              Order #{String(order.id).padStart(6,'0')} · {order.customer_name}
             </p>
           </div>
-          <button
-            onClick={onClose}
-            disabled={assigning}
-            className="p-1 text-gray-400 hover:text-gray-600 transition
-              disabled:opacity-50"
-          >
+          <button onClick={onClose} disabled={assigning}
+            className="p-1 text-gray-400 hover:text-gray-600 transition disabled:opacity-50">
             <MdClose size={20} />
           </button>
         </div>
 
-        <div className="px-6 py-5">
-          <label className="block text-xs font-semibold text-gray-600 mb-1.5">
-            Select Driver
-          </label>
-          <select
-            value={driverId}
-            onChange={e => setDriverId(e.target.value)}
-            disabled={assigning}
-            className="w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl
-              focus:outline-none focus:ring-2 focus:ring-[#168AFF]/30
-              focus:border-[#168AFF] transition disabled:bg-gray-50"
-          >
-            <option value="">— Choose a driver —</option>
-            {drivers.map(d => (
-              <option key={d.id} value={d.id}>
-                {d.full_name}{d.contact_number ? ` · ${d.contact_number}` : ''}
-              </option>
-            ))}
-          </select>
-          {drivers.length === 0 && (
-            <p className="text-xs text-red-400 mt-1.5">
-              No active drivers available.
-            </p>
+        <div className="px-6 py-5 space-y-3">
+          {/* Delivery address hint */}
+          {order.address && (
+            <div className="bg-blue-50 border border-blue-100 rounded-xl px-3.5 py-2.5">
+              <p className="text-[10px] font-bold text-blue-400 uppercase tracking-widest mb-0.5">
+                Delivery Address
+              </p>
+              <p className="text-blue-700 text-xs leading-relaxed">{order.address}</p>
+            </div>
           )}
+
+          <div>
+            <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+              Select Driver
+              {orderProvince && <span className="text-gray-400 font-normal ml-1">(sorted by proximity)</span>}
+            </label>
+            <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
+              {sorted.length === 0 ? (
+                <p className="text-xs text-red-400">No active drivers available.</p>
+              ) : sorted.map(d => {
+                const dProvince = (d.address_province ?? '').toLowerCase()
+                const op = orderProvince.toLowerCase()
+                const isMatch = dProvince && op && dProvince.includes(op.substring(0, 4))
+                const addrLine = [d.address_city, d.address_province].filter(Boolean).join(', ')
+                return (
+                  <label key={d.id}
+                    className={`flex items-start gap-3 px-3.5 py-2.5 rounded-xl border cursor-pointer transition
+                      ${driverId === d.id
+                        ? 'border-[#168AFF] bg-[#168AFF]/5'
+                        : isMatch
+                          ? 'border-green-200 bg-green-50 hover:border-green-300'
+                          : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}>
+                    <input type="radio" name="driver" value={d.id}
+                      checked={driverId === d.id}
+                      onChange={e => setDriverId(e.target.value)}
+                      disabled={assigning} className="mt-0.5 accent-[#168AFF]" />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <p className="text-sm font-semibold text-gray-800">{d.full_name ?? '—'}</p>
+                        {isMatch && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 bg-green-100
+                            text-green-700 rounded-full">
+                            Same Province
+                          </span>
+                        )}
+                      </div>
+                      {d.contact_number && (
+                        <p className="text-xs text-gray-400">{d.contact_number}</p>
+                      )}
+                      {addrLine && (
+                        <p className="text-xs text-gray-500 mt-0.5">{addrLine}</p>
+                      )}
+                    </div>
+                  </label>
+                )
+              })}
+            </div>
+          </div>
         </div>
 
         <div className="px-6 pb-6 flex gap-3">
-          <button
-            onClick={onClose}
-            disabled={assigning}
+          <button onClick={onClose} disabled={assigning}
             className="flex-1 py-2.5 text-sm font-semibold text-gray-600
               border border-gray-200 rounded-xl hover:bg-gray-50
-              transition disabled:opacity-50"
-          >
+              transition disabled:opacity-50">
             Cancel
           </button>
-          <button
-            onClick={() => onAssign(order.id, driverId)}
+          <button onClick={() => onAssign(order.id, driverId)}
             disabled={!driverId || assigning}
             className="flex-1 py-2.5 text-sm font-semibold text-white
               bg-[#168AFF] rounded-xl hover:bg-[#1270DB]
-              transition disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+              transition disabled:opacity-50 disabled:cursor-not-allowed">
             {assigning ? 'Assigning…' : 'Assign'}
           </button>
         </div>
@@ -372,7 +414,7 @@ export default function AdminOrders() {
   const fetchDrivers = useCallback(async () => {
     const { data } = await supabase
       .from('profiles')
-      .select('id, full_name, contact_number')
+      .select('id, full_name, contact_number, address_city, address_province')
       .eq('role', 'driver')
       .eq('status', 'approved')
       .order('full_name')

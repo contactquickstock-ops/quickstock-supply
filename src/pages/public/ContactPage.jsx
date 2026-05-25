@@ -36,7 +36,7 @@ const FAQS = [
   },
 ]
 
-const WEB3FORMS_KEY = 'YOUR_WEB3FORMS_KEY'
+const WEB3FORMS_KEY = 'f9fe7cd7-4658-48d8-9e4c-027212395013'
 
 export default function ContactPage() {
   const [sent,      setSent]      = useState(false)

@@ -6,7 +6,7 @@ import {
 import { FaFacebookF } from 'react-icons/fa'
 import CustomerLayout from '../../layouts/CustomerLayout'
 
-const WEB3FORMS_KEY = 'YOUR_WEB3FORMS_KEY'
+const WEB3FORMS_KEY = 'f9fe7cd7-4658-48d8-9e4c-027212395013'
 
 const FB_URL = 'https://www.facebook.com/profile.php?id=61570722723997'
 

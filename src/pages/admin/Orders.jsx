@@ -220,6 +220,23 @@ function OrderDetailModal({ order, items, loadingItems, onClose }) {
             </div>
           )}
 
+          {/* Delivered timestamp */}
+          {order.status === 'delivered' && order.delivered_at && (
+            <div className="flex items-center gap-2 px-4 py-3 bg-green-50
+              border border-green-100 rounded-xl">
+              <MdCheckCircle size={16} className="text-green-500 shrink-0" />
+              <div>
+                <p className="text-green-700 text-xs font-bold">Order Delivered</p>
+                <p className="text-green-600 text-xs mt-0.5">
+                  {new Date(order.delivered_at).toLocaleString('en-PH', {
+                    weekday: 'short', month: 'short', day: 'numeric',
+                    year: 'numeric', hour: '2-digit', minute: '2-digit',
+                  })}
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Delivery proof */}
           {order.status === 'delivered' && order.delivery_image && (
             <div>

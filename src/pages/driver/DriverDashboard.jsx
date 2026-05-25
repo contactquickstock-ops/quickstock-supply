@@ -630,10 +630,11 @@ export default function DriverDashboard() {
   async function confirmDelivered(order) {
     setModalBusy(true)
     try {
-      // 1. Update order status to delivered
+      // 1. Update order status to delivered with exact timestamp
+      const deliveredAt = new Date().toISOString()
       const { error: orderErr } = await supabase
         .from('orders')
-        .update({ status: 'delivered' })
+        .update({ status: 'delivered', delivered_at: deliveredAt })
         .eq('id', order.id)
       if (orderErr) throw new Error(orderErr.message)
 

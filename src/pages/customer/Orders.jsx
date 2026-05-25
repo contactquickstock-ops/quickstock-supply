@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import {
   MdClose, MdLocationOn, MdNotes,
-  MdImage, MdReceipt, MdFilterList, MdChat,
+  MdImage, MdReceipt, MdFilterList, MdChat, MdCheckCircle,
 } from 'react-icons/md'
 import CustomerLayout from '../../layouts/CustomerLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
@@ -402,6 +402,23 @@ export default function Orders() {
                   <p className="text-gray-600 text-sm leading-relaxed">
                     {selectedOrder.notes}
                   </p>
+                </div>
+              )}
+
+              {/* Delivered timestamp */}
+              {selectedOrder.status === 'delivered' && selectedOrder.delivered_at && (
+                <div className="flex items-center gap-2 px-4 py-3 bg-green-50
+                  border border-green-100 rounded-xl">
+                  <MdCheckCircle size={16} className="text-green-500 shrink-0" />
+                  <div>
+                    <p className="text-green-700 text-xs font-bold">Order Delivered</p>
+                    <p className="text-green-600 text-xs mt-0.5">
+                      {new Date(selectedOrder.delivered_at).toLocaleString('en-PH', {
+                        weekday: 'short', month: 'short', day: 'numeric',
+                        year: 'numeric', hour: '2-digit', minute: '2-digit',
+                      })}
+                    </p>
+                  </div>
                 </div>
               )}
 

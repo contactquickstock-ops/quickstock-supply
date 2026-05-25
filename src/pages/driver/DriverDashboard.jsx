@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useRef } from 'react'
 import {
   MdDirectionsCar, MdLocationOn, MdPerson, MdPhone,
   MdInventory2, MdRefresh, MdCheckCircle, MdWarning,
-  MdClose, MdCameraAlt, MdUpload, MdStar, MdChat,
+  MdClose, MdCameraAlt, MdUpload, MdStar, MdChat, MdStorefront,
 } from 'react-icons/md'
 import OrderChat from '../../components/OrderChat'
 import DriverLayout from '../../layouts/DriverLayout'
@@ -43,13 +43,67 @@ function SkeletonCard() {
   )
 }
 
+// ── Customer Profile Popup ────────────────────────────────────────────────────
+
+function CustomerProfilePopup({ customer, onClose }) {
+  if (!customer) return null
+  const initials = (customer.full_name ?? '?')[0].toUpperCase()
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white rounded-2xl shadow-2xl p-5 w-72 mx-4"
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between mb-4">
+          <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Customer</p>
+          <button onClick={onClose} className="p-1 text-gray-400 hover:text-gray-600 transition">
+            <MdClose size={16} />
+          </button>
+        </div>
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 rounded-full overflow-hidden bg-[#168AFF]/10 flex items-center
+            justify-center font-bold text-2xl text-[#168AFF] shrink-0 border-2 border-[#168AFF]/20">
+            {customer.avatar_url
+              ? <img src={customer.avatar_url} alt={customer.full_name} className="w-full h-full object-cover" />
+              : initials}
+          </div>
+          <div className="min-w-0">
+            <p className="font-bold text-gray-800 text-sm truncate">{customer.full_name ?? '—'}</p>
+            {customer.contact_number && (
+              <a
+                href={`tel:${customer.contact_number}`}
+                className="flex items-center gap-1.5 text-[#168AFF] text-xs mt-1 hover:underline"
+              >
+                <MdPhone size={12} />
+                {customer.contact_number}
+              </a>
+            )}
+            {customer.store_name && (
+              <div className="flex items-center gap-1.5 text-gray-400 text-xs mt-1">
+                <MdStorefront size={12} />
+                <span className="truncate">{customer.store_name}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ── Delivery Card ─────────────────────────────────────────────────────────────
 
 function DeliveryCard({ order, onAccept, onDeliver, onReport, busy, chatOpen, onToggleChat, driverId }) {
-  const cfg   = STATUS_CONFIG[order.status] ?? { color: 'bg-gray-100 text-gray-600', label: order.status }
-  const items = order.order_items ?? []
+  const cfg     = STATUS_CONFIG[order.status] ?? { color: 'bg-gray-100 text-gray-600', label: order.status }
+  const items   = order.order_items ?? []
+  const [showProfile, setShowProfile] = useState(false)
+  const customer = order.customer
 
   return (
+    <>
     <div className={`bg-white rounded-2xl border shadow-sm p-5 space-y-4
       ${order.status === 'on_the_way' ? 'border-orange-200' : 'border-gray-100'}`}>
 
@@ -66,12 +120,21 @@ function DeliveryCard({ order, onAccept, onDeliver, onReport, busy, chatOpen, on
 
       {/* Customer + Contact + Address + Landmark */}
       <div className="space-y-2">
-        <div className="flex items-start gap-2.5">
-          <MdPerson size={16} className="text-gray-400 shrink-0 mt-0.5" />
+        <button
+          type="button"
+          onClick={() => setShowProfile(true)}
+          className="flex items-center gap-2.5 w-full text-left hover:opacity-80 transition"
+        >
+          <div className="w-8 h-8 rounded-full overflow-hidden bg-[#168AFF]/10 flex items-center
+            justify-center font-bold text-sm text-[#168AFF] shrink-0">
+            {customer?.avatar_url
+              ? <img src={customer.avatar_url} alt={order.customer_name} className="w-full h-full object-cover" />
+              : (order.customer_name ?? 'C')[0].toUpperCase()}
+          </div>
           <p className="text-gray-700 font-semibold text-sm">
             {order.customer_name ?? '—'}
           </p>
-        </div>
+        </button>
         {order.customer?.contact_number && (
           <div className="flex items-center gap-2.5">
             <MdPhone size={15} className="text-gray-400 shrink-0" />
@@ -209,6 +272,10 @@ function DeliveryCard({ order, onAccept, onDeliver, onReport, busy, chatOpen, on
         </div>
       )}
     </div>
+    {showProfile && customer && (
+      <CustomerProfilePopup customer={customer} onClose={() => setShowProfile(false)} />
+    )}
+    </>
   )
 }
 
@@ -530,7 +597,7 @@ export default function DriverDashboard() {
     setError(null)
     const { data, error: err } = await supabase
       .from('orders')
-      .select('*, customer:profiles!orders_customer_id_fkey(contact_number, membership_status), order_items(quantity, products(name, unit_type)), rewards(id, name, points_required)')
+      .select('*, customer:profiles!orders_customer_id_fkey(full_name, contact_number, membership_status, avatar_url, store_name, role), order_items(quantity, products(name, unit_type)), rewards(id, name, points_required)')
       .eq('driver_id', user.id)
       .in('status', ['assigned', 'on_the_way'])
       .order('created_at', { ascending: false })

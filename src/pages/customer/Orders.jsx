@@ -49,42 +49,39 @@ function Checkmark() {
 
 function OrderStepper({ status }) {
   const currentIdx = ORDER_STEPS.indexOf(status)
-  if (currentIdx === -1) return null           // cancelled — skip stepper
+  if (currentIdx === -1) return null
+
+  const progressPct = currentIdx === 0
+    ? 0
+    : (currentIdx / (ORDER_STEPS.length - 1)) * 80
 
   return (
-    <div>
-      {/* Dots + connectors */}
-      <div className="flex items-center">
+    <div className="relative">
+      {/* Full gray track */}
+      <div className="absolute top-3 left-[10%] right-[10%] h-0.5 bg-gray-200" />
+      {/* Blue progress */}
+      <div
+        className="absolute top-3 left-[10%] h-0.5 bg-[#168AFF] transition-all"
+        style={{ width: `${progressPct}%` }}
+      />
+      {/* Steps */}
+      <div className="relative flex">
         {ORDER_STEPS.map((step, i) => {
           const done = i <= currentIdx
-          const last = i === ORDER_STEPS.length - 1
           return (
-            <div key={step} className="flex items-center flex-1">
+            <div key={step} className="flex-1 flex flex-col items-center gap-1.5">
               <div
-                className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0
-                  transition-colors
-                  ${done ? 'border-[#168AFF] bg-[#168AFF]' : 'border-gray-200 bg-white'}`}
+                className={`w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0 bg-white
+                  ${done ? 'border-[#168AFF] bg-[#168AFF]' : 'border-gray-200'}`}
               >
                 {done && <Checkmark />}
               </div>
-              {!last && (
-                <div
-                  className={`h-0.5 flex-1 transition-colors
-                    ${i < currentIdx ? 'bg-[#168AFF]' : 'bg-gray-200'}`}
-                />
-              )}
+              <p className="text-[9px] text-gray-400 text-center leading-tight whitespace-pre-line">
+                {STATUS_CONFIG[step].label.replace(' ', '\n')}
+              </p>
             </div>
           )
         })}
-      </div>
-
-      {/* Labels */}
-      <div className="flex justify-between mt-1.5">
-        {ORDER_STEPS.map(step => (
-          <p key={step} className="text-[9px] text-gray-400 text-center w-6 leading-tight">
-            {STATUS_CONFIG[step].label.replace(' ', '\n')}
-          </p>
-        ))}
       </div>
     </div>
   )
@@ -145,7 +142,7 @@ export default function Orders() {
     setLoading(true)
     const { data } = await supabase
       .from('orders')
-      .select('*, order_items(id)')
+      .select('*, order_items(quantity)')
       .eq('customer_id', user.id)
       .order('created_at', { ascending: false })
     setOrders(data ?? [])
@@ -239,7 +236,7 @@ export default function Orders() {
         ) : (
           <div className="space-y-3">
             {filteredOrders.map(order => {
-              const itemCount = order.order_items?.length ?? 0
+              const itemCount = order.order_items?.reduce((sum, i) => sum + (i.quantity ?? 0), 0) ?? 0
               return (
                 <button
                   key={order.id}

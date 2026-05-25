@@ -265,22 +265,25 @@ function OrderDetailModal({ order, items, loadingItems, onClose }) {
 function AssignModal({ order, drivers, onClose, onAssign, assigning }) {
   const [driverId, setDriverId] = useState('')
 
-  // Parse province from order.address (last structured field before country, or just search)
-  const orderProvince = (order.address ?? '').split(',').map(s => s.trim()).find(
-    s => s.length > 0 && !['Philippines'].includes(s)
-  ) ?? ''
+  const orderProvince = (order.customer_profile?.address_province ?? '').toLowerCase().trim()
+  const orderCity     = (order.customer_profile?.address_city     ?? '').toLowerCase().trim()
 
-  // Sort: same province first, then same city, then rest
-  const sorted = [...drivers].sort((a, b) => {
-    const ap = (a.address_province ?? '').toLowerCase()
-    const bp = (b.address_province ?? '').toLowerCase()
-    const op = orderProvince.toLowerCase()
-    const aMatch = ap && op && ap.includes(op.substring(0, 4))
-    const bMatch = bp && op && bp.includes(op.substring(0, 4))
-    if (aMatch && !bMatch) return -1
-    if (!aMatch && bMatch) return 1
+  // Filter: only show drivers whose province matches; fallback to all if none match
+  const provinceMatched = drivers.filter(d =>
+    orderProvince && (d.address_province ?? '').toLowerCase().trim() === orderProvince
+  )
+  const pool = provinceMatched.length > 0 ? provinceMatched : drivers
+
+  // Within pool, sort city-match first
+  const sorted = [...pool].sort((a, b) => {
+    const ac = (a.address_city ?? '').toLowerCase().trim() === orderCity
+    const bc = (b.address_city ?? '').toLowerCase().trim() === orderCity
+    if (ac && !bc) return -1
+    if (!ac && bc) return 1
     return (a.full_name ?? '').localeCompare(b.full_name ?? '')
   })
+
+  const noProvinceData = !orderProvince
 
   return (
     <div
@@ -316,23 +319,29 @@ function AssignModal({ order, drivers, onClose, onAssign, assigning }) {
 
           <div>
             <label className="block text-xs font-semibold text-gray-600 mb-1.5">
-              Select Driver
-              {orderProvince && <span className="text-gray-400 font-normal ml-1">(sorted by proximity)</span>}
+              {noProvinceData
+                ? 'Select Driver (no address data on customer)'
+                : provinceMatched.length > 0
+                  ? `Drivers in ${order.customer_profile?.address_province}`
+                  : 'No province-matched drivers — showing all'}
             </label>
+            {!noProvinceData && provinceMatched.length === 0 && (
+              <p className="text-[11px] text-orange-500 mb-2">
+                No drivers found in <strong>{order.customer_profile?.address_province}</strong>. Showing all available drivers instead.
+              </p>
+            )}
             <div className="space-y-1.5 max-h-56 overflow-y-auto pr-1">
               {sorted.length === 0 ? (
                 <p className="text-xs text-red-400">No active drivers available.</p>
               ) : sorted.map(d => {
-                const dProvince = (d.address_province ?? '').toLowerCase()
-                const op = orderProvince.toLowerCase()
-                const isMatch = dProvince && op && dProvince.includes(op.substring(0, 4))
-                const addrLine = [d.address_city, d.address_province].filter(Boolean).join(', ')
+                const cityMatch = orderCity && (d.address_city ?? '').toLowerCase().trim() === orderCity
+                const addrLine  = [d.address_city, d.address_province].filter(Boolean).join(', ')
                 return (
                   <label key={d.id}
                     className={`flex items-start gap-3 px-3.5 py-2.5 rounded-xl border cursor-pointer transition
                       ${driverId === d.id
                         ? 'border-[#168AFF] bg-[#168AFF]/5'
-                        : isMatch
+                        : cityMatch
                           ? 'border-green-200 bg-green-50 hover:border-green-300'
                           : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'}`}>
                     <input type="radio" name="driver" value={d.id}
@@ -342,19 +351,15 @@ function AssignModal({ order, drivers, onClose, onAssign, assigning }) {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <p className="text-sm font-semibold text-gray-800">{d.full_name ?? '—'}</p>
-                        {isMatch && (
+                        {cityMatch && (
                           <span className="text-[10px] font-bold px-1.5 py-0.5 bg-green-100
                             text-green-700 rounded-full">
-                            Same Province
+                            Same City
                           </span>
                         )}
                       </div>
-                      {d.contact_number && (
-                        <p className="text-xs text-gray-400">{d.contact_number}</p>
-                      )}
-                      {addrLine && (
-                        <p className="text-xs text-gray-500 mt-0.5">{addrLine}</p>
-                      )}
+                      {d.contact_number && <p className="text-xs text-gray-400">{d.contact_number}</p>}
+                      {addrLine         && <p className="text-xs text-gray-500 mt-0.5">{addrLine}</p>}
                     </div>
                   </label>
                 )
@@ -404,7 +409,7 @@ export default function AdminOrders() {
     setError(null)
     const { data, error: err } = await supabase
       .from('orders')
-      .select('*, driver:profiles!orders_driver_id_fkey(full_name)')
+      .select('*, driver:profiles!orders_driver_id_fkey(full_name), customer_profile:profiles!orders_customer_id_fkey(address_city, address_province)')
       .order('created_at', { ascending: false })
     if (err) setError('Failed to load orders.')
     else setOrders(data ?? [])

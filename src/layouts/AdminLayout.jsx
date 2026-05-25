@@ -38,13 +38,29 @@ export default function AdminLayout({ children, pageTitle = 'Dashboard' }) {
     return () => document.removeEventListener('mousedown', onOutside)
   }, [profileOpen])
 
-  const [pendingOrders, setPendingOrders] = useState(0)
+  const [pendingOrders,      setPendingOrders]      = useState(0)
+  const [pendingCustomers,   setPendingCustomers]   = useState(0)
+  const [pendingMemberships, setPendingMemberships] = useState(0)
+
   useEffect(() => {
     supabaseAdmin
       .from('orders')
       .select('id', { count: 'exact', head: true })
       .in('status', ['pending', 'confirmed'])
       .then(({ count }) => setPendingOrders(count ?? 0))
+
+    supabaseAdmin
+      .from('profiles')
+      .select('id', { count: 'exact', head: true })
+      .eq('role', 'customer')
+      .eq('status', 'pending')
+      .then(({ count }) => setPendingCustomers(count ?? 0))
+
+    supabaseAdmin
+      .from('membership_renewals')
+      .select('id', { count: 'exact', head: true })
+      .eq('status', 'pending')
+      .then(({ count }) => setPendingMemberships(count ?? 0))
   }, [])
 
   async function handleLogout() {
@@ -102,6 +118,18 @@ export default function AdminLayout({ children, pageTitle = 'Dashboard' }) {
                   <span className="ml-auto min-w-4.5 h-4.5 px-1 bg-red-500 text-white
                     text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
                     {pendingOrders > 99 ? '99+' : pendingOrders}
+                  </span>
+                )}
+                {label === 'Customers' && pendingCustomers > 0 && (
+                  <span className="ml-auto min-w-4.5 h-4.5 px-1 bg-orange-500 text-white
+                    text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
+                    {pendingCustomers > 99 ? '99+' : pendingCustomers}
+                  </span>
+                )}
+                {label === 'Memberships' && pendingMemberships > 0 && (
+                  <span className="ml-auto min-w-4.5 h-4.5 px-1 bg-yellow-500 text-white
+                    text-[10px] font-bold rounded-full flex items-center justify-center leading-none">
+                    {pendingMemberships > 99 ? '99+' : pendingMemberships}
                   </span>
                 )}
               </Link>

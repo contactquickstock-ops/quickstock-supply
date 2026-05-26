@@ -90,12 +90,14 @@ export default function Login() {
       sessionStorage.removeItem('no_persist_session')
     }
 
-    toast.success(`Welcome back, ${profile.full_name?.split(' ')[0] || 'there'}! 👋`)
+    // Store name so AuthContext fires the welcome toast on the destination page
+    sessionStorage.setItem('auth_welcome', profile.full_name?.split(' ')[0] || 'there')
 
-    if (profile.role === 'superadmin')   navigate('/admin/dashboard')
+    if (profile.role === 'superadmin')    navigate('/admin/dashboard')
     else if (profile.role === 'customer') navigate('/customer/dashboard')
     else if (profile.role === 'driver')   navigate('/driver/dashboard')
     else {
+      sessionStorage.removeItem('auth_welcome')
       toast.error('Unknown role. Contact admin.')
       await supabase.auth.signOut()
       setLoading(false)

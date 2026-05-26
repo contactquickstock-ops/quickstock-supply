@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { supabase } from '../services/supabase'
+import toast from 'react-hot-toast'
 
 const AuthContext = createContext()
 
@@ -19,9 +20,12 @@ export function AuthProvider({ children }) {
     })
 
     const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      (event, session) => {
         setUser(session?.user ?? null)
         if (session?.user) {
+          // On a fresh sign-in, hold ProtectedRoute in loading state until
+          // the profile is fetched — prevents a premature redirect to /login
+          if (event === 'SIGNED_IN') setLoading(true)
           fetchProfile(session.user.id)
         } else {
           setProfile(null)
@@ -40,6 +44,13 @@ export function AuthProvider({ children }) {
       .maybeSingle()
     setProfile(data)
     setLoading(false)
+
+    // Show welcome toast on the destination page, not the login page
+    const name = sessionStorage.getItem('auth_welcome')
+    if (name) {
+      sessionStorage.removeItem('auth_welcome')
+      toast.success(`Welcome back, ${name}! 👋`)
+    }
   }
 
   async function logout() {

@@ -13,6 +13,19 @@ const STATUS_BADGE = {
   expired:  'bg-gray-100   text-gray-500',
 }
 
+const EXPIRY_WARN_DAYS = 30
+
+function daysUntilExpiry(m) {
+  if (m.status !== 'active' || !m.expiry_date) return null
+  const today = new Date(); today.setHours(0, 0, 0, 0)
+  return Math.ceil((new Date(m.expiry_date) - today) / (1000 * 60 * 60 * 24))
+}
+
+function isNearExpiry(m) {
+  const d = daysUntilExpiry(m)
+  return d !== null && d >= 0 && d <= EXPIRY_WARN_DAYS
+}
+
 function MembershipDetailModal({ m, onClose, onApprove, onReject, acting }) {
   const isBusy      = acting === m.id
   const status      = m.status ?? 'pending'
@@ -22,6 +35,8 @@ function MembershipDetailModal({ m, onClose, onApprove, onReject, acting }) {
     month: 'long', day: 'numeric', year: 'numeric',
   })
   const [proofOpen, setProofOpen] = useState(false)
+  const nearExpiry  = isNearExpiry(m)
+  const days        = daysUntilExpiry(m)
 
   return (
     <div
@@ -86,17 +101,46 @@ function MembershipDetailModal({ m, onClose, onApprove, onReject, acting }) {
               <p className="text-gray-400 text-[10px] font-semibold uppercase tracking-wider mb-0.5">Applied</p>
               <p className="text-gray-700 font-medium">{applied}</p>
             </div>
+            <div className="bg-gray-50 rounded-xl px-4 py-3">
+              <p className="text-gray-400 text-[10px] font-semibold uppercase tracking-wider mb-0.5">Type</p>
+              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold
+                ${m.is_renewal ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}`}>
+                {m.is_renewal ? 'Renewal' : 'New'}
+              </span>
+            </div>
             {status === 'active' && m.expiry_date && (
-              <div className="bg-gray-50 rounded-xl px-4 py-3">
-                <p className="text-gray-400 text-[10px] font-semibold uppercase tracking-wider mb-0.5">Expires</p>
-                <p className="text-gray-700 font-medium">
+              <div className={`rounded-xl px-4 py-3 col-span-2
+                ${nearExpiry ? 'bg-amber-50 border border-amber-200' : 'bg-gray-50'}`}>
+                <p className={`text-[10px] font-semibold uppercase tracking-wider mb-0.5
+                  ${nearExpiry ? 'text-amber-500' : 'text-gray-400'}`}>Expires</p>
+                <p className={`font-medium ${nearExpiry ? 'text-amber-700' : 'text-gray-700'}`}>
                   {new Date(m.expiry_date).toLocaleDateString('en-PH', {
-                    month: 'short', day: 'numeric', year: 'numeric',
+                    month: 'long', day: 'numeric', year: 'numeric',
                   })}
+                  {nearExpiry && (
+                    <span className="ml-2 text-xs font-bold text-amber-600">
+                      {days === 0 ? '— Expires today!' : `— ${days} day${days !== 1 ? 's' : ''} left`}
+                    </span>
+                  )}
                 </p>
               </div>
             )}
           </div>
+
+          {/* Near-expiry warning banner */}
+          {nearExpiry && (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3
+              flex items-start gap-2.5">
+              <span className="text-amber-500 shrink-0 mt-0.5 text-lg">⚠️</span>
+              <div>
+                <p className="text-amber-800 font-bold text-xs">Expiring Soon</p>
+                <p className="text-amber-700 text-xs mt-0.5 leading-relaxed">
+                  This membership will expire in {days === 0 ? 'today' : `${days} day${days !== 1 ? 's' : ''}`}.
+                  The customer should renew soon.
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Payment proof */}
           {m.payment_proof && (
@@ -195,7 +239,7 @@ function MembershipDetailModal({ m, onClose, onApprove, onReject, acting }) {
   )
 }
 
-const FILTERS = ['all', 'pending', 'active', 'expired', 'rejected']
+const FILTERS = ['all', 'pending', 'active', 'expiring', 'expired', 'rejected']
 
 function SkeletonRows({ cols = 6, rows = 5 }) {
   return Array.from({ length: rows }, (_, i) => (
@@ -242,7 +286,8 @@ export default function Memberships() {
 
     const today  = new Date()
     const expiry = new Date(today)
-    expiry.setFullYear(expiry.getFullYear() + 2)
+    // Renewals extend by 1 year; new memberships by 2 years
+    expiry.setFullYear(expiry.getFullYear() + (m.is_renewal ? 1 : 2))
 
     const startDate  = today.toISOString().slice(0, 10)
     const expiryDate = expiry.toISOString().slice(0, 10)
@@ -299,16 +344,21 @@ export default function Memberships() {
     const matchSearch =
       (m.profiles?.full_name ?? '').toLowerCase().includes(q) ||
       (m.profiles?.email     ?? '').toLowerCase().includes(q)
-    const matchFilter = filter === 'all' || m.status === filter
+    const matchFilter = filter === 'all'
+      ? true
+      : filter === 'expiring'
+        ? isNearExpiry(m)
+        : m.status === filter
     return matchSearch && matchFilter
   })
 
   const counts = {
-    total:    memberships.length,
-    pending:  memberships.filter(m => m.status === 'pending').length,
-    active:   memberships.filter(m => m.status === 'active').length,
-    expired:  memberships.filter(m => m.status === 'expired').length,
-    rejected: memberships.filter(m => m.status === 'rejected').length,
+    total:       memberships.length,
+    pending:     memberships.filter(m => m.status === 'pending').length,
+    active:      memberships.filter(m => m.status === 'active').length,
+    expiring:    memberships.filter(m => isNearExpiry(m)).length,
+    expired:     memberships.filter(m => m.status === 'expired').length,
+    rejected:    memberships.filter(m => m.status === 'rejected').length,
   }
 
   return (
@@ -326,11 +376,12 @@ export default function Memberships() {
         {/* Summary chips */}
         <div className="flex flex-wrap gap-3">
           {[
-            { label: 'Total',    value: counts.total,    color: 'bg-gray-100   text-gray-600'   },
-            { label: 'Pending',  value: counts.pending,  color: 'bg-yellow-100 text-yellow-700' },
-            { label: 'Active',   value: counts.active,   color: 'bg-green-100  text-green-700'  },
-            { label: 'Expired',  value: counts.expired,  color: 'bg-gray-100   text-gray-500'   },
-            { label: 'Rejected', value: counts.rejected, color: 'bg-red-100    text-red-700'    },
+            { label: 'Total',         value: counts.total,    color: 'bg-gray-100   text-gray-600'   },
+            { label: 'Pending',       value: counts.pending,  color: 'bg-yellow-100 text-yellow-700' },
+            { label: 'Active',        value: counts.active,   color: 'bg-green-100  text-green-700'  },
+            { label: 'Expiring Soon', value: counts.expiring, color: 'bg-amber-100  text-amber-700'  },
+            { label: 'Expired',       value: counts.expired,  color: 'bg-gray-100   text-gray-500'   },
+            { label: 'Rejected',      value: counts.rejected, color: 'bg-red-100    text-red-700'    },
           ].map(({ label, value, color }) => (
             <span
               key={label}
@@ -355,19 +406,34 @@ export default function Memberships() {
           <div className="px-5 py-4 border-b border-gray-100 flex flex-wrap items-center gap-3 justify-between">
 
             {/* Filter tabs */}
-            <div className="flex gap-1">
-              {FILTERS.map(f => (
-                <button
-                  key={f}
-                  onClick={() => setFilter(f)}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition
-                    ${filter === f
-                      ? 'bg-[#168AFF] text-white'
-                      : 'text-gray-500 hover:bg-gray-100'}`}
-                >
-                  {f}
-                </button>
-              ))}
+            <div className="flex flex-wrap gap-1">
+              {FILTERS.map(f => {
+                const label = f === 'expiring' ? 'Expiring Soon' : f
+                const isActive = filter === f
+                return (
+                  <button
+                    key={f}
+                    onClick={() => setFilter(f)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold capitalize transition
+                      ${isActive
+                        ? f === 'expiring'
+                          ? 'bg-amber-500 text-white'
+                          : 'bg-[#168AFF] text-white'
+                        : f === 'expiring' && counts.expiring > 0
+                          ? 'text-amber-600 hover:bg-amber-50 border border-amber-200'
+                          : 'text-gray-500 hover:bg-gray-100'}`}
+                  >
+                    {label}
+                    {f === 'expiring' && counts.expiring > 0 && (
+                      <span className={`ml-1 inline-flex items-center justify-center
+                        w-4 h-4 rounded-full text-[10px] font-black
+                        ${isActive ? 'bg-white text-amber-600' : 'bg-amber-500 text-white'}`}>
+                        {counts.expiring}
+                      </span>
+                    )}
+                  </button>
+                )
+              })}
             </div>
 
             {/* Search */}
@@ -393,7 +459,7 @@ export default function Memberships() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-gray-50 text-gray-400 text-xs uppercase tracking-wider">
-                  {['Customer', 'Email', 'Applied', 'Status', 'Payment Proof', 'Actions'].map(h => (
+                  {['Customer', 'Email', 'Applied', 'Type', 'Status', 'Payment Proof', 'Actions'].map(h => (
                     <th key={h} className="px-5 py-3 text-left font-medium whitespace-nowrap">
                       {h}
                     </th>
@@ -402,10 +468,10 @@ export default function Memberships() {
               </thead>
               <tbody>
                 {loading ? (
-                  <SkeletonRows cols={6} rows={5} />
+                  <SkeletonRows cols={7} rows={5} />
                 ) : filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-5 py-14 text-center text-gray-400 text-sm">
+                    <td colSpan={7} className="px-5 py-14 text-center text-gray-400 text-sm">
                       {search || filter !== 'all'
                         ? 'No memberships match your filter.'
                         : 'No membership applications yet.'}
@@ -421,12 +487,17 @@ export default function Memberships() {
                     const applied  = new Date(m.created_at).toLocaleDateString('en-PH', {
                       month: 'short', day: 'numeric', year: 'numeric',
                     })
+                    const nearExp  = isNearExpiry(m)
+                    const daysLeft = daysUntilExpiry(m)
 
                     return (
                       <tr
                         key={m.id}
                         onClick={() => setDetailItem(m)}
-                        className="border-b border-gray-50 hover:bg-gray-50/70 transition-colors cursor-pointer"
+                        className={`border-b border-gray-50 transition-colors cursor-pointer
+                          ${nearExp
+                            ? 'bg-amber-50/50 hover:bg-amber-50'
+                            : 'hover:bg-gray-50/70'}`}
                       >
                         {/* Customer */}
                         <td className="px-5 py-4">
@@ -453,15 +524,32 @@ export default function Memberships() {
                           {applied}
                         </td>
 
+                        {/* Type */}
+                        <td className="px-5 py-4">
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full
+                            text-xs font-semibold
+                            ${m.is_renewal ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}`}>
+                            {m.is_renewal ? 'Renewal' : 'New'}
+                          </span>
+                        </td>
+
                         {/* Status */}
                         <td className="px-5 py-4">
-                          <span
-                            className={`inline-flex items-center px-2.5 py-0.5 rounded-full
-                              text-xs font-medium capitalize
-                              ${STATUS_BADGE[status] ?? 'bg-gray-100 text-gray-600'}`}
-                          >
-                            {status}
-                          </span>
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <span
+                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full
+                                text-xs font-medium capitalize
+                                ${STATUS_BADGE[status] ?? 'bg-gray-100 text-gray-600'}`}
+                            >
+                              {status}
+                            </span>
+                            {nearExp && (
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full
+                                text-[10px] font-bold bg-amber-100 text-amber-700">
+                                ⚠ {daysLeft === 0 ? 'Today' : `${daysLeft}d`}
+                              </span>
+                            )}
+                          </div>
                         </td>
 
                         {/* Payment proof */}
@@ -517,14 +605,22 @@ export default function Memberships() {
 
                           {status === 'active' && (
                             <div className="text-xs">
-                              <p className="text-gray-400">Expires</p>
-                              <p className="font-medium text-gray-600 whitespace-nowrap">
+                              <p className={nearExp ? 'text-amber-500 font-semibold' : 'text-gray-400'}>
+                                {nearExp ? '⚠ Expiring' : 'Expires'}
+                              </p>
+                              <p className={`font-medium whitespace-nowrap
+                                ${nearExp ? 'text-amber-700' : 'text-gray-600'}`}>
                                 {m.expiry_date
                                   ? new Date(m.expiry_date).toLocaleDateString('en-PH', {
                                       month: 'short', day: 'numeric', year: 'numeric',
                                     })
                                   : '—'}
                               </p>
+                              {nearExp && (
+                                <p className="text-amber-500 font-bold mt-0.5">
+                                  {daysLeft === 0 ? 'Today!' : `${daysLeft}d left`}
+                                </p>
+                              )}
                             </div>
                           )}
 

@@ -260,6 +260,7 @@ function ApplyForm({ onSubmitted, isRenewal = false }) {
           user_id:       user.id,
           status:        'pending',
           payment_proof: paymentProof,
+          is_renewal:    isRenewal,
         })
       if (insertErr) throw new Error(insertErr.message)
 

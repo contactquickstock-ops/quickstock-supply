@@ -57,7 +57,7 @@ export default function AdminLayout({ children, pageTitle = 'Dashboard' }) {
       .then(({ count }) => setPendingCustomers(count ?? 0))
 
     supabaseAdmin
-      .from('membership_renewals')
+      .from('memberships')
       .select('id', { count: 'exact', head: true })
       .eq('status', 'pending')
       .then(({ count }) => setPendingMemberships(count ?? 0))

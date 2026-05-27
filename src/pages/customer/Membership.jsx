@@ -440,7 +440,8 @@ export default function Membership() {
   const daysUntilExp  = isActive && expiryDate
     ? Math.ceil((expiryDate - new Date()) / msPerDay)
     : null
-  const expiringSoon  = daysUntilExp !== null && daysUntilExp >= 0 && daysUntilExp <= 3
+  const expiringSoon  = daysUntilExp !== null && daysUntilExp >= 0 && daysUntilExp <= 30
+  const expiringCritical = daysUntilExp !== null && daysUntilExp >= 0 && daysUntilExp <= 3
 
   function handleSubmitted() {
     setShowApply(false)
@@ -467,21 +468,51 @@ export default function Membership() {
             <div className="h-48 bg-white rounded-2xl border border-gray-100 animate-pulse" />
           </div>
 
+        ) : showApply ? (
+          <>
+            {/* Back link when renewing early (still active) */}
+            {isActive && (
+              <div className="max-w-lg mx-auto">
+                <button
+                  onClick={() => { setShowApply(false); setIsRenewal(false) }}
+                  className="text-sm text-[#168AFF] font-semibold hover:underline flex items-center gap-1 mb-1">
+                  ← Back to my membership
+                </button>
+              </div>
+            )}
+            <ApplyForm isRenewal={isRenewal} onSubmitted={handleSubmitted} />
+          </>
+
         ) : isActive ? (
           <div className="space-y-4">
-            {/* 3-day expiry warning */}
+            {/* Near-expiry warning banner (30-day window) */}
             {expiringSoon && (
-              <div className="max-w-lg mx-auto bg-amber-50 border border-amber-200
-                rounded-2xl px-5 py-4 flex items-start gap-3">
-                <MdWarning size={20} className="text-amber-500 shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-amber-800 font-bold text-sm">Membership Expiring Soon</p>
-                  <p className="text-amber-700 text-xs mt-0.5 leading-relaxed">
+              <div className={`max-w-lg mx-auto rounded-2xl px-5 py-4 flex items-start gap-3
+                ${expiringCritical
+                  ? 'bg-red-50 border border-red-200'
+                  : 'bg-amber-50 border border-amber-200'}`}>
+                <MdWarning size={20} className={`shrink-0 mt-0.5
+                  ${expiringCritical ? 'text-red-500' : 'text-amber-500'}`} />
+                <div className="flex-1 min-w-0">
+                  <p className={`font-bold text-sm
+                    ${expiringCritical ? 'text-red-800' : 'text-amber-800'}`}>
+                    {expiringCritical ? 'Membership Expiring Very Soon!' : 'Membership Expiring Soon'}
+                  </p>
+                  <p className={`text-xs mt-0.5 leading-relaxed
+                    ${expiringCritical ? 'text-red-700' : 'text-amber-700'}`}>
                     {daysUntilExp === 0
                       ? 'Your membership expires today!'
                       : `Your membership expires in ${daysUntilExp} day${daysUntilExp !== 1 ? 's' : ''}.`}
-                    {' '}Renew before it expires to keep earning points and enjoying member benefits.
+                    {' '}Renew now to keep earning points and enjoy uninterrupted member benefits.
                   </p>
+                  <button
+                    onClick={() => { setIsRenewal(true); setShowApply(true) }}
+                    className={`mt-3 px-4 py-2 rounded-xl text-xs font-bold transition shadow-sm
+                      ${expiringCritical
+                        ? 'bg-red-500 text-white hover:bg-red-600'
+                        : 'bg-amber-500 text-white hover:bg-amber-600'}`}>
+                    Renew Now — ₱1,000
+                  </button>
                 </div>
               </div>
             )}
@@ -501,7 +532,8 @@ export default function Membership() {
           <RejectedCard onReapply={() => { setIsRenewal(false); setShowApply(true) }} />
 
         ) : (
-          <ApplyForm isRenewal={isRenewal} onSubmitted={handleSubmitted} />
+          /* No membership yet */
+          <ApplyForm isRenewal={false} onSubmitted={handleSubmitted} />
         )}
       </div>
     </CustomerLayout>

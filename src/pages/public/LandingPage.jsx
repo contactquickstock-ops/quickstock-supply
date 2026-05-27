@@ -4,7 +4,7 @@ import {
   MdLocalShipping, MdStar, MdArrowForward,
   MdCheckCircle, MdShoppingCart,
   MdCardGiftcard, MdHeadsetMic,
-  MdPeople, MdVerified, MdFormatQuote,
+  MdPeople, MdVerified, MdFormatQuote, MdCampaign,
 } from 'react-icons/md'
 import PublicLayout from '../../layouts/PublicLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
@@ -38,15 +38,24 @@ const REWARD_CARDS = [
 
 export default function LandingPage() {
   const [testimonials, setTestimonials] = useState([])
+  const [posts,        setPosts]        = useState([])
 
   useEffect(() => {
     supabase
       .from('testimonials')
-      .select('id, customer_name, store_type, message, photo_url')
+      .select('id, customer_name, store_type, message, photo_url, image_url')
       .eq('published', true)
       .order('created_at', { ascending: false })
       .limit(6)
       .then(({ data }) => setTestimonials(data ?? []))
+
+    supabase
+      .from('posts')
+      .select('id, title, content, image_url, created_at')
+      .eq('published', true)
+      .order('created_at', { ascending: false })
+      .limit(6)
+      .then(({ data }) => setPosts(data ?? []))
   }, [])
 
   return (
@@ -314,46 +323,116 @@ export default function LandingPage() {
                 return (
                   <div key={t.id}
                     className="bg-white rounded-2xl border border-gray-100 shadow-sm
-                      p-6 flex flex-col gap-4 hover:shadow-md hover:border-[#168AFF]/30
+                      flex flex-col overflow-hidden hover:shadow-md hover:border-[#168AFF]/30
                       transition-all duration-300">
 
-                    {/* Quote icon + stars */}
-                    <div className="flex items-center justify-between">
-                      <MdFormatQuote size={32} className="text-[#168AFF]/25 -scale-x-100" />
-                      <div className="flex items-center gap-0.5">
-                        {[1,2,3,4,5].map(s => (
-                          <MdStar key={s} size={14} className="text-yellow-400" />
-                        ))}
+                    {/* Featured photo (if any) */}
+                    {t.image_url && (
+                      <div className="h-44 bg-gray-100 overflow-hidden shrink-0">
+                        <img src={t.image_url} alt="featured"
+                          className="w-full h-full object-cover" />
                       </div>
-                    </div>
+                    )}
 
-                    {/* Message */}
-                    <p className="text-gray-600 text-sm leading-relaxed italic flex-1 line-clamp-4">
-                      "{t.message}"
-                    </p>
-
-                    {/* Person */}
-                    <div className="flex items-center gap-3 pt-3 border-t border-gray-50">
-                      <div className="w-11 h-11 rounded-full overflow-hidden bg-[#168AFF]/10
-                        text-[#168AFF] flex items-center justify-center font-bold text-base
-                        shrink-0">
-                        {t.photo_url
-                          ? <img src={t.photo_url} alt={t.customer_name}
-                              className="w-full h-full object-cover" />
-                          : initials}
+                    <div className="p-6 flex flex-col gap-4 flex-1">
+                      {/* Quote icon + stars */}
+                      <div className="flex items-center justify-between">
+                        <MdFormatQuote size={32} className="text-[#168AFF]/25 -scale-x-100" />
+                        <div className="flex items-center gap-0.5">
+                          {[1,2,3,4,5].map(s => (
+                            <MdStar key={s} size={14} className="text-yellow-400" />
+                          ))}
+                        </div>
                       </div>
-                      <div className="min-w-0">
-                        <p className="text-gray-800 font-bold text-sm truncate">
-                          {t.customer_name}
-                        </p>
-                        {t.store_type && (
-                          <p className="text-gray-400 text-xs truncate">{t.store_type}</p>
-                        )}
+
+                      {/* Message */}
+                      <p className="text-gray-600 text-sm leading-relaxed italic flex-1 line-clamp-4">
+                        "{t.message}"
+                      </p>
+
+                      {/* Person */}
+                      <div className="flex items-center gap-3 pt-3 border-t border-gray-50">
+                        <div className="w-11 h-11 rounded-full overflow-hidden bg-[#168AFF]/10
+                          text-[#168AFF] flex items-center justify-center font-bold text-base
+                          shrink-0">
+                          {t.photo_url
+                            ? <img src={t.photo_url} alt={t.customer_name}
+                                className="w-full h-full object-cover" />
+                            : initials}
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-gray-800 font-bold text-sm truncate">
+                            {t.customer_name}
+                          </p>
+                          {t.store_type && (
+                            <p className="text-gray-400 text-xs truncate">{t.store_type}</p>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
                 )
               })}
+            </div>
+
+          </div>
+        </section>
+      )}
+
+      {/* ── Posts (reward claim highlights) ── */}
+      {posts.length > 0 && (
+        <section className="py-14 px-4 bg-white">
+          <div className="max-w-7xl mx-auto space-y-10">
+
+            {/* Heading */}
+            <div className="text-center space-y-2">
+              <span className="text-[#168AFF] font-bold text-sm uppercase tracking-widest">
+                Reward Claims
+              </span>
+              <h2 className="text-3xl font-black text-gray-800">
+                Customers Claiming <span className="text-yellow-400">Rewards</span>
+              </h2>
+              <p className="text-gray-500 text-sm max-w-sm mx-auto">
+                See what our members are redeeming with their hard-earned points.
+              </p>
+            </div>
+
+            {/* Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {posts.map(p => (
+                <div key={p.id}
+                  className="bg-white rounded-2xl border border-gray-100 shadow-sm
+                    flex flex-col overflow-hidden hover:shadow-md hover:border-[#168AFF]/30
+                    transition-all duration-300">
+
+                  {/* Image */}
+                  {p.image_url ? (
+                    <div className="h-44 bg-gray-100 overflow-hidden shrink-0">
+                      <img src={p.image_url} alt={p.title}
+                        className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <div className="h-28 bg-[#168AFF]/5 flex items-center justify-center shrink-0">
+                      <MdCampaign size={40} className="text-[#168AFF]/20" />
+                    </div>
+                  )}
+
+                  <div className="p-5 flex flex-col gap-2 flex-1">
+                    <div className="flex items-center gap-1.5">
+                      <MdStar size={14} className="text-yellow-400 shrink-0" />
+                      <span className="text-[10px] font-bold text-yellow-600 uppercase tracking-wide">
+                        Reward Claimed
+                      </span>
+                    </div>
+                    <h3 className="text-gray-800 font-bold text-sm leading-snug line-clamp-2">
+                      {p.title}
+                    </h3>
+                    <p className="text-gray-500 text-xs leading-relaxed line-clamp-3 flex-1">
+                      {p.content}
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
 
           </div>

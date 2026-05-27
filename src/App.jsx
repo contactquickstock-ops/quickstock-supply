@@ -21,6 +21,7 @@ import AdminOrders      from './pages/admin/Orders'
 import AdminMemberships from './pages/admin/Memberships'
 import AdminRewards     from './pages/admin/Rewards'
 import AdminPosts       from './pages/admin/Posts'
+import AdminFeed        from './pages/admin/Feed'
 
 // Customer
 import CustomerDashboard     from './pages/customer/Dashboard'
@@ -62,6 +63,7 @@ export default function App() {
         <Route path="/admin/memberships" element={<ProtectedRoute allowedRoles={['superadmin']}><AdminMemberships /></ProtectedRoute>} />
         <Route path="/admin/rewards"     element={<ProtectedRoute allowedRoles={['superadmin']}><AdminRewards /></ProtectedRoute>} />
         <Route path="/admin/posts"       element={<ProtectedRoute allowedRoles={['superadmin']}><AdminPosts /></ProtectedRoute>} />
+        <Route path="/admin/feed"        element={<ProtectedRoute allowedRoles={['superadmin']}><AdminFeed /></ProtectedRoute>} />
 
         {/* ── Customer ── */}
         <Route path="/customer/dashboard"  element={<ProtectedRoute allowedRoles={['customer']}><CustomerDashboard /></ProtectedRoute>} />

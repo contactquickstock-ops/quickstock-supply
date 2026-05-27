@@ -7,6 +7,7 @@ import {
   MdDashboard, MdShoppingCart, MdDirectionsCar, MdPeople,
   MdInventory2, MdCardMembership, MdStar, MdMenu, MdClose,
   MdLogout, MdEmail, MdAdminPanelSettings, MdVerified, MdCampaign,
+  MdDynamicFeed,
 } from 'react-icons/md'
 
 const NAV_ITEMS = [
@@ -17,7 +18,8 @@ const NAV_ITEMS = [
   { label: 'Products',    icon: MdInventory2,      path: '/admin/products'    },
   { label: 'Memberships', icon: MdCardMembership,  path: '/admin/memberships' },
   { label: 'Rewards',     icon: MdStar,            path: '/admin/rewards'     },
-  { label: 'Testimonials', icon: MdCampaign,        path: '/admin/posts'       },
+  { label: 'Testimonials', icon: MdCampaign,       path: '/admin/posts'       },
+  { label: 'Posts',       icon: MdDynamicFeed,     path: '/admin/feed'        },
 ]
 
 export default function AdminLayout({ children, pageTitle = 'Dashboard' }) {

@@ -1,11 +1,13 @@
 import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import {
   MdLocalShipping, MdStar, MdArrowForward,
   MdCheckCircle, MdShoppingCart,
   MdCardGiftcard, MdHeadsetMic,
-  MdPeople, MdVerified,
+  MdPeople, MdVerified, MdCampaign, MdCalendarToday,
 } from 'react-icons/md'
 import PublicLayout from '../../layouts/PublicLayout'
+import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
 
 const FEATURES = [
   { icon: MdLocalShipping, title: 'Fast Delivery',                             desc: 'Same-day delivery right to your store — quick, efficient, and hassle-free.'              },
@@ -35,6 +37,18 @@ const REWARD_CARDS = [
 ]
 
 export default function LandingPage() {
+  const [recentPosts, setRecentPosts] = useState([])
+
+  useEffect(() => {
+    supabase
+      .from('posts')
+      .select('id, title, content, image_url, created_at')
+      .eq('published', true)
+      .order('created_at', { ascending: false })
+      .limit(3)
+      .then(({ data }) => setRecentPosts(data ?? []))
+  }, [])
+
   return (
     <PublicLayout>
 
@@ -88,7 +102,7 @@ export default function LandingPage() {
           {/* Visual card */}
           <div className="hidden lg:flex justify-center">
             <div className="relative">
-              <div className="w-[480px] h-[480px] bg-white/10 rounded-3xl border border-white/20
+              <div className="w-120 h-120 bg-white/10 rounded-3xl border border-white/20
                 backdrop-blur-sm flex items-center justify-center shadow-2xl overflow-hidden">
                 <video
                   src="/hero-animation.mp4"
@@ -273,6 +287,66 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      {/* ── Latest Announcements (only shown when there are published posts) ── */}
+      {recentPosts.length > 0 && (
+        <section className="py-14 px-4 bg-white">
+          <div className="max-w-7xl mx-auto space-y-10">
+
+            {/* Heading */}
+            <div className="text-center space-y-2">
+              <span className="inline-flex items-center gap-1.5 text-[#168AFF]
+                font-bold text-sm uppercase tracking-widest">
+                <MdCampaign size={16} /> Updates
+              </span>
+              <h2 className="text-3xl font-black text-gray-800">
+                Latest <span className="text-[#168AFF]">Announcements</span>
+              </h2>
+              <p className="text-gray-500 text-sm max-w-sm mx-auto">
+                Stay updated with the latest news and promotions from QuickStock.
+              </p>
+            </div>
+
+            {/* Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {recentPosts.map(post => {
+                const date = new Date(post.created_at).toLocaleDateString('en-PH', {
+                  month: 'short', day: 'numeric', year: 'numeric',
+                })
+                return (
+                  <div key={post.id}
+                    className="bg-white rounded-2xl border border-gray-100 shadow-sm
+                      overflow-hidden hover:border-[#168AFF]/40 hover:shadow-md
+                      transition-all duration-300 flex flex-col">
+                    {post.image_url && (
+                      <div className="w-full h-44 overflow-hidden shrink-0">
+                        <img
+                          src={post.image_url}
+                          alt={post.title}
+                          className="w-full h-full object-cover hover:scale-105
+                            transition-transform duration-500"
+                        />
+                      </div>
+                    )}
+                    <div className="p-5 space-y-2.5 flex-1 flex flex-col">
+                      <p className="text-gray-400 text-xs flex items-center gap-1.5">
+                        <MdCalendarToday size={11} /> {date}
+                      </p>
+                      <h3 className="text-gray-800 font-bold text-base leading-snug">
+                        {post.title}
+                      </h3>
+                      <p className="text-gray-500 text-sm leading-relaxed line-clamp-3 flex-1">
+                        {post.content}
+                      </p>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+
+          </div>
+        </section>
+      )}
 
       {/* ── Call to Action ── */}
       <section className="py-14 px-4 bg-gray-900">

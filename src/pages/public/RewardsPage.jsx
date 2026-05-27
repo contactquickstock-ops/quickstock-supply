@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { MdStar, MdArrowForward, MdCheckCircle, MdCardGiftcard, MdImage, MdDiamond } from 'react-icons/md'
+import { MdStar, MdArrowForward, MdCheckCircle, MdCardGiftcard, MdImage, MdDiamond, MdCampaign } from 'react-icons/md'
 import PublicLayout from '../../layouts/PublicLayout'
 import { supabaseAdmin } from '../../services/supabaseAdmin'
 
@@ -27,17 +27,27 @@ function SkeletonCard() {
 
 export default function RewardsPage() {
   const [rewards, setRewards] = useState([])
+  const [posts,   setPosts]   = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function load() {
       setLoading(true)
-      const { data } = await supabaseAdmin
-        .from('rewards')
-        .select('id, name, description, points_required, image_url')
-        .eq('is_active', true)
-        .order('points_required', { ascending: true })
-      setRewards(data ?? [])
+      const [{ data: rewardsData }, { data: postsData }] = await Promise.all([
+        supabaseAdmin
+          .from('rewards')
+          .select('id, name, description, points_required, image_url')
+          .eq('is_active', true)
+          .order('points_required', { ascending: true }),
+        supabaseAdmin
+          .from('posts')
+          .select('id, title, content, image_url, created_at')
+          .eq('published', true)
+          .order('created_at', { ascending: false })
+          .limit(6),
+      ])
+      setRewards(rewardsData ?? [])
+      setPosts(postsData ?? [])
       setLoading(false)
     }
     load()
@@ -232,6 +242,57 @@ export default function RewardsPage() {
           </div>
         </div>
       </section>
+
+      {/* ── Reward Claim Posts ── */}
+      {posts.length > 0 && (
+        <section className="py-14 px-4 bg-white">
+          <div className="max-w-5xl mx-auto space-y-10">
+            <div className="text-center space-y-2">
+              <span className="text-[#168AFF] font-bold text-sm uppercase tracking-widest">
+                Reward Claims
+              </span>
+              <h2 className="text-3xl font-black text-gray-800">
+                Customers Claiming <span className="text-yellow-400">Rewards</span>
+              </h2>
+              <p className="text-gray-500 text-sm max-w-sm mx-auto">
+                See what our members are redeeming with their hard-earned points.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {posts.map(p => (
+                <div key={p.id}
+                  className="bg-white rounded-2xl border border-gray-100 shadow-sm
+                    flex flex-col overflow-hidden hover:shadow-md hover:border-[#168AFF]/30
+                    transition-all duration-300">
+                  {p.image_url ? (
+                    <div className="h-44 bg-gray-100 overflow-hidden shrink-0">
+                      <img src={p.image_url} alt={p.title} className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <div className="h-28 bg-[#168AFF]/5 flex items-center justify-center shrink-0">
+                      <MdCampaign size={40} className="text-[#168AFF]/20" />
+                    </div>
+                  )}
+                  <div className="p-5 flex flex-col gap-2 flex-1">
+                    <div className="flex items-center gap-1.5">
+                      <MdStar size={14} className="text-yellow-400 shrink-0" />
+                      <span className="text-[10px] font-bold text-yellow-600 uppercase tracking-wide">
+                        Reward Claimed
+                      </span>
+                    </div>
+                    <h3 className="text-gray-800 font-bold text-sm leading-snug line-clamp-2">
+                      {p.title}
+                    </h3>
+                    <p className="text-gray-500 text-xs leading-relaxed line-clamp-3 flex-1">
+                      {p.content}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ── CTA ── */}
       <section className="py-12 px-4 bg-linear-to-r from-[#168AFF] to-[#0D5FC4]">

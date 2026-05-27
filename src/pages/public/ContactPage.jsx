@@ -35,10 +35,6 @@ const FAQS = [
     a: 'Premium Membership costs ₱1,500 for the first 2 years. After that, renewal is ₱1,000 per year. Members earn reward points on every order and enjoy priority delivery. Apply through your account and upload your proof of payment for admin approval.',
   },
   {
-    q: 'Can I cancel my order?',
-    a: 'Orders can be cancelled before they are confirmed by our admin. Once confirmed, cancellations are no longer accepted. Contact us immediately via phone or email if you need to cancel.',
-  },
-  {
     q: 'What happens to my points if my membership expires?',
     a: 'Expired memberships stop earning new points. However, your existing points remain valid and can still be redeemed for rewards. You can renew your membership anytime — even before it expires — to continue earning.',
   },

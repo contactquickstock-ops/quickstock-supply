@@ -28,10 +28,6 @@ const FAQS = [
     a: 'Only active Premium Members earn reward points — 1 point for every ₱100 spent. Points are credited automatically once your order is delivered.',
   },
   {
-    q: 'Can I cancel my order?',
-    a: 'Orders can be cancelled before they are confirmed by our admin. Once confirmed, cancellations are no longer accepted. Contact us immediately if you need to cancel.',
-  },
-  {
     q: 'How does Premium Membership work?',
     a: 'Premium Membership costs ₱1,500 for the first 2 years. Renewal is ₱1,000/year. Members earn reward points on every delivered order. Apply through the Membership tab and upload your proof of payment.',
   },

@@ -18,7 +18,7 @@ function calcFees(subtotal, isMember) {
 }
 
 // ── GCash number to display — update this to your actual GCash number ──────────
-const GCASH_NUMBER = '09XX-XXX-XXXX'
+const GCASH_NUMBER = '0930-822-0901'
 const GCASH_NAME   = 'QuickStock Supply'
 
 export default function Checkout() {

@@ -39,6 +39,10 @@ const FAQS = [
     q: 'When can I apply for membership renewal?',
     a: 'You can apply for renewal anytime within 30 days before your membership expires, or after it has already expired. Simply go to the Membership tab and click "Renew Now".',
   },
+  {
+    q: 'Can I cancel my order?',
+    a: 'Yes, but only while your order status is Pending, Confirmed, or Assigned. Once the status changes to On the Way, cancellation is no longer allowed — your order is already en route. To cancel, go to My Orders, open the order, and tap "Cancel Order". You will need to provide a reason for cancellation.',
+  },
 ]
 
 const TC_SECTIONS = [
@@ -63,23 +67,27 @@ const TC_SECTIONS = [
     body: 'QuickStock Supply offers same-day delivery within business hours (8:00 AM – 8:00 PM). Orders placed after 8:00 PM will be delivered the next business day. We are not liable for delays caused by force majeure events such as typhoons, floods, or road closures.',
   },
   {
-    title: '6. Premium Membership',
+    title: '6. Cancellation Policy',
+    body: 'Customers may cancel an order only while the order status is Pending, Confirmed, or Assigned. Once the status changes to On the Way, cancellation is no longer possible — the order is already en route for delivery. To cancel, go to My Orders, open the order, and tap Cancel Order. A reason must be provided before the cancellation is processed. Cancellations are immediate and cannot be reversed. For concerns with an active delivery, contact our support team at 09304453799.',
+  },
+  {
+    title: '7. Premium Membership',
     body: 'Premium Membership is ₱1,500 for the first 2 years and ₱1,000/year for renewal. Applications require proof of payment and are subject to admin approval. Membership fees are non-refundable once approved. QuickStock Supply reserves the right to revoke membership for violations of these terms.',
   },
   {
-    title: '7. Rewards and Points',
+    title: '8. Rewards and Points',
     body: 'Only active Premium Members are eligible to earn reward points — 1 point per ₱100 spent on delivered orders. Points do not expire. Expired memberships stop earning points, but existing points remain redeemable. QuickStock Supply reserves the right to modify the rewards program at any time with prior notice.',
   },
   {
-    title: '8. Privacy and Data',
+    title: '9. Privacy and Data',
     body: 'We collect personal information (name, contact number, address, business details) solely to process orders and manage your account. Your information will not be shared with third parties without your consent, except as required by law.',
   },
   {
-    title: '9. Prohibited Conduct',
-    body: 'Users are prohibited from providing false information, uploading fake or edited payment proofs, creating multiple accounts to abuse promotions, or using the platform for any unlawful purpose.',
+    title: '10. Prohibited Conduct',
+    body: 'Users are prohibited from providing false information, creating multiple accounts to abuse promotions, or using the platform for any unlawful purpose.',
   },
   {
-    title: '10. Contact Us',
+    title: '11. Contact Us',
     body: 'For questions or concerns, contact us at contactquickstock@gmail.com, call us at 09304453799 (Monday–Sunday, 8:00 AM–8:00 PM), or visit us at Lubogan, Toril, Davao City.',
   },
 ]

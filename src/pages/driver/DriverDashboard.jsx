@@ -604,7 +604,7 @@ export default function DriverDashboard() {
       .from('orders')
       .select('*, customer:profiles!orders_customer_id_fkey(full_name, contact_number, membership_status, avatar_url, store_name, role), order_items(quantity, products(name, unit_type)), rewards(id, name, points_required)')
       .eq('driver_id', user.id)
-      .in('status', ['assigned', 'on_the_way'])
+      .in('status', ['assigned', 'on_the_way', 'cancelled'])
       .order('created_at', { ascending: false })
     if (err) setError('Failed to load deliveries.')
     else setOrders(data ?? [])
@@ -720,8 +720,16 @@ export default function DriverDashboard() {
     }
   }
 
-  const assignedCount = orders.filter(o => o.status === 'assigned').length
-  const onWayCount    = orders.filter(o => o.status === 'on_the_way').length
+  // Separate active deliveries from recently cancelled ones
+  // Show cancelled orders that were updated today (customer may have just cancelled)
+  const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0)
+  const activeOrders    = orders.filter(o => ['assigned', 'on_the_way'].includes(o.status))
+  const cancelledOrders = orders.filter(o =>
+    o.status === 'cancelled' && new Date(o.updated_at ?? o.created_at) >= todayStart
+  )
+
+  const assignedCount = activeOrders.filter(o => o.status === 'assigned').length
+  const onWayCount    = activeOrders.filter(o => o.status === 'on_the_way').length
 
   return (
     <DriverLayout>
@@ -732,7 +740,7 @@ export default function DriverDashboard() {
             <h2 className="text-xl font-bold text-gray-800">My Deliveries</h2>
             {!loading && (
               <p className="text-gray-400 text-sm mt-0.5">
-                {orders.length === 0
+                {activeOrders.length === 0
                   ? 'No active deliveries'
                   : `${assignedCount} assigned · ${onWayCount} on the way`}
               </p>
@@ -761,35 +769,94 @@ export default function DriverDashboard() {
             <SkeletonCard />
             <SkeletonCard />
           </div>
-        ) : orders.length === 0 ? (
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm
-            px-5 py-16 flex flex-col items-center gap-3 text-center">
-            <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
-              <MdDirectionsCar size={30} className="text-gray-300" />
-            </div>
-            <div>
-              <p className="font-semibold text-gray-500">No active deliveries</p>
-              <p className="text-gray-400 text-xs mt-1">
-                New assignments will appear here automatically.
-              </p>
-            </div>
-          </div>
         ) : (
-          <div className="space-y-4">
-            {orders.map(order => (
-              <DeliveryCard
-                key={order.id}
-                order={order}
-                busy={busyId === order.id}
-                onAccept={acceptDelivery}
-                onDeliver={o => setDeliverTarget(o)}
-                onReport={o => setReportTarget(o)}
-                chatOpen={chatOrderId === order.id}
-                onToggleChat={() => setChatOrderId(chatOrderId === order.id ? null : order.id)}
-                driverId={user.id}
-              />
-            ))}
-          </div>
+          <>
+            {/* ── Cancelled orders alert (customer-cancelled today) ── */}
+            {cancelledOrders.length > 0 && (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className="h-px flex-1 bg-red-100" />
+                  <span className="text-[10px] font-bold text-red-400 uppercase tracking-widest px-1">
+                    Cancelled Today
+                  </span>
+                  <div className="h-px flex-1 bg-red-100" />
+                </div>
+                {cancelledOrders.map(order => (
+                  <div key={order.id}
+                    className="bg-red-50 border border-red-200 rounded-2xl p-5 space-y-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-gray-700 font-bold text-sm font-mono tracking-wide">
+                        #{String(order.id).padStart(6,'0')}
+                      </p>
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full
+                        text-xs font-semibold bg-red-100 text-red-700 whitespace-nowrap">
+                        Cancelled
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-7 h-7 rounded-full bg-red-100 flex items-center
+                        justify-center font-bold text-xs text-red-500 shrink-0">
+                        {(order.customer_name ?? 'C')[0].toUpperCase()}
+                      </div>
+                      <p className="text-gray-700 text-sm font-semibold">{order.customer_name ?? '—'}</p>
+                    </div>
+                    {order.address && (
+                      <div className="flex items-start gap-2">
+                        <MdLocationOn size={14} className="text-gray-400 shrink-0 mt-0.5" />
+                        <p className="text-gray-500 text-xs leading-snug">{order.address}</p>
+                      </div>
+                    )}
+                    {order.cancellation_reason && (
+                      <div className="bg-white border border-red-100 rounded-xl px-3.5 py-3 space-y-1">
+                        <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest">
+                          Cancellation Reason
+                        </p>
+                        <p className="text-red-700 text-sm leading-relaxed">
+                          {order.cancellation_reason}
+                        </p>
+                      </div>
+                    )}
+                    <p className="text-red-400 text-xs text-center font-medium">
+                      Do not proceed with this delivery.
+                    </p>
+                  </div>
+                ))}
+                <div className="h-1" />
+              </div>
+            )}
+
+            {/* ── Active deliveries ── */}
+            {activeOrders.length === 0 ? (
+              <div className="bg-white rounded-2xl border border-gray-100 shadow-sm
+                px-5 py-16 flex flex-col items-center gap-3 text-center">
+                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center">
+                  <MdDirectionsCar size={30} className="text-gray-300" />
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-500">No active deliveries</p>
+                  <p className="text-gray-400 text-xs mt-1">
+                    New assignments will appear here automatically.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {activeOrders.map(order => (
+                  <DeliveryCard
+                    key={order.id}
+                    order={order}
+                    busy={busyId === order.id}
+                    onAccept={acceptDelivery}
+                    onDeliver={o => setDeliverTarget(o)}
+                    onReport={o => setReportTarget(o)}
+                    chatOpen={chatOrderId === order.id}
+                    onToggleChat={() => setChatOrderId(chatOrderId === order.id ? null : order.id)}
+                    driverId={user.id}
+                  />
+                ))}
+              </div>
+            )}
+          </>
         )}
       </div>
 

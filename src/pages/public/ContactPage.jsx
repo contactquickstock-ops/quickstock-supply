@@ -38,6 +38,10 @@ const FAQS = [
     q: 'What happens to my points if my membership expires?',
     a: 'Expired memberships stop earning new points. However, your existing points remain valid and can still be redeemed for rewards. You can renew your membership anytime — even before it expires — to continue earning.',
   },
+  {
+    q: 'Can I cancel my order?',
+    a: 'Yes, you can cancel your order as long as it has not yet been dispatched. Cancellation is allowed while the order status is Pending, Confirmed, or Assigned. Once the status changes to On the Way, cancellation is no longer possible. To cancel, log in, go to My Orders, open the order, and tap "Cancel Order." You will be required to provide a reason.',
+  },
 ]
 
 const WEB3FORMS_KEY = 'f9fe7cd7-4658-48d8-9e4c-027212395013'

@@ -11,12 +11,11 @@ import { useCart } from '../context/CartContext'
 import { supabase } from '../services/supabase'
 
 const NAV_ITEMS = [
-  { label: 'Browse',           icon: MdStorefront,     path: '/customer/dashboard'     },
-  { label: 'My Orders',        icon: MdReceipt,        path: '/customer/orders'        },
-  { label: 'Rewards',          icon: MdStar,           path: '/customer/rewards'       },
-  { label: 'Membership',       icon: MdCardMembership, path: '/customer/membership'    },
-  { label: 'Announcements',    icon: MdCampaign,       path: '/customer/announcements' },
-  { label: 'Customer Service', icon: MdSupportAgent,   path: '/customer/service'       },
+  { label: 'Browse',           icon: MdStorefront,     path: '/customer/dashboard'  },
+  { label: 'My Orders',        icon: MdReceipt,        path: '/customer/orders'     },
+  { label: 'Rewards',          icon: MdStar,           path: '/customer/rewards'    },
+  { label: 'Membership',       icon: MdCardMembership, path: '/customer/membership' },
+  { label: 'Customer Service', icon: MdSupportAgent,   path: '/customer/service'    },
 ]
 
 const PROFILE_LINKS = [

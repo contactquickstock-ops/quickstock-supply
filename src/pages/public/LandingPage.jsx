@@ -4,7 +4,7 @@ import {
   MdLocalShipping, MdStar, MdArrowForward,
   MdCheckCircle, MdShoppingCart,
   MdCardGiftcard, MdHeadsetMic,
-  MdPeople, MdVerified, MdCampaign, MdCalendarToday,
+  MdPeople, MdVerified, MdFormatQuote,
 } from 'react-icons/md'
 import PublicLayout from '../../layouts/PublicLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
@@ -37,16 +37,16 @@ const REWARD_CARDS = [
 ]
 
 export default function LandingPage() {
-  const [recentPosts, setRecentPosts] = useState([])
+  const [testimonials, setTestimonials] = useState([])
 
   useEffect(() => {
     supabase
-      .from('posts')
-      .select('id, title, content, image_url, created_at')
+      .from('testimonials')
+      .select('id, customer_name, store_type, message, photo_url')
       .eq('published', true)
       .order('created_at', { ascending: false })
-      .limit(3)
-      .then(({ data }) => setRecentPosts(data ?? []))
+      .limit(6)
+      .then(({ data }) => setTestimonials(data ?? []))
   }, [])
 
   return (
@@ -288,56 +288,68 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* ── Latest Announcements (only shown when there are published posts) ── */}
-      {recentPosts.length > 0 && (
-        <section className="py-14 px-4 bg-white">
+      {/* ── Testimonials (only shown when there are published ones) ── */}
+      {testimonials.length > 0 && (
+        <section className="py-14 px-4 bg-gray-50">
           <div className="max-w-7xl mx-auto space-y-10">
 
             {/* Heading */}
             <div className="text-center space-y-2">
-              <span className="inline-flex items-center gap-1.5 text-[#168AFF]
-                font-bold text-sm uppercase tracking-widest">
-                <MdCampaign size={16} /> Updates
+              <span className="text-[#168AFF] font-bold text-sm uppercase tracking-widest">
+                Testimonials
               </span>
               <h2 className="text-3xl font-black text-gray-800">
-                Latest <span className="text-[#168AFF]">Announcements</span>
+                What Our <span className="text-[#168AFF]">Customers Say</span>
               </h2>
               <p className="text-gray-500 text-sm max-w-sm mx-auto">
-                Stay updated with the latest news and promotions from QuickStock.
+                Real feedback from sari-sari stores, restaurants, and businesses
+                we serve every day.
               </p>
             </div>
 
             {/* Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {recentPosts.map(post => {
-                const date = new Date(post.created_at).toLocaleDateString('en-PH', {
-                  month: 'short', day: 'numeric', year: 'numeric',
-                })
+              {testimonials.map(t => {
+                const initials = (t.customer_name ?? '?')[0].toUpperCase()
                 return (
-                  <div key={post.id}
+                  <div key={t.id}
                     className="bg-white rounded-2xl border border-gray-100 shadow-sm
-                      overflow-hidden hover:border-[#168AFF]/40 hover:shadow-md
-                      transition-all duration-300 flex flex-col">
-                    {post.image_url && (
-                      <div className="w-full h-44 overflow-hidden shrink-0">
-                        <img
-                          src={post.image_url}
-                          alt={post.title}
-                          className="w-full h-full object-cover hover:scale-105
-                            transition-transform duration-500"
-                        />
+                      p-6 flex flex-col gap-4 hover:shadow-md hover:border-[#168AFF]/30
+                      transition-all duration-300">
+
+                    {/* Quote icon + stars */}
+                    <div className="flex items-center justify-between">
+                      <MdFormatQuote size={32} className="text-[#168AFF]/25 -scale-x-100" />
+                      <div className="flex items-center gap-0.5">
+                        {[1,2,3,4,5].map(s => (
+                          <MdStar key={s} size={14} className="text-yellow-400" />
+                        ))}
                       </div>
-                    )}
-                    <div className="p-5 space-y-2.5 flex-1 flex flex-col">
-                      <p className="text-gray-400 text-xs flex items-center gap-1.5">
-                        <MdCalendarToday size={11} /> {date}
-                      </p>
-                      <h3 className="text-gray-800 font-bold text-base leading-snug">
-                        {post.title}
-                      </h3>
-                      <p className="text-gray-500 text-sm leading-relaxed line-clamp-3 flex-1">
-                        {post.content}
-                      </p>
+                    </div>
+
+                    {/* Message */}
+                    <p className="text-gray-600 text-sm leading-relaxed italic flex-1 line-clamp-4">
+                      "{t.message}"
+                    </p>
+
+                    {/* Person */}
+                    <div className="flex items-center gap-3 pt-3 border-t border-gray-50">
+                      <div className="w-11 h-11 rounded-full overflow-hidden bg-[#168AFF]/10
+                        text-[#168AFF] flex items-center justify-center font-bold text-base
+                        shrink-0">
+                        {t.photo_url
+                          ? <img src={t.photo_url} alt={t.customer_name}
+                              className="w-full h-full object-cover" />
+                          : initials}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-gray-800 font-bold text-sm truncate">
+                          {t.customer_name}
+                        </p>
+                        {t.store_type && (
+                          <p className="text-gray-400 text-xs truncate">{t.store_type}</p>
+                        )}
+                      </div>
                     </div>
                   </div>
                 )

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
-import { MdStar, MdCheckCircle, MdShoppingCart } from 'react-icons/md'
+import { MdStar, MdCheckCircle, MdShoppingCart, MdFormatQuote } from 'react-icons/md'
 import CustomerLayout from '../../layouts/CustomerLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
 import { useAuth } from '../../context/AuthContext'
@@ -113,30 +113,39 @@ function RewardCard({ reward, canRedeem, myPoints }) {
 }
 
 export default function CustomerRewards() {
-  const { user }              = useAuth()
-  const [points, setPoints]   = useState(null)
-  const [rewards, setRewards] = useState([])
-  const [loading, setLoading] = useState(true)
+  const { user }                      = useAuth()
+  const [points,       setPoints]       = useState(null)
+  const [rewards,      setRewards]      = useState([])
+  const [loading,      setLoading]      = useState(true)
+  const [testimonials, setTestimonials] = useState([])
 
   const fetchData = useCallback(async () => {
     if (!user) return
     setLoading(true)
 
-    const [{ data: pointsRow }, { data: rewardsData }] = await Promise.all([
-      supabase
-        .from('customer_points')
-        .select('total_points')
-        .eq('customer_id', user.id)
-        .maybeSingle(),
-      supabase
-        .from('rewards')
-        .select('*')
-        .eq('is_active', true)
-        .order('points_required', { ascending: true }),
-    ])
+    const [{ data: pointsRow }, { data: rewardsData }, { data: testimonialsData }] =
+      await Promise.all([
+        supabase
+          .from('customer_points')
+          .select('total_points')
+          .eq('customer_id', user.id)
+          .maybeSingle(),
+        supabase
+          .from('rewards')
+          .select('*')
+          .eq('is_active', true)
+          .order('points_required', { ascending: true }),
+        supabase
+          .from('testimonials')
+          .select('id, customer_name, store_type, message, photo_url')
+          .eq('published', true)
+          .order('created_at', { ascending: false })
+          .limit(6),
+      ])
 
     setPoints(pointsRow?.total_points ?? 0)
     setRewards(rewardsData ?? [])
+    setTestimonials(testimonialsData ?? [])
     setLoading(false)
   }, [user])
 
@@ -180,6 +189,68 @@ export default function CustomerRewards() {
             </div>
           )}
         </div>
+
+        {/* ── Testimonials ── */}
+        {!loading && testimonials.length > 0 && (
+          <div className="space-y-4 pt-2">
+            <div className="border-t border-gray-100 pt-6">
+              <h3 className="text-gray-700 font-bold text-base">
+                What Our Customers Say
+              </h3>
+              <p className="text-gray-400 text-xs mt-0.5">
+                Real feedback from fellow store owners and business partners
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {testimonials.map(t => {
+                const initials = (t.customer_name ?? '?')[0].toUpperCase()
+                return (
+                  <div key={t.id}
+                    className="bg-white rounded-2xl border border-gray-100 shadow-sm
+                      p-5 flex flex-col gap-3">
+
+                    {/* Quote icon + stars */}
+                    <div className="flex items-center justify-between">
+                      <MdFormatQuote size={28} className="text-[#168AFF]/20 -scale-x-100" />
+                      <div className="flex items-center gap-0.5">
+                        {[1,2,3,4,5].map(s => (
+                          <MdStar key={s} size={13} className="text-yellow-400" />
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Message */}
+                    <p className="text-gray-600 text-sm leading-relaxed italic flex-1 line-clamp-4">
+                      "{t.message}"
+                    </p>
+
+                    {/* Person */}
+                    <div className="flex items-center gap-3 pt-2.5 border-t border-gray-50">
+                      <div className="w-10 h-10 rounded-full overflow-hidden
+                        bg-[#168AFF]/10 text-[#168AFF] flex items-center
+                        justify-center font-bold text-sm shrink-0">
+                        {t.photo_url
+                          ? <img src={t.photo_url} alt={t.customer_name}
+                              className="w-full h-full object-cover" />
+                          : initials}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-gray-800 font-bold text-sm truncate">
+                          {t.customer_name}
+                        </p>
+                        {t.store_type && (
+                          <p className="text-gray-400 text-xs truncate">{t.store_type}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        )}
+
       </div>
     </CustomerLayout>
   )

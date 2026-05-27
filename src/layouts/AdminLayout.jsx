@@ -17,7 +17,7 @@ const NAV_ITEMS = [
   { label: 'Products',    icon: MdInventory2,      path: '/admin/products'    },
   { label: 'Memberships', icon: MdCardMembership,  path: '/admin/memberships' },
   { label: 'Rewards',     icon: MdStar,            path: '/admin/rewards'     },
-  { label: 'Posts',       icon: MdCampaign,        path: '/admin/posts'       },
+  { label: 'Testimonials', icon: MdCampaign,        path: '/admin/posts'       },
 ]
 
 export default function AdminLayout({ children, pageTitle = 'Dashboard' }) {

@@ -653,11 +653,13 @@ export default function DriverDashboard() {
 
       let balance = currentPts?.total_points ?? 0
 
-      // 3. Award points — all customers earn 1 pt per ₱100 spent
-      const pointsEarned = Math.floor((order.total ?? 0) / 100)
+      // 3. Award points — only active members earn 1 pt per ₱100 spent
+      //    Expired / no membership: earns 0 pts but keeps existing balance + can still redeem
+      const isActiveMember = order.customer?.membership_status === 'active'
+      const pointsEarned   = isActiveMember ? Math.floor((order.total ?? 0) / 100) : 0
       balance += pointsEarned
 
-      // 4. Deduct reward points if a reward was applied
+      // 4. Deduct reward points if a reward was applied (all customers can redeem)
       const reward = order.rewards
       let rewardMsg = ''
       if (reward?.id) {
@@ -673,19 +675,24 @@ export default function DriverDashboard() {
         rewardMsg = ` · "${reward.name}" redeemed`
       }
 
-      // 5. Save final balance (insert row for first-time earners, update otherwise)
-      const { error: upsertErr } = await supabase
-        .from('customer_points')
-        .upsert(
-          { customer_id: order.customer_id, total_points: balance },
-          { onConflict: 'customer_id' }
-        )
-      if (upsertErr) throw new Error(upsertErr.message)
+      // 5. Save final balance only if something changed (points earned or reward deducted)
+      if (pointsEarned > 0 || reward?.id) {
+        const { error: upsertErr } = await supabase
+          .from('customer_points')
+          .upsert(
+            { customer_id: order.customer_id, total_points: balance },
+            { onConflict: 'customer_id' }
+          )
+        if (upsertErr) throw new Error(upsertErr.message)
+      }
 
       // 6. Remove from active list
       setOrders(prev => prev.filter(o => o.id !== order.id))
       setDeliverTarget(null)
-      toast.success(`Delivered! +${pointsEarned} pts earned${rewardMsg}.`)
+      const ptsMsg = pointsEarned > 0
+        ? `+${pointsEarned} pts earned`
+        : isActiveMember ? '+0 pts' : 'No pts (no active membership)'
+      toast.success(`Delivered! ${ptsMsg}${rewardMsg}.`)
     } catch (err) {
       toast.error('Failed to confirm delivery: ' + err.message)
     } finally {

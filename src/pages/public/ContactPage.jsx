@@ -16,7 +16,7 @@ const FAQS = [
   },
   {
     q: 'How long does delivery take?',
-    a: 'We offer same-day delivery for orders confirmed before 3:00 PM. Orders confirmed after 3:00 PM will be delivered the next available business day.',
+    a: 'We offer same-day delivery. Orders will be delivered on the same day they are confirmed, subject to availability.',
   },
   {
     q: 'Is there a minimum order amount?',

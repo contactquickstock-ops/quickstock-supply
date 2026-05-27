@@ -13,7 +13,7 @@ const FB_URL = 'https://www.facebook.com/profile.php?id=61570722723997'
 const FAQS = [
   {
     q: 'How long does delivery take?',
-    a: 'We offer same-day delivery for orders confirmed before 3:00 PM. Orders confirmed after 3:00 PM will be delivered the next available business day.',
+    a: 'We offer same-day delivery. Orders will be delivered on the same day they are confirmed, subject to availability.',
   },
   {
     q: 'Is there a minimum order amount?',
@@ -64,7 +64,7 @@ const TC_SECTIONS = [
   },
   {
     title: '5. Delivery Policy',
-    body: 'QuickStock Supply offers same-day delivery. Orders must be placed and confirmed before 3:00 PM to qualify. Orders confirmed after 3:00 PM are scheduled for the next available delivery day. We are not liable for delays caused by force majeure events such as typhoons, floods, or road closures.',
+    body: 'QuickStock Supply offers same-day delivery. Orders will be delivered on the same day they are confirmed, subject to availability. We are not liable for delays caused by force majeure events such as typhoons, floods, or road closures.',
   },
   {
     title: '6. Premium Membership',

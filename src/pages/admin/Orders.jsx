@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import {
   MdSearch, MdCheckCircle, MdDirectionsCar, MdCancel,
   MdClose, MdLocationOn, MdNotes, MdImage,
+  MdPayment, MdSmartphone, MdOpenInNew,
 } from 'react-icons/md'
 import AdminLayout from '../../layouts/AdminLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
@@ -185,6 +186,51 @@ function OrderDetailModal({ order, items, loadingItems, onClose }) {
               <span>Total</span>
               <span className="text-[#168AFF]">₱{fmtMoney(order.total)}</span>
             </div>
+          </div>
+
+          {/* Payment method + proof */}
+          <div>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest
+              mb-2 flex items-center gap-1">
+              <MdPayment size={12} /> Payment
+            </p>
+            <div className={`flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-sm font-semibold
+              ${order.payment_method === 'gcash'
+                ? 'bg-blue-50 border border-blue-100 text-blue-700'
+                : 'bg-gray-50 border border-gray-100 text-gray-600'}`}>
+              {order.payment_method === 'gcash'
+                ? <><MdSmartphone size={16} className="shrink-0" /> GCash</>
+                : <><MdPayment size={16} className="shrink-0" /> Cash on Delivery</>}
+            </div>
+
+            {/* GCash proof */}
+            {order.payment_method === 'gcash' && (
+              <div className="mt-3 space-y-2">
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                  Payment Proof
+                </p>
+                {order.payment_proof ? (
+                  <>
+                    <img
+                      src={order.payment_proof}
+                      alt="GCash payment proof"
+                      className="w-full rounded-xl object-contain max-h-72
+                        border border-gray-100 shadow-sm bg-gray-50"
+                    />
+                    <a
+                      href={order.payment_proof}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 text-xs text-[#168AFF]
+                        font-semibold hover:underline">
+                      <MdOpenInNew size={13} /> Open full image
+                    </a>
+                  </>
+                ) : (
+                  <p className="text-gray-400 text-xs italic">No proof uploaded.</p>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Delivery address */}
@@ -588,7 +634,7 @@ export default function AdminOrders() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-gray-50 text-gray-400 text-xs uppercase tracking-wider">
-                  {['Order ID', 'Customer', 'Date', 'Status', 'Total',
+                  {['Order ID', 'Customer', 'Date', 'Status', 'Payment', 'Total',
                     'Driver', 'Actions'].map(h => (
                     <th key={h} className="px-5 py-3 text-left font-medium
                       whitespace-nowrap">
@@ -599,10 +645,10 @@ export default function AdminOrders() {
               </thead>
               <tbody>
                 {loading ? (
-                  <SkeletonRows cols={7} rows={6} />
+                  <SkeletonRows cols={8} rows={6} />
                 ) : filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-5 py-14 text-center
+                    <td colSpan={8} className="px-5 py-14 text-center
                       text-gray-400 text-sm">
                       {search || filter !== 'all'
                         ? 'No orders match your filter.'
@@ -642,6 +688,24 @@ export default function AdminOrders() {
                         {/* Status */}
                         <td className="px-5 py-4">
                           <StatusBadge status={order.status} />
+                        </td>
+
+                        {/* Payment */}
+                        <td className="px-5 py-4 whitespace-nowrap">
+                          {order.payment_method === 'gcash' ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5
+                              bg-blue-100 text-blue-700 text-xs font-bold rounded-full">
+                              <MdSmartphone size={11} /> GCash
+                              {order.payment_proof
+                                ? <MdCheckCircle size={11} className="text-green-500" />
+                                : <span className="text-orange-500 text-[10px]">⚠</span>}
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5
+                              bg-gray-100 text-gray-500 text-xs font-semibold rounded-full">
+                              <MdPayment size={11} /> COD
+                            </span>
+                          )}
                         </td>
 
                         {/* Total */}

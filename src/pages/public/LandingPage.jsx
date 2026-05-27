@@ -10,7 +10,7 @@ import PublicLayout from '../../layouts/PublicLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
 
 const FEATURES = [
-  { icon: MdLocalShipping, title: 'Fast Delivery',                             desc: 'Same-day delivery right to your store — quick, efficient, and hassle-free.'              },
+  { icon: MdLocalShipping, title: 'Fast Delivery',                             desc: 'Same-day delivery right to your store within business hours (8:00 AM – 8:00 PM). Orders after 8:00 PM are delivered the next day.'              },
   { icon: MdVerified,      title: 'Quality Products',                          desc: 'Every item is checked for freshness and quality before it reaches you.'                   },
   { icon: MdCardGiftcard,  title: 'Rewards & Points (For Premium Members Only)', desc: 'Earn 1 point for every ₱100 spent and redeem them for exclusive rewards.'              },
   { icon: MdHeadsetMic,    title: 'Quality Customer Service',                  desc: 'Our dedicated team is always here to assist you with every concern, every step of the way.' },
@@ -19,7 +19,7 @@ const FEATURES = [
 const STEPS = [
   { n: '01', title: 'Create Account', desc: 'Register and wait for admin approval to activate your account.'      },
   { n: '02', title: 'Browse & Order', desc: 'Browse our catalog, add items to your cart, and place your order.'   },
-  { n: '03', title: 'Get Delivered',  desc: 'A driver is assigned and your order arrives directly at your store.' },
+  { n: '03', title: 'Get Delivered',  desc: 'A driver is assigned and delivers to your store within business hours (8:00 AM – 8:00 PM). Orders after 8:00 PM arrive the next day.' },
 ]
 
 const STATS = [

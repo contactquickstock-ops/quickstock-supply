@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import PublicLayout from '../../layouts/PublicLayout'
 
 const VALUES = [
-  { icon: MdLocalShipping, title: 'Speed',    desc: 'We deliver same-day so your store or your business never runs out of essentials.'     },
+  { icon: MdLocalShipping, title: 'Speed',    desc: 'We deliver same-day within business hours (8:00 AM – 8:00 PM). Orders after 8:00 PM are delivered the next day.'     },
   { icon: MdVerified,      title: 'Quality',  desc: 'We source only fresh, high-quality products for every order.'                         },
   { icon: MdCardGiftcard,  title: 'Generosity', desc: 'We reward loyalty — Premium clients earn points on every purchase.'               },
   { icon: MdHeadsetMic,    title: 'Service',  desc: 'Our team is always here to assist you every step of the way.'                         },
@@ -50,7 +50,7 @@ export default function AboutPage() {
             <div className="space-y-2.5 pt-2">
               {[
                 'Wide selection of quality essential products',
-                'Fast same-day delivery by trusted drivers',
+                'Fast same-day delivery within business hours (8:00 AM – 8:00 PM)',
                 'Rewards points on every purchase (For Premium Clients)',
                 '₱1,000 annual renewal to stay Premium and continue earning points',
               ].map(item => (

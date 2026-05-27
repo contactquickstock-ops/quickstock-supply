@@ -16,7 +16,7 @@ const FAQS = [
   },
   {
     q: 'How long does delivery take?',
-    a: 'We offer same-day delivery. Orders will be delivered on the same day they are confirmed, subject to availability.',
+    a: 'We offer same-day delivery within business hours (8:00 AM – 8:00 PM). Orders placed after 8:00 PM will be delivered the next business day.',
   },
   {
     q: 'Is there a minimum order amount?',

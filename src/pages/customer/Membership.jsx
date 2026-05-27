@@ -299,8 +299,8 @@ function ApplyForm({ onSubmitted, isRenewal = false }) {
         </h3>
         <p className="text-gray-400 text-xs mb-5">
           {isRenewal
-            ? 'Pay the ₱1,000 renewal fee and upload your proof of payment (receipt photo or GCash screenshot). Once approved, your membership will be reactivated and you\'ll start earning points again.'
-            : 'Upload your payment proof to start your application. This should be a clear photo of your official receipt, or a screenshot of your GCash payment confirmation.'}
+            ? 'Pay the ₱1,000 renewal fee and upload your proof of payment (official receipt photo). Once approved, your membership will be reactivated and you\'ll start earning points again.'
+            : 'Upload your payment proof to start your application. This should be a clear photo of your official receipt.'}
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -317,7 +317,7 @@ function ApplyForm({ onSubmitted, isRenewal = false }) {
             <label className="block text-xs font-semibold text-gray-600 mb-1.5">
               Payment Proof <span className="text-red-500">*</span>
               <span className="text-gray-400 font-normal ml-1">
-                (receipt photo or GCash screenshot)
+                (official receipt photo)
               </span>
             </label>
             <div
@@ -352,8 +352,7 @@ function ApplyForm({ onSubmitted, isRenewal = false }) {
                     Click to upload payment proof
                   </span>
                   <span className="text-[11px] text-gray-400 leading-relaxed">
-                    Take a photo of your <strong className="text-gray-500">official receipt</strong>, or
-                    upload a <strong className="text-gray-500">GCash payment screenshot</strong>
+                    Take a clear photo of your <strong className="text-gray-500">official receipt</strong> and upload it here
                   </span>
                   <span className="text-[10px] text-gray-300">JPG, PNG, or WEBP</span>
                 </div>

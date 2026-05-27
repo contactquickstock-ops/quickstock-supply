@@ -21,7 +21,7 @@ const FAQS = [
   },
   {
     q: 'What payment methods are accepted?',
-    a: 'We accept Cash on Delivery (COD) and GCash. For GCash, send the exact amount to our official GCash number and upload your payment screenshot during checkout. Our admin will verify it before confirming your order.',
+    a: 'We only accept Cash on Delivery (COD). Pay in cash when your order arrives at your door. No advance payment is required.',
   },
   {
     q: 'How do I earn reward points?',
@@ -56,7 +56,7 @@ const TC_SECTIONS = [
   },
   {
     title: '4. Orders and Payment',
-    body: 'Orders are subject to product availability. Accepted payment methods are Cash on Delivery (COD) and GCash. For GCash payments, you must upload a real and unaltered screenshot of your payment confirmation. Our admin reviews all GCash proofs before accepting your order. Submitting fake or manipulated payment proofs is grounds for immediate account termination. Free delivery applies to orders ₱500 and above. A ₱25 delivery fee applies to orders below ₱500 unless you have an active Premium Membership.',
+    body: 'Orders are subject to product availability. Payment is Cash on Delivery (COD) only — pay in cash when your order arrives at your door. No advance payment is required. Free delivery applies to orders ₱500 and above. A ₱25 delivery fee applies to orders below ₱500 unless you have an active Premium Membership.',
   },
   {
     title: '5. Delivery Policy',

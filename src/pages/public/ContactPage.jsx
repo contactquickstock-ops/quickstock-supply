@@ -24,7 +24,7 @@ const FAQS = [
   },
   {
     q: 'What payment methods are accepted?',
-    a: 'We accept Cash on Delivery (COD) and GCash. For GCash payments, you must send the exact amount to our official GCash number and upload a screenshot of your payment confirmation during checkout. Our admin will verify your proof before confirming your order.',
+    a: 'We accept Cash on Delivery (COD) only. Pay in cash when your order is delivered to your door. No advance payment is required.',
   },
   {
     q: 'How do I earn reward points?',

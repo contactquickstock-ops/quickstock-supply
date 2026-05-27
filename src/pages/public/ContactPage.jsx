@@ -12,27 +12,35 @@ const FB_URL = 'https://www.facebook.com/profile.php?id=61570722723997'
 const FAQS = [
   {
     q: 'How do I create an account?',
-    a: 'Click "Sign Up" at the top of the page, fill in your details, and wait for admin approval before you can start ordering.',
+    a: 'Click "Sign Up" at the top of the page, fill in your business details, and wait for admin approval. Once approved, you can start browsing and placing orders.',
   },
   {
     q: 'How long does delivery take?',
-    a: 'We aim for same-day delivery for orders placed before 3 PM. Orders placed after 3 PM are delivered the next business day.',
+    a: 'We offer same-day delivery for orders confirmed before 3:00 PM. Orders confirmed after 3:00 PM will be delivered the next available business day.',
   },
   {
     q: 'Is there a minimum order amount?',
-    a: 'There is no minimum order amount. However, orders below ₱500 incur a ₱25 delivery fee. Orders ₱500 and above get FREE delivery.',
-  },
-  {
-    q: 'How do I earn reward points?',
-    a: 'You automatically earn 1 point for every ₱100 you spend. Points are credited once your order is delivered.',
+    a: 'There is no minimum order amount. However, orders below ₱500 incur a ₱25 delivery fee. Orders ₱500 and above enjoy FREE delivery.',
   },
   {
     q: 'What payment methods are accepted?',
-    a: 'We currently accept Cash on Delivery (COD). Additional payment methods will be added soon.',
+    a: 'We accept Cash on Delivery (COD) and GCash. For GCash payments, you must send the exact amount to our official GCash number and upload a screenshot of your payment confirmation during checkout. Our admin will verify your proof before confirming your order.',
+  },
+  {
+    q: 'How do I earn reward points?',
+    a: 'Only active Premium Members earn reward points — 1 point for every ₱100 spent. Points are credited automatically once your order is delivered. Non-members do not earn points.',
+  },
+  {
+    q: 'How does Premium Membership work?',
+    a: 'Premium Membership costs ₱1,500 for the first 2 years. After that, renewal is ₱1,000 per year. Members earn reward points on every order and enjoy priority delivery. Apply through your account and upload your proof of payment for admin approval.',
   },
   {
     q: 'Can I cancel my order?',
-    a: 'Orders can be cancelled before they are confirmed by our admin. Contact us immediately if you need to cancel.',
+    a: 'Orders can be cancelled before they are confirmed by our admin. Once confirmed, cancellations are no longer accepted. Contact us immediately via phone or email if you need to cancel.',
+  },
+  {
+    q: 'What happens to my points if my membership expires?',
+    a: 'Expired memberships stop earning new points. However, your existing points remain valid and can still be redeemed for rewards. You can renew your membership anytime — even before it expires — to continue earning.',
   },
 ]
 

@@ -238,10 +238,12 @@ export default function LandingPage() {
               We make restocking easy, fast, and rewarding for your business.
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-3 -mx-4 px-4
+            sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:overflow-visible sm:pb-0 sm:mx-0 sm:px-0">
             {FEATURES.map(({ icon: Icon, title, desc }) => (
               <div key={title}
-                className="group bg-white rounded-2xl border border-gray-100 p-6
+                className="group min-w-[78vw] sm:min-w-0 snap-start shrink-0 sm:shrink
+                  bg-white rounded-2xl border border-gray-100 p-6
                   hover:border-[#168AFF] hover:bg-blue-50 transition-all duration-300
                   space-y-3 text-center">
                 <div className="w-14 h-14 bg-[#168AFF] group-hover:bg-[#5BABFF] rounded-2xl

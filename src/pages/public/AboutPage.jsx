@@ -64,7 +64,7 @@ export default function AboutPage() {
               rounded-2xl px-4 py-3 mt-1">
               <MdLocalShipping size={20} className="text-[#168AFF] shrink-0" />
               <p className="text-[#168AFF] text-sm font-semibold leading-snug">
-                Redeem for free delivery — Priority deliveries for Premium clients.
+                Convenience at its best
               </p>
             </div>
           </div>

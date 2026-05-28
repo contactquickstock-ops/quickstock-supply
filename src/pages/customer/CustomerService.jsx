@@ -140,7 +140,7 @@ export default function CustomerService() {
         </div>
 
         {/* Contact info cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {[
             { icon: MdPhone, label: 'Phone', value: '09304453799',                sub: 'Mon–Sun, 8:00AM–8:00PM' },
             { icon: MdEmail, label: 'Email', value: 'contactquickstock@gmail.com', sub: 'We reply within 24h'    },

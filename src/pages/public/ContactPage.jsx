@@ -38,10 +38,6 @@ const FAQS = [
     q: 'What happens to my points if my membership expires?',
     a: 'Expired memberships stop earning new points. However, your existing points remain valid and can still be redeemed for rewards. You can renew your membership anytime — even before it expires — to continue earning.',
   },
-  {
-    q: 'Can I cancel my order?',
-    a: 'Yes, you can cancel your order as long as it has not yet been dispatched. Cancellation is allowed while the order status is Pending, Confirmed, or Assigned. Once the status changes to On the Way, cancellation is no longer possible. To cancel, log in, go to My Orders, open the order, and tap "Cancel Order." You will be required to provide a reason.',
-  },
 ]
 
 const WEB3FORMS_KEY = 'f9fe7cd7-4658-48d8-9e4c-027212395013'
@@ -107,7 +103,7 @@ export default function ContactPage() {
             <span className="text-[#168AFF] font-bold text-sm uppercase tracking-widest">Get In Touch</span>
             <h2 className="text-3xl font-black text-gray-800">Contact Information</h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {[
               { icon: MdPhone, label: 'Phone', value: '09304453799',                sub: 'Mon–Sun, 8:00AM–8:00PM' },
               { icon: MdEmail, label: 'Email', value: 'contactquickstock@gmail.com', sub: 'We reply within 24h' },

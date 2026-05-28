@@ -51,6 +51,11 @@ function ProductCard({ product, isAdding, onAddToCart }) {
         <h4 className="text-gray-800 font-bold text-sm leading-snug line-clamp-2 mt-0.5">
           {product.name}
         </h4>
+        {product.description && (
+          <p className="text-gray-400 text-[11px] leading-relaxed line-clamp-2 mt-0.5">
+            {product.description}
+          </p>
+        )}
         <p className="text-gray-800 font-bold text-base mt-auto pt-2">
           ₱{Number(product.price ?? 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
           <span className="text-gray-400 font-normal text-xs">

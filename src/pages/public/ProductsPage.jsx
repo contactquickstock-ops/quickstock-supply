@@ -177,6 +177,11 @@ export default function ProductsPage() {
                         </p>
                       )}
                       <p className="text-gray-800 font-semibold text-xs leading-snug line-clamp-2">{product.name}</p>
+                      {product.description && (
+                        <p className="text-gray-400 text-[10px] leading-relaxed line-clamp-2">
+                          {product.description}
+                        </p>
+                      )}
                       {product.unit_type && (
                         <p className="text-gray-400 text-[10px]">per {product.unit_type}</p>
                       )}

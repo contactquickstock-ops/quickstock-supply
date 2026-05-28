@@ -68,75 +68,8 @@ export default function AboutPage() {
               </p>
             </div>
           </div>
-          {/* Sari-sari store illustration */}
-          <div className="order-1 lg:order-2 rounded-3xl overflow-hidden border border-blue-100 shadow-sm h-72 sm:h-80 relative select-none">
-
-            {/* Sky */}
-            <div className="absolute inset-0 bg-gradient-to-b from-sky-300 via-sky-200 to-sky-100" />
-
-            {/* Sun */}
-            <div className="absolute top-5 left-6 w-10 h-10 bg-yellow-300 rounded-full shadow-md opacity-90" />
-            <div className="absolute top-5 left-6 w-10 h-10 bg-yellow-200 rounded-full animate-ping opacity-30" />
-
-            {/* Ground */}
-            <div className="absolute bottom-0 left-0 right-0 h-14 bg-stone-300" />
-            <div className="absolute bottom-14 left-0 right-0 h-1 bg-stone-400 opacity-40" />
-
-            {/* ── Store ── */}
-            <div className="absolute bottom-14 left-6 right-16">
-
-              {/* QuickStock sign */}
-              <div className="bg-[#168AFF] py-1.5 px-3 rounded-t-xl text-center shadow">
-                <span className="text-white font-black text-[11px] tracking-wider">⚡ QuickStock Supply</span>
-              </div>
-
-              {/* Striped awning */}
-              <div className="h-4 flex overflow-hidden rounded-none">
-                {Array.from({ length: 14 }).map((_, i) => (
-                  <div key={i} className={`flex-1 ${i % 2 === 0 ? 'bg-[#168AFF]' : 'bg-white'}`} />
-                ))}
-              </div>
-
-              {/* Store body */}
-              <div className="bg-amber-50 border-2 border-amber-200 h-36 relative">
-
-                {/* Product shelves */}
-                <div className="absolute top-2 left-2 right-2 h-20 bg-white rounded border border-gray-200 overflow-hidden">
-                  <div className="text-[8px] text-gray-400 font-semibold px-2 pt-1">Products</div>
-                  <div className="flex gap-0.5 items-end px-2 pb-1 h-12">
-                    {[
-                      ['bg-red-400',    'h-8'],  ['bg-blue-400',   'h-6'],
-                      ['bg-green-400',  'h-10'], ['bg-yellow-400', 'h-7'],
-                      ['bg-purple-400', 'h-9'],  ['bg-orange-400', 'h-8'],
-                      ['bg-pink-400',   'h-6'],  ['bg-teal-400',   'h-10'],
-                      ['bg-indigo-400', 'h-7'],  ['bg-rose-400',   'h-9'],
-                    ].map(([c, h], i) => (
-                      <div key={i} className={`flex-1 ${c} ${h} rounded-sm opacity-75`} />
-                    ))}
-                  </div>
-                </div>
-
-                {/* Counter */}
-                <div className="absolute bottom-0 left-0 right-0 h-10 bg-amber-200 border-t-2 border-amber-300 rounded-b" />
-
-                {/* Tindera */}
-                <div className="absolute bottom-9 right-2 flex flex-col items-center gap-0">
-                  <span className="text-3xl leading-none">👩</span>
-                  <span className="text-[8px] text-amber-700 font-bold">Tindera</span>
-                </div>
-
-              </div>
-            </div>
-
-            {/* QuickStock delivery beside store */}
-            <div className="absolute bottom-14 right-2 flex flex-col items-center gap-1">
-              <div className="bg-[#168AFF] rounded-xl px-2 py-2 shadow-xl text-center">
-                <span className="text-2xl block leading-none">🛒</span>
-                <span className="text-white text-[8px] font-black block mt-0.5">QuickStock</span>
-              </div>
-              <span className="text-[8px] text-stone-500 font-semibold">Delivery</span>
-            </div>
-
+          <div className="order-1 lg:order-2 bg-blue-50 rounded-3xl p-8 flex items-center justify-center border border-blue-100">
+            <img src="/logo.jpg" alt="QuickStock Supply" className="w-64 h-64 object-contain" />
           </div>
         </div>
       </section>

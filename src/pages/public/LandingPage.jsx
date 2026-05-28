@@ -301,10 +301,10 @@ export default function LandingPage() {
               Redeem your points for exclusive rewards and discounts.
             </p>
             <Link to="/rewards"
-              className="btn-glow flex items-center justify-center gap-3 px-10 py-4 bg-yellow-400
+              className="btn-glow inline-flex items-center justify-center gap-2 px-6 py-3 bg-yellow-400
                 text-gray-900 font-black rounded-xl hover:bg-yellow-300
-                transition text-base w-full sm:w-auto">
-              View Rewards <MdArrowForward size={22} />
+                transition text-sm">
+              View Rewards <MdArrowForward size={18} />
             </Link>
           </div>
           <div className="hidden lg:grid grid-cols-2 gap-4">

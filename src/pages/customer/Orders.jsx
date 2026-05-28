@@ -12,16 +12,26 @@ import toast from 'react-hot-toast'
 
 // ── Status config ─────────────────────────────────────────────────────────────
 
+// Customer-facing statuses — internal "confirmed" and "assigned" both show as "Pending"
 const STATUS_CONFIG = {
-  pending:    { color: 'bg-yellow-100 text-yellow-700',  label: 'Pending'    },
-  confirmed:  { color: 'bg-blue-100   text-blue-700',    label: 'Confirmed'  },
-  assigned:   { color: 'bg-purple-100 text-purple-700',  label: 'Assigned'   },
-  on_the_way: { color: 'bg-orange-100 text-orange-700',  label: 'On the Way' },
-  delivered:  { color: 'bg-green-100  text-green-700',   label: 'Delivered'  },
-  cancelled:  { color: 'bg-red-100    text-red-700',     label: 'Cancelled'  },
+  pending:    { color: 'bg-yellow-100 text-yellow-700', label: 'Pending'    },
+  confirmed:  { color: 'bg-yellow-100 text-yellow-700', label: 'Pending'    },
+  assigned:   { color: 'bg-yellow-100 text-yellow-700', label: 'Pending'    },
+  on_the_way: { color: 'bg-orange-100 text-orange-700', label: 'On the Way' },
+  delivered:  { color: 'bg-green-100  text-green-700',  label: 'Delivered'  },
+  cancelled:  { color: 'bg-red-100    text-red-700',    label: 'Cancelled'  },
 }
 
-const ORDER_STEPS = ['pending', 'confirmed', 'assigned', 'on_the_way', 'delivered']
+// Customer sees 3 steps only
+const ORDER_STEPS = ['pending', 'on_the_way', 'delivered']
+
+// Map internal status → customer step index
+function toCustomerStep(status) {
+  if (['pending', 'confirmed', 'assigned'].includes(status)) return 0
+  if (status === 'on_the_way') return 1
+  if (status === 'delivered')  return 2
+  return -1
+}
 
 // Statuses the customer is allowed to cancel
 const CANCELLABLE = new Set(['pending', 'confirmed', 'assigned'])
@@ -47,8 +57,10 @@ function Checkmark() {
   )
 }
 
+const STEP_LABELS = ['Pending', 'On the\nWay', 'Delivered']
+
 function OrderStepper({ status }) {
-  const currentIdx = ORDER_STEPS.indexOf(status)
+  const currentIdx = toCustomerStep(status)
   if (currentIdx === -1) return null
 
   const progressPct = currentIdx === 0
@@ -72,7 +84,7 @@ function OrderStepper({ status }) {
                 {done && <Checkmark />}
               </div>
               <p className="text-[9px] text-gray-400 text-center leading-tight whitespace-pre-line">
-                {STATUS_CONFIG[step].label.replace(' ', '\n')}
+                {STEP_LABELS[i]}
               </p>
             </div>
           )

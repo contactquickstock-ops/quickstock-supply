@@ -315,10 +315,15 @@ export default function LandingPage() {
           <div className="hidden lg:grid grid-cols-2 gap-4">
             {REWARD_CARDS.map(({ value, label, sub }) => (
               <div key={label}
-                className="bg-white/10 border border-white/20 rounded-2xl p-5 space-y-1">
-                <p className="text-yellow-300 font-black text-lg leading-tight">{value}</p>
-                <p className="text-white font-bold text-sm">{label}</p>
-                <p className="text-white/60 text-xs">{sub}</p>
+                className="group bg-white/10 border border-white/20 rounded-2xl p-5 space-y-1
+                  hover:bg-white/20 hover:border-white/40 hover:scale-105 hover:shadow-xl
+                  transition-all duration-300 cursor-default">
+                <p className="text-yellow-300 font-black text-lg leading-tight
+                  group-hover:text-yellow-200 transition-colors duration-300">{value}</p>
+                <p className="text-white font-bold text-sm group-hover:text-yellow-100
+                  transition-colors duration-300">{label}</p>
+                <p className="text-white/60 text-xs group-hover:text-white/90
+                  transition-colors duration-300">{sub}</p>
               </div>
             ))}
           </div>

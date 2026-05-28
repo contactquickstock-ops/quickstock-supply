@@ -39,6 +39,8 @@ function EmptyCart({ onBrowse }) {
 function CartItem({ item, onRemove, onIncrease, onDecrease }) {
   const { product, quantity } = item
   const itemSubtotal = product.price * quantity
+  const [expanded, setExpanded] = useState(false)
+  const longDesc = (product.description ?? '').length > 60
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 flex gap-4">
@@ -61,6 +63,21 @@ function CartItem({ item, onRemove, onIncrease, onDecrease }) {
             <h4 className="text-gray-800 font-bold text-sm leading-snug line-clamp-1 mt-0.5">
               {product.name}
             </h4>
+            {product.description && (
+              <div className="mt-0.5">
+                <p className={`text-gray-400 text-[11px] leading-relaxed ${expanded ? '' : 'line-clamp-2'}`}>
+                  {product.description}
+                </p>
+                {longDesc && (
+                  <button
+                    type="button"
+                    onClick={e => { e.stopPropagation(); setExpanded(v => !v) }}
+                    className="text-[#168AFF] text-[10px] font-semibold hover:underline mt-0.5">
+                    {expanded ? 'Show less' : 'Show more'}
+                  </button>
+                )}
+              </div>
+            )}
             <p className="text-gray-400 text-xs mt-0.5">
               ₱{Number(product.price).toLocaleString('en-PH', { minimumFractionDigits: 2 })} / {product.unit_type ?? 'unit'}
             </p>

@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import {
   MdSearch, MdAdd, MdClose, MdEdit, MdImage,
-  MdCheckCircle, MdCancel,
+  MdCheckCircle, MdCancel, MdDelete,
 } from 'react-icons/md'
 import AdminLayout from '../../layouts/AdminLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
@@ -37,7 +37,7 @@ function SkeletonCard() {
   )
 }
 
-function ProductCard({ product, toggling, onEdit, onToggle }) {
+function ProductCard({ product, toggling, onEdit, onToggle, onDelete }) {
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden
       flex flex-col hover:shadow-md transition-shadow">
@@ -103,6 +103,15 @@ function ProductCard({ product, toggling, onEdit, onToggle }) {
             ? <><MdCancel size={14} />{toggling ? 'Hiding…' : 'Hide'}</>
             : <><MdCheckCircle size={14} />{toggling ? 'Showing…' : 'Show'}</>}
         </button>
+        <button
+          onClick={onDelete}
+          title="Delete product"
+          className="inline-flex items-center justify-center w-9 h-9 rounded-xl
+            bg-red-50 text-red-500 hover:bg-red-100 hover:text-red-700
+            transition shrink-0"
+        >
+          <MdDelete size={16} />
+        </button>
       </div>
     </div>
   )
@@ -119,6 +128,8 @@ export default function Products() {
   const [formError, setFormError] = useState(null)
   const [saving, setSaving]       = useState(false)
   const [toggling, setToggling]   = useState(null)
+  const [productToDelete, setProductToDelete] = useState(null)
+  const [deleting, setDeleting]   = useState(false)
   const fileInputRef              = useRef(null)
 
   const fetchProducts = useCallback(async () => {
@@ -269,6 +280,34 @@ export default function Products() {
     setToggling(null)
   }
 
+  async function handleDelete() {
+    if (!productToDelete) return
+    setDeleting(true)
+    setError(null)
+    try {
+      if (productToDelete.image_url) {
+        const parts = productToDelete.image_url.split('/products/')
+        if (parts.length === 2) {
+          await supabase.storage.from('products').remove([parts[1]])
+        }
+      }
+      const { error: err } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', productToDelete.id)
+      if (err) {
+        setError('Failed to delete product.')
+      } else {
+        setProducts(prev => prev.filter(p => p.id !== productToDelete.id))
+      }
+    } catch {
+      setError('Failed to delete product.')
+    } finally {
+      setProductToDelete(null)
+      setDeleting(false)
+    }
+  }
+
   const filtered = products.filter(p => {
     const q = search.toLowerCase()
     return (
@@ -366,6 +405,7 @@ export default function Products() {
                   toggling={toggling === product.id}
                   onEdit={() => openEdit(product)}
                   onToggle={() => toggleAvailability(product)}
+                  onDelete={() => setProductToDelete(product)}
                 />
               ))}
             </div>
@@ -612,6 +652,50 @@ export default function Products() {
           </div>
         </div>
       )}
+      {/* ── Delete Confirmation Modal ── */}
+      {productToDelete && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+          onClick={e => { if (e.target === e.currentTarget && !deleting) setProductToDelete(null) }}
+        >
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 space-y-5">
+            <div className="flex flex-col items-center text-center gap-3">
+              <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center">
+                <MdDelete size={28} className="text-red-500" />
+              </div>
+              <div>
+                <h3 className="text-gray-800 font-bold text-base">Delete Product?</h3>
+                <p className="text-gray-500 text-sm mt-1">
+                  Are you sure you want to delete{' '}
+                  <span className="font-semibold text-gray-700">{productToDelete.name}</span>?
+                  This cannot be undone.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setProductToDelete(null)}
+                disabled={deleting}
+                className="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-600
+                  border border-gray-200 rounded-xl hover:bg-gray-50
+                  transition disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                disabled={deleting}
+                className="flex-1 px-4 py-2.5 text-sm font-semibold text-white
+                  bg-red-500 rounded-xl hover:bg-red-600
+                  transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {deleting ? 'Deleting…' : 'Yes, Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </AdminLayout>
   )
 }

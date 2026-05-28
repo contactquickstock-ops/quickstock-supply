@@ -301,9 +301,9 @@ export default function LandingPage() {
               Redeem your points for exclusive rewards and discounts.
             </p>
             <Link to="/rewards"
-              className="flex items-center justify-center gap-3 px-10 py-4 bg-yellow-400
+              className="btn-glow flex items-center justify-center gap-3 px-10 py-4 bg-yellow-400
                 text-gray-900 font-black rounded-xl hover:bg-yellow-300
-                transition shadow-xl text-base w-full sm:w-auto">
+                transition text-base w-full sm:w-auto">
               View Rewards <MdArrowForward size={22} />
             </Link>
           </div>

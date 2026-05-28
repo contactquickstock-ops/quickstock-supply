@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import {
-  MdPhone, MdEmail, MdLocationOn, MdCheckCircle,
+  MdPhone, MdEmail, MdCheckCircle,
   MdAccessTime, MdSend, MdGavel, MdExpandMore, MdExpandLess,
 } from 'react-icons/md'
 import { FaFacebookF } from 'react-icons/fa'
@@ -39,10 +39,6 @@ const FAQS = [
     q: 'When can I apply for membership renewal?',
     a: 'You can apply for renewal anytime within 30 days before your membership expires, or after it has already expired. Simply go to the Membership tab and click "Renew Now".',
   },
-  {
-    q: 'Can I cancel my order?',
-    a: 'Yes, but only while your order status is Pending, Confirmed, or Assigned. Once the status changes to On the Way, cancellation is no longer allowed — your order is already en route. To cancel, go to My Orders, open the order, and tap "Cancel Order". You will need to provide a reason for cancellation.',
-  },
 ]
 
 const TC_SECTIONS = [
@@ -64,7 +60,7 @@ const TC_SECTIONS = [
   },
   {
     title: '5. Delivery Policy',
-    body: 'QuickStock Supply offers same-day delivery within business hours (8:00 AM – 8:00 PM). Orders placed after 8:00 PM will be delivered the next business day. We are not liable for delays caused by force majeure events such as typhoons, floods, or road closures.',
+    body: 'QuickStock Supply offers same-day delivery within business hours (8:00 AM – 8:00 PM). Orders placed after 8:00 PM will be delivered the next business day. We are not liable for delays caused by force major events such as typhoons, floods, or road closures.',
   },
   {
     title: '6. Cancellation Policy',
@@ -88,7 +84,7 @@ const TC_SECTIONS = [
   },
   {
     title: '11. Contact Us',
-    body: 'For questions or concerns, contact us at contactquickstock@gmail.com, call us at 09304453799 (Monday–Sunday, 8:00 AM–8:00 PM), or visit us at Lubogan, Toril, Davao City.',
+    body: 'For questions or concerns, contact us at contactquickstock@gmail.com or call us at 09304453799 (Monday–Sunday, 8:00 AM–8:00 PM).',
   },
 ]
 
@@ -146,9 +142,8 @@ export default function CustomerService() {
         {/* Contact info cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {[
-            { icon: MdPhone,      label: 'Phone',   value: '09304453799',               sub: 'Mon–Sun, 8:00AM–8:00PM' },
-            { icon: MdEmail,      label: 'Email',   value: 'contactquickstock@gmail.com', sub: 'We reply within 24h'    },
-            { icon: MdLocationOn, label: 'Address', value: 'Lubogan, Toril Davao City',  sub: 'Service area'           },
+            { icon: MdPhone, label: 'Phone', value: '09304453799',                sub: 'Mon–Sun, 8:00AM–8:00PM' },
+            { icon: MdEmail, label: 'Email', value: 'contactquickstock@gmail.com', sub: 'We reply within 24h'    },
           ].map(({ icon: Icon, label, value, sub }) => (
             <div key={label}
               className="flex flex-col items-center gap-2.5 text-center p-5 bg-white

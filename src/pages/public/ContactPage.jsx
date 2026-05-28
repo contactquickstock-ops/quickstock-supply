@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
-  MdPhone, MdEmail, MdLocationOn, MdArrowForward,
+  MdPhone, MdEmail, MdArrowForward,
   MdCheckCircle, MdAccessTime, MdSend,
 } from 'react-icons/md'
 import { FaFacebookF } from 'react-icons/fa'
@@ -109,9 +109,8 @@ export default function ContactPage() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             {[
-              { icon: MdPhone,      label: 'Phone',   value: '09304453799',                 sub: 'Mon–Sun, 8:00AM–8:00PM' },
-              { icon: MdEmail,      label: 'Email',   value: 'contactquickstock@gmail.com',  sub: 'We reply within 24h' },
-              { icon: MdLocationOn, label: 'Address', value: 'Lubogan, Toril Davao City',   sub: 'Service area'        },
+              { icon: MdPhone, label: 'Phone', value: '09304453799',                sub: 'Mon–Sun, 8:00AM–8:00PM' },
+              { icon: MdEmail, label: 'Email', value: 'contactquickstock@gmail.com', sub: 'We reply within 24h' },
             ].map(({ icon: Icon, label, value, sub }) => (
               <div key={label}
                 className="flex flex-col items-center gap-3 text-center p-6 bg-gray-50

@@ -29,6 +29,14 @@ export default function RewardsPage() {
   const [rewards, setRewards] = useState([])
   const [posts,   setPosts]   = useState([])
   const [loading, setLoading] = useState(true)
+  const [rwdStep, setRwdStep] = useState(0)
+  // 0=01glow 1=line1 2=02glow 3=line2 4=03glow 5=line3 6=04glow 7=reset
+
+  useEffect(() => {
+    const timings = [1200, 550, 1200, 550, 1200, 550, 1400, 150]
+    const t = setTimeout(() => setRwdStep(s => (s + 1) % 8), timings[rwdStep])
+    return () => clearTimeout(t)
+  }, [rwdStep])
 
   useEffect(() => {
     async function load() {
@@ -94,17 +102,66 @@ export default function RewardsPage() {
             <span className="text-[#168AFF] font-bold text-sm uppercase tracking-widest">Simple Process</span>
             <h2 className="text-3xl font-black text-gray-800">How to Earn &amp; Redeem</h2>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {HOW_IT_WORKS.map(({ step, title, desc }) => (
-              <div key={step} className="flex flex-col items-center text-center gap-3">
-                <div className="w-16 h-16 bg-[#168AFF] rounded-2xl flex items-center
-                  justify-center shadow-md">
-                  <span className="text-white font-black text-lg">{step}</span>
-                </div>
-                <h3 className="font-bold text-gray-800 text-sm">{title}</h3>
-                <p className="text-gray-500 text-xs leading-relaxed">{desc}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 relative">
+
+            {/* Line 1 */}
+            <div className="hidden lg:block absolute top-8 h-0.5 bg-blue-100 z-0 overflow-hidden"
+              style={{ left: '16%', right: '66%' }}>
+              <div className="h-full bg-[#168AFF] relative overflow-hidden" style={{
+                width: rwdStep >= 1 && rwdStep < 7 ? '100%' : '0%',
+                transition: rwdStep === 7 ? 'none' : 'width 550ms ease-in-out',
+              }}>
+                {rwdStep >= 1 && rwdStep < 7 && (
+                  <div className="line-shimmer absolute inset-y-0 w-1/4 bg-linear-to-r from-transparent via-white/60 to-transparent" />
+                )}
               </div>
-            ))}
+            </div>
+
+            {/* Line 2 */}
+            <div className="hidden lg:block absolute top-8 h-0.5 bg-blue-100 z-0 overflow-hidden"
+              style={{ left: '41%', right: '41%' }}>
+              <div className="h-full bg-[#168AFF] relative overflow-hidden" style={{
+                width: rwdStep >= 3 && rwdStep < 7 ? '100%' : '0%',
+                transition: rwdStep === 7 ? 'none' : 'width 550ms ease-in-out',
+              }}>
+                {rwdStep >= 3 && rwdStep < 7 && (
+                  <div className="line-shimmer absolute inset-y-0 w-1/4 bg-linear-to-r from-transparent via-white/60 to-transparent" />
+                )}
+              </div>
+            </div>
+
+            {/* Line 3 */}
+            <div className="hidden lg:block absolute top-8 h-0.5 bg-blue-100 z-0 overflow-hidden"
+              style={{ left: '66%', right: '16%' }}>
+              <div className="h-full bg-[#168AFF] relative overflow-hidden" style={{
+                width: rwdStep >= 5 && rwdStep < 7 ? '100%' : '0%',
+                transition: rwdStep === 7 ? 'none' : 'width 550ms ease-in-out',
+              }}>
+                {rwdStep >= 5 && rwdStep < 7 && (
+                  <div className="line-shimmer absolute inset-y-0 w-1/4 bg-linear-to-r from-transparent via-white/60 to-transparent" />
+                )}
+              </div>
+            </div>
+
+            {HOW_IT_WORKS.map(({ step, title, desc }, i) => {
+              const isActive =
+                (i === 0 && rwdStep === 0) ||
+                (i === 1 && rwdStep === 2) ||
+                (i === 2 && rwdStep === 4) ||
+                (i === 3 && rwdStep === 6)
+              return (
+                <div key={step} className="relative z-10 flex flex-col items-center text-center gap-3">
+                  <div className={`w-16 h-16 bg-[#168AFF] rounded-2xl flex items-center
+                    justify-center shadow-md transition-transform duration-300
+                    ${isActive ? 'step-active-anim' : 'scale-100'}`}>
+                    <span className="text-white font-black text-lg">{step}</span>
+                  </div>
+                  <h3 className={`font-bold text-sm transition-colors duration-300
+                    ${isActive ? 'text-[#168AFF]' : 'text-gray-800'}`}>{title}</h3>
+                  <p className="text-gray-500 text-xs leading-relaxed">{desc}</p>
+                </div>
+              )
+            })}
           </div>
         </div>
       </section>

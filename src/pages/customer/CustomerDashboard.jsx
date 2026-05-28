@@ -24,6 +24,9 @@ function SkeletonCard() {
 // ── Product Card ──────────────────────────────────────────────────────────────
 
 function ProductCard({ product, isAdding, onAddToCart }) {
+  const [expanded, setExpanded] = useState(false)
+  const longDesc = (product.description ?? '').length > 60
+
   return (
     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden
       flex flex-col hover:shadow-md transition-shadow">
@@ -52,9 +55,19 @@ function ProductCard({ product, isAdding, onAddToCart }) {
           {product.name}
         </h4>
         {product.description && (
-          <p className="text-gray-400 text-[11px] leading-relaxed line-clamp-2 mt-0.5">
-            {product.description}
-          </p>
+          <div className="mt-0.5">
+            <p className={`text-gray-400 text-[11px] leading-relaxed ${expanded ? '' : 'line-clamp-2'}`}>
+              {product.description}
+            </p>
+            {longDesc && (
+              <button
+                type="button"
+                onClick={e => { e.stopPropagation(); setExpanded(v => !v) }}
+                className="text-[#168AFF] text-[10px] font-semibold hover:underline mt-0.5">
+                {expanded ? 'Show less' : 'Show more'}
+              </button>
+            )}
+          </div>
         )}
         <p className="text-gray-800 font-bold text-base mt-auto pt-2">
           ₱{Number(product.price ?? 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}

@@ -1,6 +1,61 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { MdShoppingCart, MdArrowForward, MdLock, MdImage, MdSearch } from 'react-icons/md'
+
+function ProductCard({ product }) {
+  const [expanded, setExpanded] = useState(false)
+  const longDesc = (product.description ?? '').length > 60
+
+  return (
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm
+      overflow-hidden hover:shadow-md hover:border-[#168AFF]/30
+      transition-all duration-200 flex flex-col">
+      <div className="relative bg-blue-50 h-28 flex items-center justify-center overflow-hidden">
+        {product.image_url ? (
+          <img src={product.image_url} alt={product.name}
+            className="w-full h-full object-contain p-2" />
+        ) : (
+          <MdImage size={40} className="text-gray-200" />
+        )}
+      </div>
+      <div className="p-3 flex flex-col flex-1 gap-1.5">
+        {product.category && (
+          <p className="text-[10px] font-semibold text-[#168AFF] uppercase tracking-wide">
+            {product.category}
+          </p>
+        )}
+        <p className="text-gray-800 font-semibold text-xs leading-snug line-clamp-2">{product.name}</p>
+        {product.description && (
+          <div>
+            <p className={`text-gray-400 text-[10px] leading-relaxed ${expanded ? '' : 'line-clamp-2'}`}>
+              {product.description}
+            </p>
+            {longDesc && (
+              <button
+                type="button"
+                onClick={() => setExpanded(v => !v)}
+                className="text-[#168AFF] text-[10px] font-semibold hover:underline mt-0.5">
+                {expanded ? 'Show less' : 'Show more'}
+              </button>
+            )}
+          </div>
+        )}
+        {product.unit_type && (
+          <p className="text-gray-400 text-[10px]">per {product.unit_type}</p>
+        )}
+        <p className="text-[#168AFF] font-black text-base mt-auto">
+          ₱{Number(product.price).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+        </p>
+        <Link to="/login"
+          className="mt-1 w-full py-1.5 border border-[#168AFF] text-[#168AFF]
+            text-xs font-bold rounded-lg text-center hover:bg-blue-50
+            transition flex items-center justify-center gap-1">
+          <MdShoppingCart size={12} /> Login to Order
+        </Link>
+      </div>
+    </div>
+  )
+}
 import PublicLayout from '../../layouts/PublicLayout'
 import { supabaseAdmin } from '../../services/supabaseAdmin'
 
@@ -153,49 +208,7 @@ export default function ProductsPage() {
 
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                 {filtered.map(product => (
-                  <div key={product.id}
-                    className="bg-white rounded-2xl border border-gray-100 shadow-sm
-                      overflow-hidden hover:shadow-md hover:border-[#168AFF]/30
-                      transition-all duration-200 flex flex-col">
-                    {/* Image area */}
-                    <div className="relative bg-blue-50 h-28 flex items-center justify-center overflow-hidden">
-                      {product.image_url ? (
-                        <img
-                          src={product.image_url}
-                          alt={product.name}
-                          className="w-full h-full object-contain p-2"
-                        />
-                      ) : (
-                        <MdImage size={40} className="text-gray-200" />
-                      )}
-                    </div>
-                    {/* Info */}
-                    <div className="p-3 flex flex-col flex-1 gap-1.5">
-                      {product.category && (
-                        <p className="text-[10px] font-semibold text-[#168AFF] uppercase tracking-wide">
-                          {product.category}
-                        </p>
-                      )}
-                      <p className="text-gray-800 font-semibold text-xs leading-snug line-clamp-2">{product.name}</p>
-                      {product.description && (
-                        <p className="text-gray-400 text-[10px] leading-relaxed line-clamp-2">
-                          {product.description}
-                        </p>
-                      )}
-                      {product.unit_type && (
-                        <p className="text-gray-400 text-[10px]">per {product.unit_type}</p>
-                      )}
-                      <p className="text-[#168AFF] font-black text-base mt-auto">
-                        ₱{Number(product.price).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-                      </p>
-                      <Link to="/login"
-                        className="mt-1 w-full py-1.5 border border-[#168AFF] text-[#168AFF]
-                          text-xs font-bold rounded-lg text-center hover:bg-blue-50
-                          transition flex items-center justify-center gap-1">
-                        <MdShoppingCart size={12} /> Login to Order
-                      </Link>
-                    </div>
-                  </div>
+                  <ProductCard key={product.id} product={product} />
                 ))}
               </div>
             </>

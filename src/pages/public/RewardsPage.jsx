@@ -29,7 +29,8 @@ export default function RewardsPage() {
   const [rewards, setRewards] = useState([])
   const [posts,   setPosts]   = useState([])
   const [loading, setLoading] = useState(true)
-  const [rwdStep, setRwdStep] = useState(0)
+  const [rwdStep,     setRwdStep]     = useState(0)
+  const [benefitStep, setBenefitStep] = useState(0)
   // 0=01glow 1=line1 2=02glow 3=line2 4=03glow 5=line3 6=04glow 7=reset
 
   useEffect(() => {
@@ -37,6 +38,11 @@ export default function RewardsPage() {
     const t = setTimeout(() => setRwdStep(s => (s + 1) % 8), timings[rwdStep])
     return () => clearTimeout(t)
   }, [rwdStep])
+
+  useEffect(() => {
+    const t = setTimeout(() => setBenefitStep(s => (s + 1) % 6), 1400)
+    return () => clearTimeout(t)
+  }, [benefitStep])
 
   useEffect(() => {
     async function load() {
@@ -289,13 +295,22 @@ export default function RewardsPage() {
               'Access to the full rewards catalog managed by our team',
               'Track your points balance inside your account anytime',
               'Surprise bonus points on special occasions for Premium members',
-            ].map(b => (
-              <div key={b} className="flex items-start gap-3 bg-white rounded-xl
-                border border-gray-100 px-4 py-3 shadow-sm">
-                <MdCheckCircle size={18} className="text-[#168AFF] shrink-0 mt-0.5" />
-                <p className="text-gray-700 text-sm">{b}</p>
-              </div>
-            ))}
+            ].map((b, i) => {
+              const isActive = i === benefitStep
+              return (
+                <div key={b} className={`flex items-start gap-3 rounded-xl border px-4 py-3
+                  transition-all duration-300
+                  ${isActive
+                    ? 'bg-blue-50 border-[#168AFF]/30 shadow-md shadow-[#168AFF]/10'
+                    : 'bg-white border-gray-100 shadow-sm'}`}>
+                  <span className={`shrink-0 mt-0.5 ${isActive ? 'check-active-anim' : ''}`}>
+                    <MdCheckCircle size={18} className="text-[#168AFF]" />
+                  </span>
+                  <p className={`text-sm transition-colors duration-300
+                    ${isActive ? 'text-gray-900 font-semibold' : 'text-gray-700'}`}>{b}</p>
+                </div>
+              )
+            })}
           </div>
         </div>
       </section>

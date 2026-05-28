@@ -74,9 +74,9 @@ export default function LandingPage() {
             </p>
             <div className="flex flex-wrap gap-3">
               <Link to="/products"
-                className="inline-flex items-center gap-2 px-7 py-3.5 bg-yellow-400
+                className="btn-glow inline-flex items-center gap-2 px-7 py-3.5 bg-yellow-400
                   text-gray-900 font-bold rounded-xl hover:bg-yellow-300
-                  transition shadow-lg text-sm">
+                  transition text-sm">
                 Order Now <MdArrowForward size={18} />
               </Link>
               <Link to="/about"

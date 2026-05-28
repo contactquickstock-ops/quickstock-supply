@@ -38,6 +38,14 @@ const REWARD_CARDS = [
 
 export default function LandingPage() {
   const [testimonials, setTestimonials] = useState([])
+  const [howStep, setHowStep]           = useState(0)
+  // howStep: 0=01glow 1=line1fill 2=02glow 3=line2fill 4=03glow 5=reset
+
+  useEffect(() => {
+    const timings = [1200, 600, 1200, 600, 1400, 150]
+    const t = setTimeout(() => setHowStep(s => (s + 1) % 6), timings[howStep])
+    return () => clearTimeout(t)
+  }, [howStep])
 
   useEffect(() => {
     supabase
@@ -230,18 +238,42 @@ export default function LandingPage() {
             <p className="text-gray-500 text-sm max-w-sm mx-auto">Ordering from QuickStock is quick and easy.</p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 relative">
-            <div className="hidden sm:block absolute top-10 left-1/4 right-1/4 h-0.5 bg-blue-100 z-0" />
-            {STEPS.map(({ n, title, desc }) => (
-              <div key={n} className="relative z-10 flex flex-col items-center text-center gap-4">
-                <div className="w-20 h-20 rounded-2xl bg-[#168AFF] flex items-center justify-center shadow-lg">
-                  <span className="text-white font-black text-2xl">{n}</span>
+
+            {/* Line 1: step 01 → 02 */}
+            <div className="hidden sm:block absolute top-10 left-1/4 right-1/2 h-0.5 bg-blue-100 z-0 overflow-hidden">
+              <div className="h-full bg-[#168AFF]" style={{
+                width: howStep >= 1 && howStep < 5 ? '100%' : '0%',
+                transition: howStep === 5 ? 'none' : 'width 600ms ease-in-out',
+              }} />
+            </div>
+
+            {/* Line 2: step 02 → 03 */}
+            <div className="hidden sm:block absolute top-10 left-1/2 right-1/4 h-0.5 bg-blue-100 z-0 overflow-hidden">
+              <div className="h-full bg-[#168AFF]" style={{
+                width: howStep >= 3 && howStep < 5 ? '100%' : '0%',
+                transition: howStep === 5 ? 'none' : 'width 600ms ease-in-out',
+              }} />
+            </div>
+
+            {STEPS.map(({ n, title, desc }, i) => {
+              const isActive =
+                (i === 0 && howStep === 0) ||
+                (i === 1 && howStep === 2) ||
+                (i === 2 && howStep === 4)
+              return (
+                <div key={n} className="relative z-10 flex flex-col items-center text-center gap-4">
+                  <div className={`w-20 h-20 rounded-2xl bg-[#168AFF] flex items-center justify-center
+                    transition-transform duration-300
+                    ${isActive ? 'step-glow scale-110' : 'scale-100 shadow-lg'}`}>
+                    <span className="text-white font-black text-2xl">{n}</span>
+                  </div>
+                  <div className="space-y-1.5">
+                    <h3 className="font-bold text-gray-800 text-base">{title}</h3>
+                    <p className="text-gray-500 text-sm leading-relaxed max-w-xs mx-auto">{desc}</p>
+                  </div>
                 </div>
-                <div className="space-y-1.5">
-                  <h3 className="font-bold text-gray-800 text-base">{title}</h3>
-                  <p className="text-gray-500 text-sm leading-relaxed max-w-xs mx-auto">{desc}</p>
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </section>

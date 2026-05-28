@@ -187,10 +187,15 @@ export default function LandingPage() {
                 { icon: MdVerified,      title: 'Only ₱1,500',       desc: '2-year membership'         },
               ].map(({ icon: Icon, title, desc }) => (
                 <div key={title}
-                  className="bg-white/10 border border-white/20 rounded-2xl p-4 space-y-2">
-                  <Icon size={22} className="text-yellow-300" />
-                  <p className="text-white font-bold text-sm">{title}</p>
-                  <p className="text-white/70 text-xs">{desc}</p>
+                  className="group bg-white/10 border border-white/20 rounded-2xl p-4 space-y-2
+                    hover:bg-white/20 hover:border-white/40 hover:scale-105 hover:shadow-xl
+                    transition-all duration-300 cursor-default">
+                  <Icon size={22} className="text-yellow-300 group-hover:scale-125
+                    group-hover:text-yellow-200 transition-all duration-300" />
+                  <p className="text-white font-bold text-sm group-hover:text-yellow-100
+                    transition-colors duration-300">{title}</p>
+                  <p className="text-white/70 text-xs group-hover:text-white/90
+                    transition-colors duration-300">{desc}</p>
                 </div>
               ))}
             </div>

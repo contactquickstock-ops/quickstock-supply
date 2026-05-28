@@ -100,9 +100,9 @@ export default function LandingPage() {
           </div>
 
           {/* Visual card */}
-          <div className="hidden lg:flex justify-center">
+          <div className="flex justify-center">
             <div className="relative">
-              <div className="w-120 h-120 bg-white/10 rounded-3xl border border-white/20
+              <div className="w-72 h-72 sm:w-96 sm:h-96 lg:w-120 lg:h-120 bg-white/10 rounded-3xl border border-white/20
                 backdrop-blur-sm flex items-center justify-center shadow-2xl overflow-hidden">
                 <video
                   src="/hero-animation.mp4"

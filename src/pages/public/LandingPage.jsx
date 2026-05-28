@@ -149,12 +149,12 @@ export default function LandingPage() {
                 <div key={label}
                   className="group flex flex-col sm:flex-row items-center justify-center
                     gap-2 sm:gap-3 py-5 px-3 text-center sm:text-left
-                    hover:bg-blue-50/60 transition-colors duration-300 cursor-default">
+                    hover:bg-blue-50/60 active:bg-blue-50/60 transition-colors duration-300 cursor-default">
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0
                     transition-all duration-300
                     ${isActive
                       ? 'bg-[#168AFF] shadow-lg shadow-[#168AFF]/40 scale-110'
-                      : 'bg-blue-50 group-hover:bg-[#168AFF]/10 group-hover:scale-110'}`}>
+                      : 'bg-blue-50 group-hover:bg-[#168AFF]/10 group-hover:scale-110 group-active:bg-[#168AFF]/10 group-active:scale-110'}`}>
                     <span className={isActive ? 'check-active-anim' : ''}>
                       <Icon size={22} className={`transition-colors duration-300
                         ${isActive ? 'text-white' : 'text-[#168AFF]'}`} />
@@ -207,12 +207,17 @@ export default function LandingPage() {
                 <div key={title}
                   className="group bg-white/10 border border-white/20 rounded-2xl p-4 space-y-2
                     hover:bg-white/20 hover:border-white/40 hover:scale-105 hover:shadow-xl
+                    active:bg-white/20 active:border-white/40 active:scale-105 active:shadow-xl
                     transition-all duration-300 cursor-default">
-                  <Icon size={22} className="text-yellow-300 group-hover:scale-125
-                    group-hover:text-yellow-200 transition-all duration-300" />
-                  <p className="text-white font-bold text-sm group-hover:text-yellow-100
+                  <Icon size={22} className="text-yellow-300
+                    group-hover:scale-125 group-hover:text-yellow-200
+                    group-active:scale-125 group-active:text-yellow-200
+                    transition-all duration-300" />
+                  <p className="text-white font-bold text-sm
+                    group-hover:text-yellow-100 group-active:text-yellow-100
                     transition-colors duration-300">{title}</p>
-                  <p className="text-white/70 text-xs group-hover:text-white/90
+                  <p className="text-white/70 text-xs
+                    group-hover:text-white/90 group-active:text-white/90
                     transition-colors duration-300">{desc}</p>
                 </div>
               ))}
@@ -335,12 +340,16 @@ export default function LandingPage() {
               <div key={label}
                 className="group bg-white/10 border border-white/20 rounded-2xl p-5 space-y-1
                   hover:bg-white/20 hover:border-white/40 hover:scale-105 hover:shadow-xl
+                  active:bg-white/20 active:border-white/40 active:scale-105 active:shadow-xl
                   transition-all duration-300 cursor-default">
                 <p className="text-yellow-300 font-black text-lg leading-tight
-                  group-hover:text-yellow-200 transition-colors duration-300">{value}</p>
-                <p className="text-white font-bold text-sm group-hover:text-yellow-100
+                  group-hover:text-yellow-200 group-active:text-yellow-200
+                  transition-colors duration-300">{value}</p>
+                <p className="text-white font-bold text-sm
+                  group-hover:text-yellow-100 group-active:text-yellow-100
                   transition-colors duration-300">{label}</p>
-                <p className="text-white/60 text-xs group-hover:text-white/90
+                <p className="text-white/60 text-xs
+                  group-hover:text-white/90 group-active:text-white/90
                   transition-colors duration-300">{sub}</p>
               </div>
             ))}

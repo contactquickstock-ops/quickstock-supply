@@ -79,9 +79,12 @@ export default function AboutPage() {
       <section className="py-14 px-4 bg-gray-50">
         <div className="max-w-5xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div className="group bg-[#168AFF] text-white rounded-3xl p-8 space-y-4
-            transition-all duration-300 hover:scale-[1.03] hover:shadow-2xl hover:shadow-[#168AFF]/40 cursor-default">
+            transition-all duration-300
+            hover:scale-[1.03] hover:shadow-2xl hover:shadow-[#168AFF]/40
+            active:scale-[1.03] active:shadow-2xl active:shadow-[#168AFF]/40 cursor-default">
             <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center mx-auto
-              group-hover:scale-110 group-hover:bg-white/30 transition-all duration-300">
+              group-hover:scale-110 group-hover:bg-white/30
+              group-active:scale-110 group-active:bg-white/30 transition-all duration-300">
               <span className="text-2xl">🎯</span>
             </div>
             <h3 className="text-2xl font-black text-white text-center">Our Mission</h3>
@@ -95,9 +98,12 @@ export default function AboutPage() {
             </p>
           </div>
           <div className="group bg-white rounded-3xl p-8 space-y-4 border border-gray-100 shadow-sm
-            transition-all duration-300 hover:scale-[1.03] hover:shadow-2xl hover:border-[#168AFF]/30 hover:shadow-[#168AFF]/15 cursor-default">
+            transition-all duration-300
+            hover:scale-[1.03] hover:shadow-2xl hover:border-[#168AFF]/30 hover:shadow-[#168AFF]/15
+            active:scale-[1.03] active:shadow-2xl active:border-[#168AFF]/30 active:shadow-[#168AFF]/15 cursor-default">
             <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto
-              group-hover:scale-110 group-hover:bg-blue-100 transition-all duration-300">
+              group-hover:scale-110 group-hover:bg-blue-100
+              group-active:scale-110 group-active:bg-blue-100 transition-all duration-300">
               <span className="text-2xl">🔭</span>
             </div>
             <h3 className="text-2xl font-black text-gray-800 text-center">Our Vision</h3>
@@ -124,10 +130,12 @@ export default function AboutPage() {
             {VALUES.map(({ icon: Icon, title, desc }) => (
               <div key={title}
                 className="group bg-gray-50 rounded-2xl border border-gray-100 p-6 space-y-3 text-center
-                  hover:border-[#5BABFF] hover:bg-blue-50 transition-all duration-300">
-                <div className="w-14 h-14 bg-[#168AFF] group-hover:bg-[#5BABFF] rounded-2xl
-                  flex items-center justify-center mx-auto shadow-md
-                  group-hover:scale-105 transition-all duration-300">
+                  hover:border-[#5BABFF] hover:bg-blue-50
+                  active:border-[#5BABFF] active:bg-blue-50 transition-all duration-300">
+                <div className="w-14 h-14 bg-[#168AFF] rounded-2xl
+                  group-hover:bg-[#5BABFF] group-hover:scale-105
+                  group-active:bg-[#5BABFF] group-active:scale-105
+                  flex items-center justify-center mx-auto shadow-md transition-all duration-300">
                   <Icon size={26} className="text-white" />
                 </div>
                 <h3 className="font-bold text-gray-800 text-base">{title}</h3>

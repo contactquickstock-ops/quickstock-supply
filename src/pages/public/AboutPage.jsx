@@ -68,8 +68,9 @@ export default function AboutPage() {
               </p>
             </div>
           </div>
-          <div className="order-1 lg:order-2 bg-blue-50 rounded-3xl p-8 flex items-center justify-center border border-blue-100">
-            <img src="/logo.jpg" alt="QuickStock Supply" className="w-64 h-64 object-contain" />
+          <div className="order-1 lg:order-2 rounded-3xl overflow-hidden border border-blue-100 shadow-sm">
+            <img src="/about-store.jpg" alt="QuickStock Supply sari-sari store delivery"
+              className="w-full h-72 sm:h-80 lg:h-full object-cover" />
           </div>
         </div>
       </section>

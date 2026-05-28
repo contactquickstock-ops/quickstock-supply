@@ -38,7 +38,8 @@ const REWARD_CARDS = [
 
 export default function LandingPage() {
   const [testimonials, setTestimonials] = useState([])
-  const [howStep, setHowStep]           = useState(0)
+  const [howStep,  setHowStep]  = useState(0)
+  const [statStep, setStatStep] = useState(0)
   // howStep: 0=01glow 1=line1fill 2=02glow 3=line2fill 4=03glow 5=reset
 
   useEffect(() => {
@@ -46,6 +47,11 @@ export default function LandingPage() {
     const t = setTimeout(() => setHowStep(s => (s + 1) % 6), timings[howStep])
     return () => clearTimeout(t)
   }, [howStep])
+
+  useEffect(() => {
+    const t = setTimeout(() => setStatStep(s => (s + 1) % 4), 1200)
+    return () => clearTimeout(t)
+  }, [statStep])
 
   useEffect(() => {
     supabase
@@ -137,19 +143,31 @@ export default function LandingPage() {
       <section className="bg-white border-b border-gray-100 shadow-sm">
         <div className="max-w-7xl mx-auto px-4">
           <div className="grid grid-cols-2 sm:grid-cols-4 divide-x divide-gray-100">
-            {STATS.map(({ icon: Icon, value, label }) => (
-              <div key={label}
-                className="flex flex-col sm:flex-row items-center justify-center
-                  gap-2 sm:gap-3 py-5 px-3 text-center sm:text-left">
-                <div className="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center shrink-0">
-                  <Icon size={22} className="text-[#168AFF]" />
+            {STATS.map(({ icon: Icon, value, label }, i) => {
+              const isActive = i === statStep
+              return (
+                <div key={label}
+                  className="group flex flex-col sm:flex-row items-center justify-center
+                    gap-2 sm:gap-3 py-5 px-3 text-center sm:text-left
+                    hover:bg-blue-50/60 transition-colors duration-300 cursor-default">
+                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0
+                    transition-all duration-300
+                    ${isActive
+                      ? 'bg-[#168AFF] shadow-lg shadow-[#168AFF]/40 scale-110'
+                      : 'bg-blue-50 group-hover:bg-[#168AFF]/10 group-hover:scale-110'}`}>
+                    <span className={isActive ? 'check-active-anim' : ''}>
+                      <Icon size={22} className={`transition-colors duration-300
+                        ${isActive ? 'text-white' : 'text-[#168AFF]'}`} />
+                    </span>
+                  </div>
+                  <div>
+                    <p className={`text-xl font-black transition-colors duration-300
+                      ${isActive ? 'text-[#168AFF]' : 'text-gray-800'}`}>{value}</p>
+                    <p className="text-xs text-gray-500 font-medium">{label}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xl font-black text-gray-800">{value}</p>
-                  <p className="text-xs text-gray-500 font-medium">{label}</p>
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </section>

@@ -31,26 +31,8 @@ export default function ForgotPassword() {
     setLoading(true)
     setError(null)
 
-    // Verify the email actually belongs to an account
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('status')
-      .eq('email', email.trim().toLowerCase())
-      .maybeSingle()
-
-    if (!profile) {
-      setError('No account found with this email address.')
-      setLoading(false)
-      return
-    }
-    if (profile.status === 'disabled' || profile.status === 'deleted') {
-      setError('This account has been disabled. Please contact support.')
-      setLoading(false)
-      return
-    }
-
     const { error: err } = await supabase.auth.signInWithOtp({
-      email: email.trim().toLowerCase(),
+      email: email.trim(),
       options: { shouldCreateUser: false },
     })
 
@@ -58,6 +40,8 @@ export default function ForgotPassword() {
       const msg = err.message.toLowerCase()
       if (msg.includes('fetch') || msg.includes('network') || msg.includes('failed to fetch')) {
         setError('Connection failed. Please check your internet and try again.')
+      } else if (msg.includes('not found') || msg.includes('no user') || msg.includes('signup')) {
+        setError('No account found with this email. Please check and try again.')
       } else {
         setError(err.message)
       }

@@ -291,7 +291,7 @@ export default function RewardsPage() {
             {[
               'Only Premium Clients can earn reward points on every order',
               'Points never expire — accumulate at your own pace',
-              'Redeem for free delivery, discounts, or exclusive gift items',
+              'Redeem accumulated points for rewards from our catalog',
               'Access to the full rewards catalog managed by our team',
               'Track your points balance inside your account anytime',
               'Surprise bonus points on special occasions for Premium members',

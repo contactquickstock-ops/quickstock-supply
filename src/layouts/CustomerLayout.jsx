@@ -4,7 +4,7 @@ import {
   MdStorefront, MdShoppingCart, MdReceipt,
   MdCardMembership, MdMenu, MdClose, MdLogout,
   MdStar, MdEmail, MdVerified, MdPhone, MdPerson,
-  MdSupportAgent, MdCampaign,
+  MdSupportAgent, MdCampaign, MdGavel,
 } from 'react-icons/md'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
@@ -19,10 +19,11 @@ const NAV_ITEMS = [
 ]
 
 const PROFILE_LINKS = [
-  { label: 'My Profile',  icon: MdPerson,         path: '/customer/profile'    },
-  { label: 'My Orders',   icon: MdReceipt,        path: '/customer/orders'     },
-  { label: 'Rewards',     icon: MdStar,           path: '/customer/rewards'    },
-  { label: 'Membership',  icon: MdCardMembership, path: '/customer/membership' },
+  { label: 'My Profile',          icon: MdPerson,         path: '/customer/profile'    },
+  { label: 'Terms & Conditions',  icon: MdGavel,          path: '/terms'               },
+  { label: 'My Orders',          icon: MdReceipt,        path: '/customer/orders'     },
+  { label: 'Rewards',            icon: MdStar,           path: '/customer/rewards'    },
+  { label: 'Membership',         icon: MdCardMembership, path: '/customer/membership' },
 ]
 
 export default function CustomerLayout({ children }) {
@@ -265,6 +266,13 @@ export default function CustomerLayout({ children }) {
                     : 'text-gray-600 hover:bg-gray-100'}`}>
                 <MdPerson size={18} />
                 My Profile
+              </Link>
+              <Link to="/terms"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center gap-3 px-3 py-2.5 rounded-xl
+                  text-sm font-medium text-gray-600 hover:bg-gray-100 transition">
+                <MdGavel size={18} />
+                Terms &amp; Conditions
               </Link>
             </div>
 

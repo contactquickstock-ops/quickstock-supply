@@ -66,3 +66,11 @@
 .btn-glow {
   animation: glow-pulse 2.4s ease-in-out infinite;
 }
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}

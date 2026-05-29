@@ -12,6 +12,7 @@ const NAV = [
   { label: 'Products',   path: '/products' },
   { label: 'Rewards',    path: '/rewards'  },
   { label: 'Contact Us', path: '/contact'  },
+  { label: 'FAQs',       path: '/faq'      },
 ]
 
 const FB_URL = 'https://www.facebook.com/profile.php?id=61570722723997'
@@ -209,6 +210,7 @@ export default function PublicLayout({ children }) {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col sm:flex-row
             items-center justify-between gap-2 text-xs text-gray-500">
             <p>© {new Date().getFullYear()} QuickStock Supply. All rights reserved.</p>
+            <Link to="/terms" className="hover:text-[#168AFF] transition">Terms &amp; Conditions</Link>
             <p className="flex items-center gap-1">
               Made with <MdFavorite size={12} className="text-red-400 mx-0.5" /> in the Philippines
             </p>

@@ -2,43 +2,12 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   MdPhone, MdEmail, MdArrowForward,
-  MdCheckCircle, MdAccessTime, MdSend,
+  MdCheckCircle, MdAccessTime, MdSend, MdHelpOutline,
 } from 'react-icons/md'
 import { FaFacebookF } from 'react-icons/fa'
 import PublicLayout from '../../layouts/PublicLayout'
 
 const FB_URL = 'https://www.facebook.com/profile.php?id=61570722723997'
-
-const FAQS = [
-  {
-    q: 'How do I create an account?',
-    a: 'Click "Sign Up" at the top of the page, fill in your business details, and wait for admin approval. Once approved, you can start browsing and placing orders.',
-  },
-  {
-    q: 'How long does delivery take?',
-    a: 'We offer same-day delivery within business hours (8:00 AM – 8:00 PM). Orders placed after 8:00 PM will be delivered the next business day.',
-  },
-  {
-    q: 'Is there a minimum order amount?',
-    a: 'There is no minimum order amount. However, orders below ₱500 incur a ₱25 delivery fee. Orders ₱500 and above enjoy FREE delivery.',
-  },
-  {
-    q: 'What payment methods are accepted?',
-    a: 'We accept Cash on Delivery (COD) only. Pay in cash when your order is delivered to your door. No advance payment is required.',
-  },
-  {
-    q: 'How do I earn reward points?',
-    a: 'Only active Premium Members earn reward points — 1 point for every ₱100 spent. Points are credited automatically once your order is delivered. Non-members do not earn points.',
-  },
-  {
-    q: 'How does Premium Membership work?',
-    a: 'Premium Membership costs ₱1,500 for the first 2 years. After that, renewal is ₱1,000 per year. Members earn reward points on every order and enjoy priority delivery. Apply through your account and upload your proof of payment for admin approval.',
-  },
-  {
-    q: 'What happens to my points if my membership expires?',
-    a: 'Expired memberships stop earning new points. However, your existing points remain valid and can still be redeemed for rewards. You can renew your membership anytime — even before it expires — to continue earning.',
-  },
-]
 
 const WEB3FORMS_KEY = 'f9fe7cd7-4658-48d8-9e4c-027212395013'
 
@@ -237,24 +206,28 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* ── FAQs ── */}
-      <section className="py-14 px-4 bg-white">
-        <div className="max-w-3xl mx-auto space-y-8">
-          <div className="text-center space-y-2">
-            <span className="text-[#168AFF] font-bold text-sm uppercase tracking-widest">FAQs</span>
-            <h2 className="text-3xl font-black text-gray-800">Frequently Asked Questions</h2>
-          </div>
-          <div className="space-y-4">
-            {FAQS.map(({ q, a }) => (
-              <div key={q} className="bg-gray-50 rounded-2xl border border-gray-100 p-5 space-y-2">
-                <h3 className="font-bold text-gray-800 text-sm flex items-start gap-2">
-                  <span className="w-5 h-5 bg-[#168AFF] text-white rounded-full flex items-center
-                    justify-center text-xs font-black shrink-0 mt-0.5">?</span>
-                  {q}
-                </h3>
-                <p className="text-gray-500 text-sm leading-relaxed pl-7">{a}</p>
-              </div>
-            ))}
+      {/* ── FAQ Teaser ── */}
+      <section className="py-10 px-4 bg-white">
+        <div className="max-w-3xl mx-auto">
+          <div className="flex items-center gap-4 bg-blue-50 border border-blue-100
+            rounded-2xl px-6 py-5">
+            <div className="w-12 h-12 bg-[#168AFF] rounded-2xl flex items-center
+              justify-center shrink-0">
+              <MdHelpOutline size={24} className="text-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-bold text-gray-800 text-sm">Have more questions?</p>
+              <p className="text-gray-500 text-xs mt-0.5">
+                Check our dedicated FAQ page for answers to common questions about
+                orders, delivery, membership, and rewards.
+              </p>
+            </div>
+            <Link to="/faq"
+              className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#168AFF]
+                text-white text-xs font-bold rounded-xl hover:bg-[#1270DB]
+                transition shrink-0">
+              View FAQs <MdArrowForward size={14} />
+            </Link>
           </div>
         </div>
       </section>

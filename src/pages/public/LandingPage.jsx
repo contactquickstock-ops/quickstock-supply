@@ -238,11 +238,11 @@ export default function LandingPage() {
               We make restocking easy, fast, and rewarding for your business.
             </p>
           </div>
-          <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-3
+          <div className="scrollbar-hide flex overflow-x-auto snap-x snap-mandatory gap-4 pb-1
             sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:overflow-visible sm:pb-0">
             {FEATURES.map(({ icon: Icon, title, desc }) => (
               <div key={title}
-                className="group flex-none w-[72vw] max-w-70 sm:w-auto sm:flex-auto snap-start
+                className="group flex-none w-[78vw] max-w-72 sm:w-auto sm:flex-auto snap-center
                   bg-white rounded-2xl border border-gray-100 p-6 shadow-sm
                   hover:border-[#168AFF] hover:bg-blue-50 transition-all duration-300
                   space-y-3 text-center">

@@ -11,6 +11,8 @@ import AboutPage     from './pages/public/AboutPage'
 import ProductsPage  from './pages/public/ProductsPage'
 import RewardsPage   from './pages/public/RewardsPage'
 import ContactPage   from './pages/public/ContactPage'
+import FAQPage       from './pages/public/FAQPage'
+import TermsPage     from './pages/public/TermsPage'
 
 // Admin
 import AdminDashboard   from './pages/admin/Dashboard'
@@ -49,6 +51,8 @@ export default function App() {
         <Route path="/products"      element={<ProductsPage />} />
         <Route path="/rewards"       element={<RewardsPage />} />
         <Route path="/contact"       element={<ContactPage />} />
+        <Route path="/faq"           element={<FAQPage />} />
+        <Route path="/terms"         element={<TermsPage />} />
         <Route path="/login"          element={<LoginPage />} />
         <Route path="/register"        element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

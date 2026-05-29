@@ -106,12 +106,12 @@ export default function CustomerLayout({ children }) {
               )}
             </Link>
 
-            {/* Profile dropdown trigger */}
-            <div ref={profileRef} className="relative hidden sm:block">
+            {/* Profile dropdown trigger — visible on ALL screen sizes */}
+            <div ref={profileRef} className="relative">
               <button
                 onClick={() => setProfileOpen(v => !v)}
                 className="flex items-center gap-2 pl-1 pr-2 py-1 rounded-xl
-                  hover:bg-gray-100 transition"
+                  hover:bg-gray-100 active:bg-gray-100 transition"
                 aria-label="Profile menu">
                 <div className="w-8 h-8 rounded-full bg-[#168AFF] flex items-center justify-center
                   text-white font-bold text-sm shadow-sm shrink-0 overflow-hidden">
@@ -119,15 +119,17 @@ export default function CustomerLayout({ children }) {
                     ? <img src={profile.avatar_url} alt="avatar" className="w-full h-full object-cover" />
                     : initials}
                 </div>
-                <span className="text-sm text-gray-700 font-medium max-w-22.5 truncate">
+                {/* Name only on sm+ to keep mobile header compact */}
+                <span className="hidden sm:block text-sm text-gray-700 font-medium max-w-22.5 truncate">
                   {firstName}
                 </span>
               </button>
 
-              {/* Dropdown */}
+              {/* Dropdown — fixed on mobile so it never clips off-screen */}
               {profileOpen && (
-                <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-2xl
-                  shadow-xl border border-gray-100 overflow-hidden z-50">
+                <div className="fixed sm:absolute right-2 sm:right-0 top-14 sm:top-full sm:mt-2
+                  w-[calc(100vw-16px)] sm:w-72 max-h-[80vh] overflow-y-auto
+                  bg-white rounded-2xl shadow-xl border border-gray-100 z-50">
 
                   {/* Header */}
                   <div className="bg-linear-to-br from-[#168AFF] to-[#0D5FC4] px-5 py-4">

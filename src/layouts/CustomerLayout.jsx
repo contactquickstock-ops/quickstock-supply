@@ -4,7 +4,7 @@ import {
   MdStorefront, MdShoppingCart, MdReceipt,
   MdCardMembership, MdMenu, MdClose, MdLogout,
   MdStar, MdEmail, MdVerified, MdPhone, MdPerson,
-  MdSupportAgent, MdCampaign, MdGavel,
+  MdSupportAgent, MdCampaign, MdGavel, MdSettings,
 } from 'react-icons/md'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
@@ -19,11 +19,14 @@ const NAV_ITEMS = [
 ]
 
 const PROFILE_LINKS = [
-  { label: 'My Profile',          icon: MdPerson,         path: '/customer/profile'    },
-  { label: 'Terms & Conditions',  icon: MdGavel,          path: '/terms'               },
-  { label: 'My Orders',          icon: MdReceipt,        path: '/customer/orders'     },
-  { label: 'Rewards',            icon: MdStar,           path: '/customer/rewards'    },
-  { label: 'Membership',         icon: MdCardMembership, path: '/customer/membership' },
+  { label: 'My Profile',  icon: MdPerson,         path: '/customer/profile'    },
+  { label: 'My Orders',   icon: MdReceipt,        path: '/customer/orders'     },
+  { label: 'Rewards',     icon: MdStar,           path: '/customer/rewards'    },
+  { label: 'Membership',  icon: MdCardMembership, path: '/customer/membership' },
+]
+
+const SETTINGS_LINKS = [
+  { label: 'Terms & Conditions', icon: MdGavel, path: '/terms' },
 ]
 
 export default function CustomerLayout({ children }) {
@@ -183,6 +186,23 @@ export default function CustomerLayout({ children }) {
                     ))}
                   </div>
 
+                  {/* Settings */}
+                  <div className="px-2 pt-2 pb-1 border-b border-gray-50">
+                    <p className="px-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                      Settings
+                    </p>
+                    {SETTINGS_LINKS.map(({ label, icon: Icon, path }) => (
+                      <Link key={path} to={path}
+                        onClick={() => setProfileOpen(false)}
+                        className="flex items-center gap-3 px-3 py-2.5 rounded-xl
+                          text-sm text-gray-600 hover:bg-blue-50 hover:text-[#168AFF]
+                          transition font-medium">
+                        <Icon size={16} className="shrink-0" />
+                        {label}
+                      </Link>
+                    ))}
+                  </div>
+
                   {/* Logout */}
                   <div className="px-2 py-2">
                     <button onClick={handleLogout}
@@ -267,13 +287,22 @@ export default function CustomerLayout({ children }) {
                 <MdPerson size={18} />
                 My Profile
               </Link>
-              <Link to="/terms"
-                onClick={() => setMenuOpen(false)}
-                className="flex items-center gap-3 px-3 py-2.5 rounded-xl
-                  text-sm font-medium text-gray-600 hover:bg-gray-100 transition">
-                <MdGavel size={18} />
-                Terms &amp; Conditions
-              </Link>
+            </div>
+
+            {/* Settings */}
+            <div className="border-t border-gray-100 pt-2">
+              <p className="px-3 pb-1 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                Settings
+              </p>
+              {SETTINGS_LINKS.map(({ label, icon: Icon, path }) => (
+                <Link key={path} to={path}
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl
+                    text-sm font-medium text-gray-600 hover:bg-gray-100 transition">
+                  <Icon size={18} />
+                  {label}
+                </Link>
+              ))}
             </div>
 
             <div className="border-t border-gray-100 pt-2">

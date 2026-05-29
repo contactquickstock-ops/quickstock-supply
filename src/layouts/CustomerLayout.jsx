@@ -4,7 +4,7 @@ import {
   MdStorefront, MdShoppingCart, MdReceipt,
   MdCardMembership, MdMenu, MdClose, MdLogout,
   MdStar, MdEmail, MdVerified, MdPhone, MdPerson,
-  MdSupportAgent, MdCampaign, MdGavel, MdSettings,
+  MdSupportAgent, MdCampaign, MdGavel, MdSettings, MdHelpOutline,
 } from 'react-icons/md'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
@@ -16,6 +16,7 @@ const NAV_ITEMS = [
   { label: 'Rewards',          icon: MdStar,           path: '/customer/rewards'    },
   { label: 'Membership',       icon: MdCardMembership, path: '/customer/membership' },
   { label: 'Customer Service', icon: MdSupportAgent,   path: '/customer/service'    },
+  { label: 'FAQs',             icon: MdHelpOutline,    path: '/customer/faq'        },
 ]
 
 const PROFILE_LINKS = [
@@ -26,7 +27,7 @@ const PROFILE_LINKS = [
 ]
 
 const SETTINGS_LINKS = [
-  { label: 'Terms & Conditions', icon: MdGavel, path: '/terms' },
+  { label: 'Terms & Conditions', icon: MdGavel, path: '/customer/terms' },
 ]
 
 export default function CustomerLayout({ children }) {

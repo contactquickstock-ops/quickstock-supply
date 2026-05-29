@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import {
   MdPhone, MdEmail, MdCheckCircle,
-  MdAccessTime, MdSend, MdHelpOutline, MdGavel,
+  MdAccessTime, MdSend,
 } from 'react-icons/md'
 import { FaFacebookF } from 'react-icons/fa'
-import { Link } from 'react-router-dom'
 import CustomerLayout from '../../layouts/CustomerLayout'
 
 const WEB3FORMS_KEY = 'f9fe7cd7-4658-48d8-9e4c-027212395013'
@@ -175,35 +174,6 @@ export default function CustomerService() {
               </button>
             </form>
           )}
-        </div>
-
-        {/* Quick links — FAQs and T&C */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Link to="/faq"
-            className="flex items-center gap-4 bg-blue-50 border border-blue-100
-              rounded-2xl px-5 py-4 hover:border-[#168AFF] hover:bg-blue-100 transition">
-            <div className="w-11 h-11 bg-[#168AFF] rounded-xl flex items-center
-              justify-center shrink-0">
-              <MdHelpOutline size={22} className="text-white" />
-            </div>
-            <div>
-              <p className="font-bold text-gray-800 text-sm">Frequently Asked Questions</p>
-              <p className="text-gray-500 text-xs mt-0.5">Find answers to common questions</p>
-            </div>
-          </Link>
-
-          <Link to="/terms"
-            className="flex items-center gap-4 bg-gray-50 border border-gray-100
-              rounded-2xl px-5 py-4 hover:border-[#168AFF] hover:bg-blue-50 transition">
-            <div className="w-11 h-11 bg-gray-700 rounded-xl flex items-center
-              justify-center shrink-0">
-              <MdGavel size={22} className="text-white" />
-            </div>
-            <div>
-              <p className="font-bold text-gray-800 text-sm">Terms &amp; Conditions</p>
-              <p className="text-gray-500 text-xs mt-0.5">Read our terms of service</p>
-            </div>
-          </Link>
         </div>
 
       </div>

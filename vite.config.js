@@ -36,25 +36,23 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,jpg,jpeg,svg,png,woff2}'],
+        // Only pre-cache the app's own static files (JS, CSS, HTML)
+        // This makes the app shell load fast, but ALL live data goes through the network
+        globPatterns: ['**/*.{js,css,html,woff2}'],
+
         runtimeCaching: [
           {
-            // Cache Supabase API calls with network-first so data is always fresh
-            urlPattern: /^https:\/\/.*\.supabase\.co\/.*/i,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'supabase-cache',
-              expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 },
-              networkTimeoutSeconds: 10,
-            },
+            // Supabase database + auth — NEVER cache, always require live internet
+            urlPattern: /^https:\/\/[^/]+\.supabase\.co\/(rest|auth|realtime)\/.*/i,
+            handler: 'NetworkOnly',
           },
           {
-            // Cache Supabase storage images
-            urlPattern: /^https:\/\/.*\.supabase\.co\/storage\/.*/i,
+            // Supabase storage product images — cache for performance (images don't change)
+            urlPattern: /^https:\/\/[^/]+\.supabase\.co\/storage\/.*/i,
             handler: 'CacheFirst',
             options: {
-              cacheName: 'supabase-images',
-              expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 7 },
+              cacheName: 'product-images',
+              expiration: { maxEntries: 150, maxAgeSeconds: 60 * 60 * 24 * 7 },
             },
           },
         ],

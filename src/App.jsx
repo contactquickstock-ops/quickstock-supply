@@ -7,6 +7,7 @@ import LoginPage       from './pages/public/Login'
 import RegisterPage    from './pages/public/Register'
 import AuthCallback    from './pages/public/AuthCallback'
 import ForgotPassword  from './pages/public/ForgotPassword'
+import ResetPassword   from './pages/public/ResetPassword'
 import AboutPage     from './pages/public/AboutPage'
 import ProductsPage  from './pages/public/ProductsPage'
 import RewardsPage   from './pages/public/RewardsPage'
@@ -58,6 +59,7 @@ export default function App() {
         <Route path="/login"          element={<LoginPage />} />
         <Route path="/register"        element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password"  element={<ResetPassword />} />
         <Route path="/auth/callback"  element={<AuthCallback />} />
 
         {/* ── Admin ── */}

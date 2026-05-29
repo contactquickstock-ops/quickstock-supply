@@ -145,8 +145,8 @@ export default function AuthCallback() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         if (event === 'SIGNED_IN' && session) handleSession(session)
-        // Old link-based recovery — send back to forgot password
-        if (event === 'PASSWORD_RECOVERY') window.location.replace('/forgot-password')
+        // Password reset link clicked — go to the new password form
+        if (event === 'PASSWORD_RECOVERY') window.location.replace('/reset-password')
       }
     )
 

@@ -14,6 +14,32 @@
   </head>
   <body>
     <div id="root"></div>
+
+    <!-- Splash screen shown before React hydrates -->
+    <div id="app-splash" style="
+      position:fixed;inset:0;z-index:99999;
+      background:#ffffff;
+      display:flex;flex-direction:column;
+      align-items:center;justify-content:center;gap:20px;
+      transition:opacity 0.35s ease;
+    ">
+      <img src="/logo.jpg" alt="QuickStock" style="
+        width:110px;height:110px;object-fit:contain;
+        border-radius:20px;box-shadow:0 4px 24px rgba(22,138,255,0.18);
+      " />
+      <div style="
+        width:36px;height:36px;
+        border:3px solid #e5e7eb;
+        border-top-color:#168AFF;
+        border-radius:50%;
+        animation:qs-spin 0.75s linear infinite;
+      "></div>
+      <p style="font-family:system-ui,sans-serif;font-size:13px;color:#9ca3af;font-weight:600;letter-spacing:0.03em;">
+        QuickStock Supply
+      </p>
+    </div>
+    <style>@keyframes qs-spin { to { transform:rotate(360deg) } }</style>
+
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

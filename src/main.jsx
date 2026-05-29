@@ -5,12 +5,15 @@ import './index.css'
 import App from './App.jsx'
 import { AuthProvider } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
+import OfflineBanner from './components/OfflineBanner.jsx'
 
-createRoot(document.getElementById('root')).render(
+const root = createRoot(document.getElementById('root'))
+root.render(
   <StrictMode>
     <AuthProvider>
       <CartProvider>
         <App />
+        <OfflineBanner />
         <Toaster
           position="top-center"
           toastOptions={{ duration: 2000 }}
@@ -19,3 +22,10 @@ createRoot(document.getElementById('root')).render(
     </AuthProvider>
   </StrictMode>,
 )
+
+// Fade out and remove the HTML splash screen once React has mounted
+const splash = document.getElementById('app-splash')
+if (splash) {
+  splash.style.opacity = '0'
+  setTimeout(() => splash.remove(), 380)
+}

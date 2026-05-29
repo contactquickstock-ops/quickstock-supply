@@ -25,7 +25,9 @@ export default function Login() {
   const [email,      setEmail]      = useState('')
   const [password,   setPassword]   = useState('')
   const [showPass,   setShowPass]   = useState(false)
-  const [rememberMe, setRememberMe] = useState(false)
+  // Auto-enable remember me when running as an installed PWA
+  const isPWA = window.matchMedia('(display-mode: standalone)').matches || !!window.navigator.standalone
+  const [rememberMe, setRememberMe] = useState(isPWA)
   const [loading,    setLoading]    = useState(false)
   const [statusInfo, setStatusInfo] = useState(null) // shown instead of toast for account status
 
@@ -39,15 +41,22 @@ export default function Login() {
 
   async function handleLogin(e) {
     e.preventDefault()
+
+    if (!navigator.onLine) {
+      toast.error('No internet connection. Please check your WiFi or mobile data.')
+      return
+    }
+
     setLoading(true)
     setStatusInfo(null)
 
     const { data, error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) {
-      // Map common Supabase auth errors to friendly messages
       const msg = error.message.toLowerCase()
-      if (msg.includes('invalid login') || msg.includes('invalid credentials')) {
+      if (msg.includes('fetch') || msg.includes('network') || msg.includes('failed to fetch') || msg.includes('load failed')) {
+        toast.error('Connection failed. Please check your internet and try again.')
+      } else if (msg.includes('invalid login') || msg.includes('invalid credentials')) {
         toast.error('Incorrect email or password. Please try again.')
       } else if (msg.includes('email not confirmed')) {
         toast.error('Account not confirmed. Please contact admin at contactquickstock@gmail.com.')

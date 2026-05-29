@@ -5,6 +5,7 @@ import {
   MdCheckCircle, MdShoppingCart,
   MdCardGiftcard, MdHeadsetMic,
   MdPeople, MdVerified, MdFormatQuote,
+  MdChevronLeft, MdChevronRight,
 } from 'react-icons/md'
 import PublicLayout from '../../layouts/PublicLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
@@ -38,8 +39,9 @@ const REWARD_CARDS = [
 
 export default function LandingPage() {
   const [testimonials, setTestimonials] = useState([])
-  const [howStep,  setHowStep]  = useState(0)
-  const [statStep, setStatStep] = useState(0)
+  const [howStep,     setHowStep]     = useState(0)
+  const [statStep,    setStatStep]    = useState(0)
+  const [featureIdx,  setFeatureIdx]  = useState(0)
   // howStep: 0=01glow 1=line1fill 2=02glow 3=line2fill 4=03glow 5=reset
 
   useEffect(() => {
@@ -238,12 +240,65 @@ export default function LandingPage() {
               We make restocking easy, fast, and rewarding for your business.
             </p>
           </div>
-          <div className="scrollbar-hide flex overflow-x-auto snap-x snap-mandatory gap-4 pb-1
-            sm:grid sm:grid-cols-2 lg:grid-cols-4 sm:overflow-visible sm:pb-0">
+          {/* Mobile: one card at a time with arrow buttons */}
+          <div className="sm:hidden">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setFeatureIdx(i => (i - 1 + FEATURES.length) % FEATURES.length)}
+                className="w-10 h-10 rounded-full bg-white border border-gray-200 shadow-sm
+                  flex items-center justify-center text-[#168AFF] shrink-0
+                  hover:bg-[#168AFF] hover:text-white active:bg-[#168AFF] active:text-white
+                  transition-all duration-200">
+                <MdChevronLeft size={24} />
+              </button>
+
+              <div className="flex-1 bg-white rounded-2xl border border-[#168AFF]/30 p-6
+                shadow-md space-y-3 text-center">
+                {(() => {
+                  const { icon: Icon, title, desc } = FEATURES[featureIdx]
+                  return (
+                    <>
+                      <div className="w-14 h-14 bg-[#168AFF] rounded-2xl
+                        flex items-center justify-center mx-auto shadow-md">
+                        <Icon size={26} className="text-white" />
+                      </div>
+                      <h3 className="font-bold text-gray-800 text-sm">{title}</h3>
+                      <p className="text-gray-500 text-sm leading-relaxed">{desc}</p>
+                    </>
+                  )
+                })()}
+              </div>
+
+              <button
+                onClick={() => setFeatureIdx(i => (i + 1) % FEATURES.length)}
+                className="w-10 h-10 rounded-full bg-white border border-gray-200 shadow-sm
+                  flex items-center justify-center text-[#168AFF] shrink-0
+                  hover:bg-[#168AFF] hover:text-white active:bg-[#168AFF] active:text-white
+                  transition-all duration-200">
+                <MdChevronRight size={24} />
+              </button>
+            </div>
+
+            {/* Dot indicators */}
+            <div className="flex justify-center gap-2 mt-5">
+              {FEATURES.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setFeatureIdx(i)}
+                  className={`rounded-full transition-all duration-300
+                    ${i === featureIdx
+                      ? 'w-6 h-2.5 bg-[#168AFF]'
+                      : 'w-2.5 h-2.5 bg-gray-200'}`}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Desktop: 2-col / 4-col grid */}
+          <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {FEATURES.map(({ icon: Icon, title, desc }) => (
               <div key={title}
-                className="group flex-none w-[78vw] max-w-72 sm:w-auto sm:flex-auto snap-center
-                  bg-white rounded-2xl border border-gray-100 p-6 shadow-sm
+                className="group bg-white rounded-2xl border border-gray-100 p-6 shadow-sm
                   hover:border-[#168AFF] hover:bg-blue-50 transition-all duration-300
                   space-y-3 text-center">
                 <div className="w-14 h-14 bg-[#168AFF] group-hover:bg-[#5BABFF] rounded-2xl

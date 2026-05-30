@@ -293,12 +293,11 @@ function DeliverModal({ order, onClose, onConfirm, confirming }) {
   const [imagePreview, setImagePreview] = useState(order.delivery_image ?? null)
   const [uploading,    setUploading]    = useState(false)
   const [uploadError,  setUploadError]  = useState(null)
-  const cameraRef  = useRef(null)
-  const galleryRef = useRef(null)
+  const fileRef = useRef(null)
 
   const photoReady = Boolean(uploadedUrl)
 
-  // Keep a stable ref to the latest upload logic so addEventListener never sees stale closures
+  // Stable ref so the native listener never captures a stale closure
   const doUploadRef = useRef(null)
   doUploadRef.current = async function doUpload(file) {
     if (!file) return
@@ -322,7 +321,6 @@ function DeliverModal({ order, onClose, onConfirm, confirming }) {
         .eq('id', order.id)
       if (updateErr) throw new Error(updateErr.message)
 
-      // Create preview URL while file is still valid, before any reset
       setUploadedUrl(imgData.publicUrl)
       setImagePreview(URL.createObjectURL(file))
     } catch (err) {
@@ -332,31 +330,20 @@ function DeliverModal({ order, onClose, onConfirm, confirming }) {
     }
   }
 
-  // Attach native change listeners — more reliable than React's synthetic onChange on iOS/PWA
   useEffect(() => {
     function handle(e) {
       const file = e.target?.files?.[0]
       if (!file) return
-      // Call the latest upload logic via ref (no stale closure)
       doUploadRef.current(file)
-      // Reset the input AFTER handing off the file reference, using rAF to defer
       const input = e.target
       requestAnimationFrame(() => { input.value = '' })
     }
+    const el = fileRef.current
+    el?.addEventListener('change', handle)
+    return () => el?.removeEventListener('change', handle)
+  }, [])
 
-    const c = cameraRef.current
-    const g = galleryRef.current
-    c?.addEventListener('change', handle)
-    g?.addEventListener('change', handle)
-    return () => {
-      c?.removeEventListener('change', handle)
-      g?.removeEventListener('change', handle)
-    }
-  }, []) // inputs are stable for the lifetime of this modal
-
-  // Direct .click() — no setTimeout — preserves iOS user-gesture context
-  function triggerCamera()  { if (cameraRef.current)  { cameraRef.current.value  = ''; cameraRef.current.click()  } }
-  function triggerGallery() { if (galleryRef.current) { galleryRef.current.value = ''; galleryRef.current.click() } }
+  function triggerUpload() { if (fileRef.current) { fileRef.current.value = ''; fileRef.current.click() } }
 
   return (
     <div
@@ -405,34 +392,22 @@ function DeliverModal({ order, onClose, onConfirm, confirming }) {
             </p>
           </div>
 
-          {/* ── No photo yet: show two buttons ── */}
+          {/* ── No photo yet: upload button ── */}
           {!imagePreview && !uploading && (
-            <div className="space-y-2">
+            <div className="space-y-3">
               <p className="text-xs text-gray-500 text-center">
-                Take or upload a clear photo of the delivered items.
+                Upload a clear photo of the delivered items at the customer's location.
               </p>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={triggerCamera}
-                  disabled={confirming}
-                  className="flex flex-col items-center justify-center gap-2 py-6 px-3
-                    bg-[#168AFF] text-white rounded-2xl font-bold text-sm
-                    active:opacity-75 transition disabled:opacity-50">
-                  <MdCameraAlt size={30} />
-                  <span>Take Photo</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={triggerGallery}
-                  disabled={confirming}
-                  className="flex flex-col items-center justify-center gap-2 py-6 px-3
-                    bg-gray-100 text-gray-700 rounded-2xl font-bold text-sm
-                    active:bg-gray-200 transition disabled:opacity-50">
-                  <MdUpload size={30} />
-                  <span>Upload Photo</span>
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={triggerUpload}
+                disabled={confirming}
+                className="w-full flex items-center justify-center gap-3 py-5 px-4
+                  bg-[#168AFF] text-white rounded-2xl font-bold text-sm
+                  active:opacity-75 transition disabled:opacity-50">
+                <MdUpload size={24} />
+                Upload Delivery Photo
+              </button>
             </div>
           )}
 
@@ -457,21 +432,12 @@ function DeliverModal({ order, onClose, onConfirm, confirming }) {
                   <MdCheckCircle size={16} className="text-white" />
                 </div>
               </div>
-              {/* Retake / Change buttons below the preview */}
-              <div className="grid grid-cols-2 gap-2">
-                <button type="button" onClick={triggerCamera} disabled={confirming}
-                  className="flex items-center justify-center gap-1.5 py-2 bg-gray-100
-                    text-gray-600 rounded-xl text-xs font-semibold
-                    active:bg-gray-200 transition disabled:opacity-50">
-                  <MdCameraAlt size={15} /> Retake
-                </button>
-                <button type="button" onClick={triggerGallery} disabled={confirming}
-                  className="flex items-center justify-center gap-1.5 py-2 bg-gray-100
-                    text-gray-600 rounded-xl text-xs font-semibold
-                    active:bg-gray-200 transition disabled:opacity-50">
-                  <MdUpload size={15} /> Change
-                </button>
-              </div>
+              <button type="button" onClick={triggerUpload} disabled={confirming}
+                className="w-full flex items-center justify-center gap-1.5 py-2 bg-gray-100
+                  text-gray-600 rounded-xl text-xs font-semibold
+                  active:bg-gray-200 transition disabled:opacity-50">
+                <MdUpload size={15} /> Change Photo
+              </button>
             </div>
           )}
 
@@ -479,10 +445,7 @@ function DeliverModal({ order, onClose, onConfirm, confirming }) {
             <p className="text-red-500 text-xs text-center">{uploadError}</p>
           )}
 
-          {/* camera: capture="environment" opens back camera */}
-          <input ref={cameraRef}  type="file" accept="image/*" capture="environment" className="hidden" />
-          {/* gallery: no capture, opens file picker */}
-          <input ref={galleryRef} type="file" accept="image/*" className="hidden" />
+          <input ref={fileRef} type="file" accept="image/*" className="hidden" />
         </div>
 
         {/* Footer */}

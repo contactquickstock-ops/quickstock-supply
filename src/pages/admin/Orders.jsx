@@ -6,6 +6,7 @@ import {
 } from 'react-icons/md'
 import AdminLayout from '../../layouts/AdminLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
+import { supabase as supabaseRT } from '../../services/supabase'
 
 // ── Status config ─────────────────────────────────────────────────────────────
 
@@ -445,13 +446,14 @@ export default function AdminOrders() {
   }, [fetchOrders, fetchDrivers])
 
   // Real-time: re-fetch whenever any order changes
+  // Must use the regular supabase client (not supabaseAdmin) — Realtime requires an active session
   useEffect(() => {
-    const channel = supabase
+    const channel = supabaseRT
       .channel('admin-orders-rt')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' },
         () => { fetchOrders() })
       .subscribe()
-    return () => supabase.removeChannel(channel)
+    return () => supabaseRT.removeChannel(channel)
   }, [fetchOrders])
 
   // ── Open order detail ──────────────────────────────────────────────────────

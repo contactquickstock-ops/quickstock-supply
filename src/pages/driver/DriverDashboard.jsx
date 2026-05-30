@@ -7,6 +7,7 @@ import {
 import OrderChat from '../../components/OrderChat'
 import DriverLayout from '../../layouts/DriverLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
+import { supabase as supabaseRT } from '../../services/supabase'
 import { useAuth } from '../../context/AuthContext'
 import toast from 'react-hot-toast'
 
@@ -600,16 +601,17 @@ export default function DriverDashboard() {
 
   useEffect(() => { fetchDeliveries() }, [fetchDeliveries])
 
-  // Real-time: refresh whenever one of this driver's orders changes
+  // Real-time: refresh whenever one of this driver's orders changes (new assignment or update)
+  // Must use regular supabase client — supabaseAdmin has no session so Realtime won't connect
   useEffect(() => {
     if (!user) return
-    const channel = supabase
+    const channel = supabaseRT
       .channel('driver-orders-rt')
       .on('postgres_changes',
         { event: '*', schema: 'public', table: 'orders', filter: `driver_id=eq.${user.id}` },
         () => fetchDeliveries())
       .subscribe()
-    return () => supabase.removeChannel(channel)
+    return () => supabaseRT.removeChannel(channel)
   }, [user, fetchDeliveries])
 
   // ── Accept Delivery ────────────────────────────────────────────────────────

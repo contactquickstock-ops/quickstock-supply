@@ -6,6 +6,7 @@ import {
 } from 'react-icons/md'
 import CustomerLayout from '../../layouts/CustomerLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
+import { supabase as supabaseRT } from '../../services/supabase'
 import { useAuth } from '../../context/AuthContext'
 import OrderChat from '../../components/OrderChat'
 import toast from 'react-hot-toast'
@@ -261,9 +262,10 @@ export default function Orders() {
   useEffect(() => { fetchOrders() }, [fetchOrders])
 
   // Real-time: update this customer's orders live
+  // Must use regular supabase client — supabaseAdmin has no session so Realtime won't work
   useEffect(() => {
     if (!user) return
-    const channel = supabase
+    const channel = supabaseRT
       .channel('customer-orders-rt')
       .on('postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'orders', filter: `customer_id=eq.${user.id}` },
@@ -271,14 +273,15 @@ export default function Orders() {
           setOrders(prev => prev.map(o =>
             o.id === payload.new.id ? { ...o, ...payload.new } : o
           ))
-          // Refresh detail if it's currently open for this order
-          setSelectedOrder(prev => prev?.id === payload.new.id ? { ...prev, ...payload.new } : prev)
+          setSelectedOrder(prev =>
+            prev?.id === payload.new.id ? { ...prev, ...payload.new } : prev
+          )
         })
       .on('postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'orders', filter: `customer_id=eq.${user.id}` },
         () => fetchOrders())
       .subscribe()
-    return () => supabase.removeChannel(channel)
+    return () => supabaseRT.removeChannel(channel)
   }, [user, fetchOrders])
 
   async function openOrder(order) {

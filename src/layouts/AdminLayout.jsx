@@ -60,16 +60,13 @@ export default function AdminLayout({ children, pageTitle = 'Dashboard' }) {
 
     refreshCounts()
 
-    // Real-time for orders badge (new orders / status changes)
+    // Real-time — any order change immediately refreshes badge counts
     const channel = supabase
       .channel('admin-layout-counts-rt')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, refreshCounts)
       .subscribe()
 
-    // Polling fallback every 15 s so badge always stays current
-    const poll = setInterval(refreshCounts, 15000)
-
-    return () => { supabase.removeChannel(channel); clearInterval(poll) }
+    return () => supabase.removeChannel(channel)
   }, [])
 
   async function handleLogout() {

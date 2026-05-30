@@ -444,15 +444,26 @@ export default function AdminOrders() {
     fetchDrivers()
   }, [fetchOrders, fetchDrivers])
 
-  // Real-time + polling fallback — silent so no loading flicker
+  // Real-time — no server-side filter so events are never missed
   useEffect(() => {
     const channel = supabaseRT
       .channel('admin-orders-rt')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' },
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' },
         () => fetchOrders(true))
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' },
+        (payload) => {
+          // In-place update for status changes — instant, no network round-trip
+          setOrders(prev => prev.map(o =>
+            o.id === payload.new.id ? { ...o, ...payload.new } : o
+          ))
+          setDetailOrder(prev =>
+            prev?.id === payload.new.id ? { ...prev, ...payload.new } : prev
+          )
+        })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'orders' },
+        (payload) => setOrders(prev => prev.filter(o => o.id !== payload.old.id)))
       .subscribe()
-    const poll = setInterval(() => fetchOrders(true), 15000)
-    return () => { supabaseRT.removeChannel(channel); clearInterval(poll) }
+    return () => supabaseRT.removeChannel(channel)
   }, [fetchOrders])
 
   // ── Open order detail ──────────────────────────────────────────────────────

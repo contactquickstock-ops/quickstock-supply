@@ -261,14 +261,15 @@ export default function Orders() {
 
   useEffect(() => { fetchOrders() }, [fetchOrders])
 
-  // Real-time + polling fallback
+  // Real-time — no server-side filter, client-side check for this customer's orders
   useEffect(() => {
     if (!user) return
     const channel = supabaseRT
       .channel('customer-orders-rt')
-      .on('postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'orders', filter: `customer_id=eq.${user.id}` },
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders' },
         (payload) => {
+          if (payload.new.customer_id !== user.id) return
+          // In-place status update — instant
           setOrders(prev => prev.map(o =>
             o.id === payload.new.id ? { ...o, ...payload.new } : o
           ))
@@ -276,12 +277,13 @@ export default function Orders() {
             prev?.id === payload.new.id ? { ...prev, ...payload.new } : prev
           )
         })
-      .on('postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'orders', filter: `customer_id=eq.${user.id}` },
-        () => fetchOrders(true))
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'orders' },
+        (payload) => {
+          if (payload.new.customer_id !== user.id) return
+          fetchOrders(true)
+        })
       .subscribe()
-    const poll = setInterval(() => fetchOrders(true), 15000)
-    return () => { supabaseRT.removeChannel(channel); clearInterval(poll) }
+    return () => supabaseRT.removeChannel(channel)
   }, [user, fetchOrders])
 
   async function openOrder(order) {

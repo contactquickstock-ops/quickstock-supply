@@ -600,17 +600,18 @@ export default function DriverDashboard() {
 
   useEffect(() => { fetchDeliveries() }, [fetchDeliveries])
 
-  // Real-time + polling fallback — silent so no loading flicker on background refreshes
+  // Real-time — no server-side filter, client-side check so new assignments are never missed
   useEffect(() => {
     if (!user) return
     const channel = supabaseRT
       .channel('driver-orders-rt')
-      .on('postgres_changes',
-        { event: '*', schema: 'public', table: 'orders', filter: `driver_id=eq.${user.id}` },
-        () => fetchDeliveries(true))
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' },
+        (payload) => {
+          const row = payload.new ?? payload.old ?? {}
+          if (row.driver_id === user.id) fetchDeliveries(true)
+        })
       .subscribe()
-    const poll = setInterval(() => fetchDeliveries(true), 10000)
-    return () => { supabaseRT.removeChannel(channel); clearInterval(poll) }
+    return () => supabaseRT.removeChannel(channel)
   }, [user, fetchDeliveries])
 
   // ── Accept Delivery ────────────────────────────────────────────────────────

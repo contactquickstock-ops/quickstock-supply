@@ -70,14 +70,15 @@ export default function CustomerLayout({ children }) {
     }
   }, [location.pathname])
 
-  // Real-time order status notifications
+  // Real-time order status notifications — no server filter, check client-side
   useEffect(() => {
     if (!profile?.id) return
     const channel = supabase
       .channel('customer-layout-order-notifs')
       .on('postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'orders', filter: `customer_id=eq.${profile.id}` },
+        { event: 'UPDATE', schema: 'public', table: 'orders' },
         (payload) => {
+          if (payload.new?.customer_id !== profile.id) return
           const status = payload.new?.status
           const label  = ORDER_STATUS_LABEL[status]
           if (!label) return

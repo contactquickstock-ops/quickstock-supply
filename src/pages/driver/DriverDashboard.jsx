@@ -600,6 +600,18 @@ export default function DriverDashboard() {
 
   useEffect(() => { fetchDeliveries() }, [fetchDeliveries])
 
+  // Real-time: refresh whenever one of this driver's orders changes
+  useEffect(() => {
+    if (!user) return
+    const channel = supabase
+      .channel('driver-orders-rt')
+      .on('postgres_changes',
+        { event: '*', schema: 'public', table: 'orders', filter: `driver_id=eq.${user.id}` },
+        () => fetchDeliveries())
+      .subscribe()
+    return () => supabase.removeChannel(channel)
+  }, [user, fetchDeliveries])
+
   // ── Accept Delivery ────────────────────────────────────────────────────────
   async function acceptDelivery(orderId) {
     setBusyId(orderId)

@@ -444,6 +444,16 @@ export default function AdminOrders() {
     fetchDrivers()
   }, [fetchOrders, fetchDrivers])
 
+  // Real-time: re-fetch whenever any order changes
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin-orders-rt')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' },
+        () => { fetchOrders() })
+      .subscribe()
+    return () => supabase.removeChannel(channel)
+  }, [fetchOrders])
+
   // ── Open order detail ──────────────────────────────────────────────────────
   async function openDetail(order) {
     setDetailOrder(order)

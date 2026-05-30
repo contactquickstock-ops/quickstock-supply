@@ -9,6 +9,15 @@ import {
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import { supabase } from '../services/supabase'
+import toast from 'react-hot-toast'
+
+const ORDER_STATUS_LABEL = {
+  confirmed:  'Confirmed',
+  assigned:   'Driver assigned',
+  on_the_way: 'On the way!',
+  delivered:  'Delivered',
+  cancelled:  'Cancelled',
+}
 
 const NAV_ITEMS = [
   { label: 'Browse',           icon: MdStorefront,     path: '/customer/dashboard'  },
@@ -33,6 +42,9 @@ const SETTINGS_LINKS = [
 export default function CustomerLayout({ children }) {
   const [menuOpen, setMenuOpen]       = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
+  const [orderNotifs, setOrderNotifs] = useState(
+    () => parseInt(sessionStorage.getItem('qs_order_notifs') || '0', 10)
+  )
   const { profile }   = useAuth()
   const { itemCount } = useCart()
   const location      = useLocation()
@@ -49,6 +61,43 @@ export default function CustomerLayout({ children }) {
     if (profileOpen) document.addEventListener('mousedown', onOutside)
     return () => document.removeEventListener('mousedown', onOutside)
   }, [profileOpen])
+
+  // Clear notification badge when visiting My Orders
+  useEffect(() => {
+    if (location.pathname.startsWith('/customer/orders')) {
+      setOrderNotifs(0)
+      sessionStorage.removeItem('qs_order_notifs')
+    }
+  }, [location.pathname])
+
+  // Real-time order status notifications
+  useEffect(() => {
+    if (!profile?.id) return
+    const channel = supabase
+      .channel('customer-layout-order-notifs')
+      .on('postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'orders', filter: `customer_id=eq.${profile.id}` },
+        (payload) => {
+          const status = payload.new?.status
+          const label  = ORDER_STATUS_LABEL[status]
+          if (!label) return
+          const orderId = String(payload.new.id).padStart(6, '0')
+          toast(`Order #${orderId}: ${label}`, {
+            icon: status === 'delivered' ? '✅' : status === 'cancelled' ? '❌' : '🔔',
+            duration: 5000,
+          })
+          // Only badge if not currently on orders page
+          if (!window.location.pathname.startsWith('/customer/orders')) {
+            setOrderNotifs(prev => {
+              const next = prev + 1
+              sessionStorage.setItem('qs_order_notifs', String(next))
+              return next
+            })
+          }
+        })
+      .subscribe()
+    return () => supabase.removeChannel(channel)
+  }, [profile?.id])
 
   async function handleLogout() {
     await supabase.auth.signOut()
@@ -75,15 +124,23 @@ export default function CustomerLayout({ children }) {
           <nav className="hidden md:flex items-center gap-1 flex-1 justify-center">
             {NAV_ITEMS.map(({ label, icon: Icon, path }) => {
               const active = location.pathname.startsWith(path)
+              const isOrders = path === '/customer/orders'
               return (
                 <Link key={path} to={path}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg
+                  className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg
                     text-sm font-medium transition
                     ${active
                       ? 'bg-[#168AFF]/10 text-[#168AFF]'
                       : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'}`}>
                   <Icon size={17} />
                   {label}
+                  {isOrders && orderNotifs > 0 && (
+                    <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1
+                      bg-red-500 text-white text-[9px] font-bold rounded-full
+                      flex items-center justify-center leading-none">
+                      {orderNotifs > 9 ? '9+' : orderNotifs}
+                    </span>
+                  )}
                 </Link>
               )
             })}
@@ -265,15 +322,23 @@ export default function CustomerLayout({ children }) {
 
             <div className="border-t border-gray-100 pt-2">
               {NAV_ITEMS.map(({ label, icon: Icon, path }) => {
-                const active = location.pathname.startsWith(path)
+                const active   = location.pathname.startsWith(path)
+                const isOrders = path === '/customer/orders'
                 return (
                   <Link key={path} to={path}
                     onClick={() => setMenuOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl
+                    className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl
                       text-sm font-medium transition
                       ${active ? 'bg-[#168AFF]/10 text-[#168AFF]' : 'text-gray-600 hover:bg-gray-100'}`}>
                     <Icon size={18} />
                     {label}
+                    {isOrders && orderNotifs > 0 && (
+                      <span className="ml-auto min-w-4 h-5 px-1.5
+                        bg-red-500 text-white text-[10px] font-bold rounded-full
+                        flex items-center justify-center leading-none">
+                        {orderNotifs > 9 ? '9+' : orderNotifs}
+                      </span>
+                    )}
                   </Link>
                 )
               })}

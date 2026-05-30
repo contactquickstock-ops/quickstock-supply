@@ -260,6 +260,27 @@ export default function Orders() {
 
   useEffect(() => { fetchOrders() }, [fetchOrders])
 
+  // Real-time: update this customer's orders live
+  useEffect(() => {
+    if (!user) return
+    const channel = supabase
+      .channel('customer-orders-rt')
+      .on('postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'orders', filter: `customer_id=eq.${user.id}` },
+        (payload) => {
+          setOrders(prev => prev.map(o =>
+            o.id === payload.new.id ? { ...o, ...payload.new } : o
+          ))
+          // Refresh detail if it's currently open for this order
+          setSelectedOrder(prev => prev?.id === payload.new.id ? { ...prev, ...payload.new } : prev)
+        })
+      .on('postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'orders', filter: `customer_id=eq.${user.id}` },
+        () => fetchOrders())
+      .subscribe()
+    return () => supabase.removeChannel(channel)
+  }, [user, fetchOrders])
+
   async function openOrder(order) {
     setSelectedOrder(order)
     setOrderItems([])

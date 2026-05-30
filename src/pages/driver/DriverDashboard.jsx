@@ -293,7 +293,6 @@ function DeliverModal({ order, onClose, onConfirm, confirming }) {
   const [imagePreview, setImagePreview] = useState(order.delivery_image ?? null)
   const [uploading,    setUploading]    = useState(false)
   const [uploadError,  setUploadError]  = useState(null)
-  const [showOptions,  setShowOptions]  = useState(false)
   const cameraRef  = useRef(null)
   const galleryRef = useRef(null)
 
@@ -301,11 +300,9 @@ function DeliverModal({ order, onClose, onConfirm, confirming }) {
 
   async function handleFileChange(e) {
     const file = e.target.files?.[0]
-    // Reset the input immediately so the same source can be used again
-    e.target.value = ''
+    e.target.value = ''   // reset immediately so same source works again
     if (!file) return
 
-    setShowOptions(false)
     setUploading(true)
     setUploadError(null)
 
@@ -317,9 +314,7 @@ function DeliverModal({ order, onClose, onConfirm, confirming }) {
         .upload(fileName, file, { contentType: file.type })
       if (uploadErr) throw new Error(uploadErr.message)
 
-      const { data: imgData } = supabase.storage
-        .from('deliveries')
-        .getPublicUrl(fileName)
+      const { data: imgData } = supabase.storage.from('deliveries').getPublicUrl(fileName)
       const imageUrl = imgData.publicUrl
 
       const { error: updateErr } = await supabase
@@ -337,29 +332,11 @@ function DeliverModal({ order, onClose, onConfirm, confirming }) {
     }
   }
 
-  function openCamera() {
-    setShowOptions(false)
-    // Small delay so the options sheet fully closes before the camera launches
-    setTimeout(() => {
-      if (cameraRef.current) {
-        cameraRef.current.value = ''
-        cameraRef.current.click()
-      }
-    }, 80)
-  }
-
-  function openGallery() {
-    setShowOptions(false)
-    setTimeout(() => {
-      if (galleryRef.current) {
-        galleryRef.current.value = ''
-        galleryRef.current.click()
-      }
-    }, 80)
-  }
+  // Direct click — no setTimeout, preserves iOS user-gesture context
+  function triggerCamera()  { if (cameraRef.current)  { cameraRef.current.value  = ''; cameraRef.current.click()  } }
+  function triggerGallery() { if (galleryRef.current) { galleryRef.current.value = ''; galleryRef.current.click() } }
 
   return (
-    <>
     <div
       className="fixed inset-0 z-50 flex items-end sm:items-center justify-center
         p-0 sm:p-4 bg-black/50 backdrop-blur-sm"
@@ -377,12 +354,9 @@ function DeliverModal({ order, onClose, onConfirm, confirming }) {
               #{String(order.id).padStart(6,'0')} · {order.customer_name ?? '—'}
             </p>
           </div>
-          <button
-            onClick={onClose}
-            disabled={uploading || confirming}
+          <button onClick={onClose} disabled={uploading || confirming}
             className="p-1 text-gray-400 hover:text-gray-600 transition disabled:opacity-50"
-            aria-label="Close"
-          >
+            aria-label="Close">
             <MdClose size={20} />
           </button>
         </div>
@@ -397,7 +371,7 @@ function DeliverModal({ order, onClose, onConfirm, confirming }) {
               {photoReady ? <MdCheckCircle size={16} /> : '1'}
             </div>
             <p className={`text-xs font-semibold ${photoReady ? 'text-[#168AFF]' : 'text-gray-500'}`}>
-              Upload delivery photo
+              Add delivery photo
             </p>
             <div className="flex-1 h-px bg-gray-200 mx-1" />
             <div className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold
@@ -409,89 +383,93 @@ function DeliverModal({ order, onClose, onConfirm, confirming }) {
             </p>
           </div>
 
-          {/* Photo area */}
-          <div>
-            <div
-              onClick={() => !uploading && !confirming && setShowOptions(true)}
-              className={`relative w-full h-48 rounded-xl border-2 overflow-hidden
-                flex items-center justify-center transition-colors group
-                ${imagePreview
-                  ? 'border-transparent cursor-pointer'
-                  : uploading
-                    ? 'border-gray-200 cursor-not-allowed'
-                    : 'border-dashed border-gray-200 hover:border-[#168AFF] active:border-[#168AFF] cursor-pointer'}`}
-            >
-              {imagePreview ? (
-                <>
-                  <img src={imagePreview} alt="Delivery proof"
-                    className="w-full h-full object-contain" />
-                  {!uploading && (
-                    <div className="absolute top-2.5 right-2.5 bg-[#168AFF] rounded-full p-1">
-                      <MdCheckCircle size={16} className="text-white" />
-                    </div>
-                  )}
-                  {!uploading && (
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30
-                      group-active:bg-black/30 transition-colors flex items-center justify-center">
-                      <span className="text-white text-xs font-semibold opacity-0
-                        group-hover:opacity-100 group-active:opacity-100 transition-opacity
-                        flex items-center gap-1">
-                        <MdUpload size={14} /> Change photo
-                      </span>
-                    </div>
-                  )}
-                </>
-              ) : uploading ? (
-                <div className="flex flex-col items-center gap-3 text-gray-400 select-none">
-                  <div className="w-8 h-8 border-2 border-[#168AFF] border-t-transparent
-                    rounded-full animate-spin" />
-                  <span className="text-xs">Uploading photo…</span>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center gap-2 text-gray-300 select-none">
-                  <MdCameraAlt size={40} />
-                  <span className="text-sm font-semibold text-gray-400">Tap to add photo</span>
-                  <span className="text-[10px] text-gray-300 text-center px-4">
-                    Take a clear photo of the delivered items at the customer's location
-                  </span>
-                </div>
-              )}
+          {/* ── No photo yet: show two buttons ── */}
+          {!imagePreview && !uploading && (
+            <div className="space-y-2">
+              <p className="text-xs text-gray-500 text-center">
+                Take or upload a clear photo of the delivered items.
+              </p>
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  type="button"
+                  onClick={triggerCamera}
+                  disabled={confirming}
+                  className="flex flex-col items-center justify-center gap-2 py-6 px-3
+                    bg-[#168AFF] text-white rounded-2xl font-bold text-sm
+                    active:opacity-75 transition disabled:opacity-50">
+                  <MdCameraAlt size={30} />
+                  <span>Take Photo</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={triggerGallery}
+                  disabled={confirming}
+                  className="flex flex-col items-center justify-center gap-2 py-6 px-3
+                    bg-gray-100 text-gray-700 rounded-2xl font-bold text-sm
+                    active:bg-gray-200 transition disabled:opacity-50">
+                  <MdUpload size={30} />
+                  <span>Upload Photo</span>
+                </button>
+              </div>
             </div>
+          )}
 
-            {uploadError && (
-              <p className="text-red-500 text-xs mt-2">{uploadError}</p>
-            )}
+          {/* ── Uploading spinner ── */}
+          {uploading && (
+            <div className="w-full h-36 rounded-xl border-2 border-gray-100 bg-gray-50
+              flex flex-col items-center justify-center gap-3">
+              <div className="w-8 h-8 border-2 border-[#168AFF] border-t-transparent
+                rounded-full animate-spin" />
+              <span className="text-xs text-gray-400 font-medium">Uploading photo…</span>
+            </div>
+          )}
 
-            {/* Two separate hidden inputs — camera vs gallery */}
-            {/* camera input: capture="environment" opens the back camera directly */}
-            <input
-              ref={cameraRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-            {/* gallery input: no capture, opens file picker / gallery */}
-            <input
-              ref={galleryRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-          </div>
+          {/* ── Photo preview ── */}
+          {imagePreview && !uploading && (
+            <div className="space-y-2">
+              <div className="relative w-full h-48 rounded-xl overflow-hidden border-2
+                border-[#168AFF]/30">
+                <img src={imagePreview} alt="Delivery proof"
+                  className="w-full h-full object-contain" />
+                <div className="absolute top-2.5 right-2.5 bg-[#168AFF] rounded-full p-1">
+                  <MdCheckCircle size={16} className="text-white" />
+                </div>
+              </div>
+              {/* Retake / Change buttons below the preview */}
+              <div className="grid grid-cols-2 gap-2">
+                <button type="button" onClick={triggerCamera} disabled={confirming}
+                  className="flex items-center justify-center gap-1.5 py-2 bg-gray-100
+                    text-gray-600 rounded-xl text-xs font-semibold
+                    active:bg-gray-200 transition disabled:opacity-50">
+                  <MdCameraAlt size={15} /> Retake
+                </button>
+                <button type="button" onClick={triggerGallery} disabled={confirming}
+                  className="flex items-center justify-center gap-1.5 py-2 bg-gray-100
+                    text-gray-600 rounded-xl text-xs font-semibold
+                    active:bg-gray-200 transition disabled:opacity-50">
+                  <MdUpload size={15} /> Change
+                </button>
+              </div>
+            </div>
+          )}
+
+          {uploadError && (
+            <p className="text-red-500 text-xs text-center">{uploadError}</p>
+          )}
+
+          {/* Two separate hidden inputs — no setTimeout, direct user-gesture click */}
+          <input ref={cameraRef}  type="file" accept="image/*" capture="environment"
+            onChange={handleFileChange} className="hidden" />
+          <input ref={galleryRef} type="file" accept="image/*"
+            onChange={handleFileChange} className="hidden" />
         </div>
 
         {/* Footer */}
         <div className="px-6 pb-6 flex gap-3">
-          <button
-            onClick={onClose}
-            disabled={uploading || confirming}
+          <button onClick={onClose} disabled={uploading || confirming}
             className="flex-1 py-3 text-sm font-semibold text-gray-600
               border border-gray-200 rounded-xl hover:bg-gray-50
-              transition disabled:opacity-50"
-          >
+              transition disabled:opacity-50">
             Cancel
           </button>
           <button
@@ -500,63 +478,12 @@ function DeliverModal({ order, onClose, onConfirm, confirming }) {
             className={`flex-1 py-3 text-sm font-semibold rounded-xl transition-all
               ${photoReady && !uploading && !confirming
                 ? 'bg-[#168AFF] text-white hover:bg-[#1270DB] active:scale-[0.98]'
-                : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
-          >
+                : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}>
             {confirming ? 'Confirming…' : 'Mark as Delivered'}
           </button>
         </div>
       </div>
     </div>
-
-    {/* ── Photo source picker sheet ── */}
-    {showOptions && (
-      <div
-        className="fixed inset-0 z-60 flex items-end justify-center bg-black/50"
-        onClick={() => setShowOptions(false)}
-      >
-        <div
-          className="bg-white w-full rounded-t-2xl shadow-2xl px-5 pt-5 pb-8 space-y-3"
-          onClick={e => e.stopPropagation()}
-        >
-          <p className="text-center text-sm font-bold text-gray-700 pb-1">
-            Add Delivery Photo
-          </p>
-
-          <button
-            onClick={openCamera}
-            className="w-full flex items-center gap-4 px-5 py-4 bg-[#168AFF]
-              text-white rounded-2xl font-bold text-sm active:opacity-80 transition"
-          >
-            <span className="text-2xl">📷</span>
-            <div className="text-left">
-              <p className="font-bold">Take a Photo</p>
-              <p className="text-white/75 text-xs font-normal">Open camera and capture now</p>
-            </div>
-          </button>
-
-          <button
-            onClick={openGallery}
-            className="w-full flex items-center gap-4 px-5 py-4 bg-gray-100
-              text-gray-800 rounded-2xl font-bold text-sm active:bg-gray-200 transition"
-          >
-            <span className="text-2xl">🖼️</span>
-            <div className="text-left">
-              <p className="font-bold">Upload from Gallery</p>
-              <p className="text-gray-500 text-xs font-normal">Choose an existing photo</p>
-            </div>
-          </button>
-
-          <button
-            onClick={() => setShowOptions(false)}
-            className="w-full py-3 text-sm font-semibold text-gray-500
-              hover:text-gray-700 active:text-gray-700 transition"
-          >
-            Cancel
-          </button>
-        </div>
-      </div>
-    )}
-    </>
   )
 }
 

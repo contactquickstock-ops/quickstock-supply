@@ -418,16 +418,15 @@ export default function AdminOrders() {
   const [orderItems, setOrderItems]       = useState([])
   const [loadingItems, setLoadingItems]   = useState(false)
 
-  const fetchOrders = useCallback(async () => {
-    setLoading(true)
-    setError(null)
+  const fetchOrders = useCallback(async (silent = false) => {
+    if (!silent) { setLoading(true); setError(null) }
     const { data, error: err } = await supabase
       .from('orders')
       .select('*, driver:profiles!orders_driver_id_fkey(full_name), customer_profile:profiles!orders_customer_id_fkey(address_city, address_province)')
       .order('created_at', { ascending: false })
-    if (err) setError('Failed to load orders.')
+    if (err) { if (!silent) setError('Failed to load orders.') }
     else setOrders(data ?? [])
-    setLoading(false)
+    if (!silent) setLoading(false)
   }, [])
 
   const fetchDrivers = useCallback(async () => {
@@ -445,15 +444,15 @@ export default function AdminOrders() {
     fetchDrivers()
   }, [fetchOrders, fetchDrivers])
 
-  // Real-time: re-fetch whenever any order changes
-  // Must use the regular supabase client (not supabaseAdmin) — Realtime requires an active session
+  // Real-time + polling fallback — silent so no loading flicker
   useEffect(() => {
     const channel = supabaseRT
       .channel('admin-orders-rt')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' },
-        () => { fetchOrders() })
+        () => fetchOrders(true))
       .subscribe()
-    return () => supabaseRT.removeChannel(channel)
+    const poll = setInterval(() => fetchOrders(true), 15000)
+    return () => { supabaseRT.removeChannel(channel); clearInterval(poll) }
   }, [fetchOrders])
 
   // ── Open order detail ──────────────────────────────────────────────────────

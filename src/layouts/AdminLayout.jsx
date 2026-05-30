@@ -46,24 +46,30 @@ export default function AdminLayout({ children, pageTitle = 'Dashboard' }) {
   const [pendingMemberships, setPendingMemberships] = useState(0)
 
   useEffect(() => {
-    supabaseAdmin
-      .from('orders')
-      .select('id', { count: 'exact', head: true })
-      .in('status', ['pending', 'confirmed'])
-      .then(({ count }) => setPendingOrders(count ?? 0))
+    function refreshCounts() {
+      supabaseAdmin.from('orders').select('id', { count: 'exact', head: true })
+        .in('status', ['pending', 'confirmed'])
+        .then(({ count }) => setPendingOrders(count ?? 0))
+      supabaseAdmin.from('profiles').select('id', { count: 'exact', head: true })
+        .eq('role', 'customer').eq('status', 'pending')
+        .then(({ count }) => setPendingCustomers(count ?? 0))
+      supabaseAdmin.from('memberships').select('id', { count: 'exact', head: true })
+        .eq('status', 'pending')
+        .then(({ count }) => setPendingMemberships(count ?? 0))
+    }
 
-    supabaseAdmin
-      .from('profiles')
-      .select('id', { count: 'exact', head: true })
-      .eq('role', 'customer')
-      .eq('status', 'pending')
-      .then(({ count }) => setPendingCustomers(count ?? 0))
+    refreshCounts()
 
-    supabaseAdmin
-      .from('memberships')
-      .select('id', { count: 'exact', head: true })
-      .eq('status', 'pending')
-      .then(({ count }) => setPendingMemberships(count ?? 0))
+    // Real-time for orders badge (new orders / status changes)
+    const channel = supabase
+      .channel('admin-layout-counts-rt')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, refreshCounts)
+      .subscribe()
+
+    // Polling fallback every 15 s so badge always stays current
+    const poll = setInterval(refreshCounts, 15000)
+
+    return () => { supabase.removeChannel(channel); clearInterval(poll) }
   }, [])
 
   async function handleLogout() {

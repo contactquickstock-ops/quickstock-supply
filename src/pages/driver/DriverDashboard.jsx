@@ -584,34 +584,33 @@ export default function DriverDashboard() {
   const [modalBusy, setModalBusy]         = useState(false)
   const [chatOrderId, setChatOrderId]     = useState(null)
 
-  const fetchDeliveries = useCallback(async () => {
+  const fetchDeliveries = useCallback(async (silent = false) => {
     if (!user) return
-    setLoading(true)
-    setError(null)
+    if (!silent) { setLoading(true); setError(null) }
     const { data, error: err } = await supabase
       .from('orders')
       .select('*, customer:profiles!orders_customer_id_fkey(full_name, contact_number, membership_status, avatar_url, store_name, role), order_items(quantity, products(name, unit_type)), rewards(id, name, points_required)')
       .eq('driver_id', user.id)
       .in('status', ['assigned', 'on_the_way', 'cancelled'])
       .order('created_at', { ascending: false })
-    if (err) setError('Failed to load deliveries.')
+    if (err) { if (!silent) setError('Failed to load deliveries.') }
     else setOrders(data ?? [])
-    setLoading(false)
+    if (!silent) setLoading(false)
   }, [user])
 
   useEffect(() => { fetchDeliveries() }, [fetchDeliveries])
 
-  // Real-time: refresh whenever one of this driver's orders changes (new assignment or update)
-  // Must use regular supabase client — supabaseAdmin has no session so Realtime won't connect
+  // Real-time + polling fallback — silent so no loading flicker on background refreshes
   useEffect(() => {
     if (!user) return
     const channel = supabaseRT
       .channel('driver-orders-rt')
       .on('postgres_changes',
         { event: '*', schema: 'public', table: 'orders', filter: `driver_id=eq.${user.id}` },
-        () => fetchDeliveries())
+        () => fetchDeliveries(true))
       .subscribe()
-    return () => supabaseRT.removeChannel(channel)
+    const poll = setInterval(() => fetchDeliveries(true), 10000)
+    return () => { supabaseRT.removeChannel(channel); clearInterval(poll) }
   }, [user, fetchDeliveries])
 
   // ── Accept Delivery ────────────────────────────────────────────────────────

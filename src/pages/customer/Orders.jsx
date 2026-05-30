@@ -247,22 +247,21 @@ export default function Orders() {
   const [cancelTarget, setCancelTarget]       = useState(null)
   const [cancelling, setCancelling]           = useState(false)
 
-  const fetchOrders = useCallback(async () => {
+  const fetchOrders = useCallback(async (silent = false) => {
     if (!user) return
-    setLoading(true)
+    if (!silent) setLoading(true)
     const { data } = await supabase
       .from('orders')
       .select('*, order_items(quantity)')
       .eq('customer_id', user.id)
       .order('created_at', { ascending: false })
-    setOrders(data ?? [])
-    setLoading(false)
+    if (data) setOrders(data)
+    if (!silent) setLoading(false)
   }, [user])
 
   useEffect(() => { fetchOrders() }, [fetchOrders])
 
-  // Real-time: update this customer's orders live
-  // Must use regular supabase client — supabaseAdmin has no session so Realtime won't work
+  // Real-time + polling fallback
   useEffect(() => {
     if (!user) return
     const channel = supabaseRT
@@ -279,9 +278,10 @@ export default function Orders() {
         })
       .on('postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'orders', filter: `customer_id=eq.${user.id}` },
-        () => fetchOrders())
+        () => fetchOrders(true))
       .subscribe()
-    return () => supabaseRT.removeChannel(channel)
+    const poll = setInterval(() => fetchOrders(true), 15000)
+    return () => { supabaseRT.removeChannel(channel); clearInterval(poll) }
   }, [user, fetchOrders])
 
   async function openOrder(order) {

@@ -298,32 +298,32 @@ function DeliverModal({ order, onClose, onConfirm, confirming }) {
 
   const photoReady = Boolean(uploadedUrl)
 
-  async function handleFileChange(e) {
-    const file = e.target.files?.[0]
-    e.target.value = ''   // reset immediately so same source works again
+  // Keep a stable ref to the latest upload logic so addEventListener never sees stale closures
+  const doUploadRef = useRef(null)
+  doUploadRef.current = async function doUpload(file) {
     if (!file) return
-
     setUploading(true)
     setUploadError(null)
-
     try {
-      const ext      = file.type.split('/')[1] || 'jpg'
+      const type     = file.type || 'image/jpeg'
+      const ext      = type.split('/')[1] || 'jpg'
       const fileName = `delivery-${order.id}-${Date.now()}.${ext}`
+
       const { error: uploadErr } = await supabase.storage
         .from('deliveries')
-        .upload(fileName, file, { contentType: file.type })
+        .upload(fileName, file, { contentType: type })
       if (uploadErr) throw new Error(uploadErr.message)
 
       const { data: imgData } = supabase.storage.from('deliveries').getPublicUrl(fileName)
-      const imageUrl = imgData.publicUrl
 
       const { error: updateErr } = await supabase
         .from('orders')
-        .update({ delivery_image: imageUrl })
+        .update({ delivery_image: imgData.publicUrl })
         .eq('id', order.id)
       if (updateErr) throw new Error(updateErr.message)
 
-      setUploadedUrl(imageUrl)
+      // Create preview URL while file is still valid, before any reset
+      setUploadedUrl(imgData.publicUrl)
       setImagePreview(URL.createObjectURL(file))
     } catch (err) {
       setUploadError(err.message)
@@ -332,7 +332,29 @@ function DeliverModal({ order, onClose, onConfirm, confirming }) {
     }
   }
 
-  // Direct click — no setTimeout, preserves iOS user-gesture context
+  // Attach native change listeners — more reliable than React's synthetic onChange on iOS/PWA
+  useEffect(() => {
+    function handle(e) {
+      const file = e.target?.files?.[0]
+      if (!file) return
+      // Call the latest upload logic via ref (no stale closure)
+      doUploadRef.current(file)
+      // Reset the input AFTER handing off the file reference, using rAF to defer
+      const input = e.target
+      requestAnimationFrame(() => { input.value = '' })
+    }
+
+    const c = cameraRef.current
+    const g = galleryRef.current
+    c?.addEventListener('change', handle)
+    g?.addEventListener('change', handle)
+    return () => {
+      c?.removeEventListener('change', handle)
+      g?.removeEventListener('change', handle)
+    }
+  }, []) // inputs are stable for the lifetime of this modal
+
+  // Direct .click() — no setTimeout — preserves iOS user-gesture context
   function triggerCamera()  { if (cameraRef.current)  { cameraRef.current.value  = ''; cameraRef.current.click()  } }
   function triggerGallery() { if (galleryRef.current) { galleryRef.current.value = ''; galleryRef.current.click() } }
 
@@ -457,11 +479,10 @@ function DeliverModal({ order, onClose, onConfirm, confirming }) {
             <p className="text-red-500 text-xs text-center">{uploadError}</p>
           )}
 
-          {/* Two separate hidden inputs — no setTimeout, direct user-gesture click */}
-          <input ref={cameraRef}  type="file" accept="image/*" capture="environment"
-            onChange={handleFileChange} className="hidden" />
-          <input ref={galleryRef} type="file" accept="image/*"
-            onChange={handleFileChange} className="hidden" />
+          {/* camera: capture="environment" opens back camera */}
+          <input ref={cameraRef}  type="file" accept="image/*" capture="environment" className="hidden" />
+          {/* gallery: no capture, opens file picker */}
+          <input ref={galleryRef} type="file" accept="image/*" className="hidden" />
         </div>
 
         {/* Footer */}

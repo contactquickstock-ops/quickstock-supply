@@ -87,6 +87,10 @@ function CartItem({ item, onRemove, onIncrease, onDecrease }) {
               const up      = changed && Number(curr) > Number(prev)
               return changed ? (
                 <div className="mt-0.5">
+                  <span className="inline-block bg-green-500 text-white text-[9px] font-black
+                    px-1.5 py-0.5 rounded leading-tight tracking-wide mb-0.5">
+                    NEW PRICE
+                  </span>
                   <div className="flex items-center gap-1">
                     <p className="text-gray-800 font-bold text-sm">
                       ₱{Number(curr).toLocaleString('en-PH', { minimumFractionDigits: 2 })}

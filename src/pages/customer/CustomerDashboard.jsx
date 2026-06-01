@@ -78,6 +78,12 @@ function ProductCard({ product, isAdding, onAddToCart }) {
           const up = changed && Number(curr) > Number(prev)
           return (
             <div className="mt-auto pt-2">
+              {changed && (
+                <span className="inline-block bg-green-500 text-white text-[9px] font-black
+                  px-1.5 py-0.5 rounded leading-tight tracking-wide mb-0.5">
+                  NEW PRICE
+                </span>
+              )}
               <div className="flex items-center gap-1">
                 <p className="text-gray-800 font-bold text-base">
                   ₱{Number(curr).toLocaleString('en-PH', { minimumFractionDigits: 2 })}

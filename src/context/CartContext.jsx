@@ -1,4 +1,6 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useState, useEffect } from 'react'
+import { supabase } from '../services/supabase'
+import toast from 'react-hot-toast'
 
 const CartContext = createContext()
 
@@ -24,21 +26,43 @@ export function CartProvider({ children }) {
   }
 
   function updateQty(productId, qty) {
-    if (qty < 1) {
-      removeFromCart(productId)
-      return
-    }
+    if (qty < 1) { removeFromCart(productId); return }
     setCartItems(prev =>
       prev.map(i => i.product.id === productId ? { ...i, quantity: qty } : i)
     )
   }
 
-  function clearCart() {
-    setCartItems([])
-  }
+  function clearCart() { setCartItems([]) }
 
-  const itemCount    = cartItems.reduce((sum, i) => sum + i.quantity, 0)
-  const totalAmount  = cartItems.reduce((sum, i) => sum + (i.product.price * i.quantity), 0)
+  // When admin changes a product price, update it in the cart in real-time
+  useEffect(() => {
+    const channel = supabase
+      .channel('cart-product-prices')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'products' },
+        (payload) => {
+          const updated = payload.new
+          setCartItems(prev => {
+            const inCart = prev.find(i => i.product.id === updated.id)
+            if (!inCart) return prev
+            if (inCart.product.price === updated.price) return prev
+            // Price changed — update cart item and toast the customer
+            toast(`Price updated: ${updated.name} is now ₱${Number(updated.price).toLocaleString('en-PH', { minimumFractionDigits: 2 })}`, {
+              icon: updated.price > inCart.product.price ? '↑' : '↓',
+              duration: 6000,
+            })
+            return prev.map(i =>
+              i.product.id === updated.id
+                ? { ...i, product: { ...i.product, ...updated } }
+                : i
+            )
+          })
+        })
+      .subscribe()
+    return () => supabase.removeChannel(channel)
+  }, [])
+
+  const itemCount   = cartItems.reduce((sum, i) => sum + i.quantity, 0)
+  const totalAmount = cartItems.reduce((sum, i) => sum + (i.product.price * i.quantity), 0)
 
   return (
     <CartContext.Provider value={{

@@ -226,14 +226,19 @@ export default function Products() {
         imageUrl = await uploadImage(imageFile)
       }
 
+      const newPrice = Number(price)
+      const priceChanged = editProduct && Number(editProduct.price) !== newPrice
+
       const payload = {
-        name:         name.trim(),
-        description:  description.trim(),
-        category:     category.trim(),
-        price:        Number(price),
-        unit_type:    unitType,
-        is_available: isAvailable,
-        image_url:    imageUrl,
+        name:           name.trim(),
+        description:    description.trim(),
+        category:       category.trim(),
+        price:          newPrice,
+        unit_type:      unitType,
+        is_available:   isAvailable,
+        image_url:      imageUrl,
+        // Track old price so customers can see the change
+        previous_price: priceChanged ? Number(editProduct.price) : (editProduct ? editProduct.previous_price : null),
       }
 
       if (editProduct) {

@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import {
   MdAdd, MdRemove, MdDelete, MdShoppingCart,
   MdLocalShipping, MdCheckCircle, MdStar, MdCardGiftcard,
+  MdArrowUpward, MdArrowDownward,
 } from 'react-icons/md'
 import CustomerLayout from '../../layouts/CustomerLayout'
 import { useCart } from '../../context/CartContext'
@@ -78,9 +79,33 @@ function CartItem({ item, onRemove, onIncrease, onDecrease }) {
                 )}
               </div>
             )}
-            <p className="text-gray-400 text-xs mt-0.5">
-              ₱{Number(product.price).toLocaleString('en-PH', { minimumFractionDigits: 2 })} / {product.unit_type ?? 'unit'}
-            </p>
+            {/* Price — strikethrough + arrow if admin changed it */}
+            {(() => {
+              const prev    = product.previous_price
+              const curr    = product.price
+              const changed = prev != null && Number(prev) !== Number(curr)
+              const up      = changed && Number(curr) > Number(prev)
+              return changed ? (
+                <div className="mt-0.5">
+                  <div className="flex items-center gap-1">
+                    <p className="text-gray-800 font-bold text-sm">
+                      ₱{Number(curr).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+                      <span className="text-gray-400 font-normal text-xs"> / {product.unit_type ?? 'unit'}</span>
+                    </p>
+                    {up
+                      ? <MdArrowUpward size={14} className="text-red-500 shrink-0" />
+                      : <MdArrowDownward size={14} className="text-green-600 shrink-0" />}
+                  </div>
+                  <p className="text-red-400 text-[11px] line-through leading-tight">
+                    ₱{Number(prev).toLocaleString('en-PH', { minimumFractionDigits: 2 })} / {product.unit_type ?? 'unit'}
+                  </p>
+                </div>
+              ) : (
+                <p className="text-gray-400 text-xs mt-0.5">
+                  ₱{Number(curr).toLocaleString('en-PH', { minimumFractionDigits: 2 })} / {product.unit_type ?? 'unit'}
+                </p>
+              )
+            })()}
           </div>
           <button onClick={onRemove} aria-label="Remove item"
             className="p-1 text-gray-300 hover:text-red-400 transition shrink-0">

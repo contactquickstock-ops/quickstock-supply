@@ -1,7 +1,8 @@
 import { useEffect, useState, useCallback, useMemo } from 'react'
-import { MdShoppingCart, MdSearch, MdImageNotSupported } from 'react-icons/md'
+import { MdShoppingCart, MdSearch, MdImageNotSupported, MdArrowUpward, MdArrowDownward } from 'react-icons/md'
 import CustomerLayout from '../../layouts/CustomerLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
+import { supabase as supabaseRT } from '../../services/supabase'
 import { useCart } from '../../context/CartContext'
 import toast from 'react-hot-toast'
 
@@ -69,12 +70,33 @@ function ProductCard({ product, isAdding, onAddToCart }) {
             )}
           </div>
         )}
-        <p className="text-gray-800 font-bold text-base mt-auto pt-2">
-          ₱{Number(product.price ?? 0).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-          <span className="text-gray-400 font-normal text-xs">
-            {' '}/ {product.unit_type ?? 'unit'}
-          </span>
-        </p>
+        {/* Price — shows change indicator when admin updates price */}
+        {(() => {
+          const prev = product.previous_price
+          const curr = product.price ?? 0
+          const changed = prev != null && Number(prev) !== Number(curr)
+          const up = changed && Number(curr) > Number(prev)
+          return (
+            <div className="mt-auto pt-2">
+              <div className="flex items-center gap-1">
+                <p className="text-gray-800 font-bold text-base">
+                  ₱{Number(curr).toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+                  <span className="text-gray-400 font-normal text-xs"> / {product.unit_type ?? 'unit'}</span>
+                </p>
+                {changed && (
+                  up
+                    ? <MdArrowUpward size={16} className="text-red-500 shrink-0" />
+                    : <MdArrowDownward size={16} className="text-green-600 shrink-0" />
+                )}
+              </div>
+              {changed && (
+                <p className="text-red-400 text-xs line-through leading-tight">
+                  ₱{Number(prev).toLocaleString('en-PH', { minimumFractionDigits: 2 })} / {product.unit_type ?? 'unit'}
+                </p>
+              )}
+            </div>
+          )
+        })()}
       </div>
 
       {/* Add to Cart */}
@@ -110,7 +132,7 @@ export default function CustomerDashboard() {
     setLoading(true)
     const { data } = await supabase
       .from('products')
-      .select('id, name, description, category, price, unit_type, image_url')
+      .select('id, name, description, category, price, previous_price, unit_type, image_url')
       .eq('is_available', true)
       .order('category')
       .order('name')
@@ -119,6 +141,24 @@ export default function CustomerDashboard() {
   }, [])
 
   useEffect(() => { fetchProducts() }, [fetchProducts])
+
+  // Real-time product price updates — update in-place instantly
+  useEffect(() => {
+    const channel = supabaseRT
+      .channel('dashboard-products-rt')
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'products' },
+        (payload) => {
+          setProducts(prev => prev.map(p =>
+            p.id === payload.new.id ? { ...p, ...payload.new } : p
+          ))
+        })
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'products' },
+        () => fetchProducts())
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'products' },
+        (payload) => setProducts(prev => prev.filter(p => p.id !== payload.old.id)))
+      .subscribe()
+    return () => supabaseRT.removeChannel(channel)
+  }, [fetchProducts])
 
   // Derive categories from loaded data
   const categories = useMemo(() => {

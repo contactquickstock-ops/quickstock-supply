@@ -31,7 +31,7 @@ const STATS = [
 ]
 
 const REWARD_CARDS = [
-  { value: '₱500+',        label: 'Free Delivery',  sub: 'Orders ₱500 & above'     },
+  { value: '₱500+',        label: 'Free Delivery',  sub: 'Premium Members only'     },
   { value: 'Every ₱100',   label: '= 1 Point',      sub: 'Earn as you spend'        },
   { value: 'Earn Points',  label: 'Redeem Rewards', sub: 'Your points, your choice' },
   { value: 'Accumulative', label: 'No Expiry',      sub: 'Points never expire'      },
@@ -106,7 +106,7 @@ export default function LandingPage() {
               {[
                 'Quality Products.',
                 'Same-Day Delivery',
-                'Earn Rewards Points (For Premium Clients Only)',
+                'Free Delivery on ₱500+ (Premium Members)',
               ].map(t => (
                 <span key={t} className="flex items-center gap-1.5 text-white/90 text-xs font-medium">
                   <MdCheckCircle size={15} className="text-yellow-300 shrink-0" /> {t}
@@ -129,7 +129,7 @@ export default function LandingPage() {
               <div className="absolute -top-4 -right-4 bg-yellow-400 text-gray-900
                 px-4 py-2 rounded-2xl shadow-lg font-bold text-sm text-center">
                 FREE Delivery<br />
-                <span className="text-xs font-medium">on ₱500+ orders</span>
+                <span className="text-xs font-medium">₱500+ (Premium only)</span>
               </div>
               <div className="absolute -bottom-4 -left-4 bg-white text-[#168AFF]
                 px-4 py-2 rounded-2xl shadow-lg font-bold text-sm">

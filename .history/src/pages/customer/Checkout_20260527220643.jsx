@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate, Navigate, useLocation } from 'react-router-dom'
 import {
   MdLocationOn, MdPlace, MdNotes, MdPayment,
   MdCheckCircle, MdShoppingCart, MdStar, MdCardGiftcard,
+  MdImage, MdUpload, MdSmartphone,
 } from 'react-icons/md'
 import CustomerLayout from '../../layouts/CustomerLayout'
 import { supabaseAdmin as supabase } from '../../services/supabaseAdmin'
@@ -11,16 +12,21 @@ import { useCart } from '../../context/CartContext'
 import toast from 'react-hot-toast'
 
 function calcFees(subtotal, isMember) {
-  const deliveryFee = (isMember && subtotal >= 500) ? 0 : 25
+  const deliveryFee = (isMember || subtotal >= 500) ? 0 : 25
   const total       = subtotal + deliveryFee
   return { deliveryFee, total }
 }
+
+// ── GCash number to display — update this to your actual GCash number ──────────
+const GCASH_NUMBER = '0930-822-0901'
+const GCASH_NAME   = 'QuickStock Supply'
 
 export default function Checkout() {
   const { user, profile }                                = useAuth()
   const { cartItems, totalAmount, itemCount, clearCart } = useCart()
   const navigate                                         = useNavigate()
   const location                                         = useLocation()
+  const proofRef                                         = useRef(null)
 
   const selectedReward = location.state?.selectedReward ?? null
 
@@ -29,11 +35,14 @@ export default function Checkout() {
       .filter(Boolean).join(', ')
   }
 
-  const [address,  setAddress]  = useState(() => buildAddress(profile))
-  const [landmark, setLandmark] = useState('')
-  const [notes,    setNotes]    = useState('')
-  const [placing,  setPlacing]  = useState(false)
-  const [error,    setError]    = useState(null)
+  const [address,       setAddress]       = useState(() => buildAddress(profile))
+  const [landmark,      setLandmark]      = useState('')
+  const [notes,         setNotes]         = useState('')
+  const [paymentMethod, setPaymentMethod] = useState('cod')   // 'cod' | 'gcash'
+  const [proofFile,     setProofFile]     = useState(null)
+  const [proofPreview,  setProofPreview]  = useState(null)
+  const [placing,       setPlacing]       = useState(false)
+  const [error,         setError]         = useState(null)
 
   // Pre-fill address once profile is available
   useEffect(() => {
@@ -50,6 +59,15 @@ export default function Checkout() {
   const isMember               = profile?.membership_status === 'active'
   const { deliveryFee, total } = calcFees(subtotal, isMember)
 
+  function handleProofChange(e) {
+    const file = e.target.files[0]
+    if (!file) return
+    setProofFile(file)
+    setProofPreview(URL.createObjectURL(file))
+    e.target.value = ''
+    setError(null)
+  }
+
   async function handlePlaceOrder(e) {
     e.preventDefault()
 
@@ -57,32 +75,51 @@ export default function Checkout() {
       setError('Please enter your delivery address.')
       return
     }
+    if (paymentMethod === 'gcash' && !proofFile && !proofPreview) {
+      setError('Please upload your GCash payment proof.')
+      return
+    }
 
     setPlacing(true)
     setError(null)
 
     try {
-      // Insert the order
+      // 1. Upload GCash proof if needed
+      let paymentProofUrl = null
+      if (paymentMethod === 'gcash' && proofFile) {
+        const ext      = proofFile.type.split('/')[1] || 'jpg'
+        const fileName = `gcash-${user.id}-${Date.now()}.${ext}`
+        const { error: upErr } = await supabase.storage
+          .from('order-payments')
+          .upload(fileName, proofFile, { contentType: proofFile.type, upsert: false })
+        if (upErr) throw new Error(upErr.message)
+        const { data: urlData } = supabase.storage.from('order-payments').getPublicUrl(fileName)
+        paymentProofUrl = urlData.publicUrl
+      }
+
+      // 2. Insert the order
       const { data: order, error: orderErr } = await supabase
         .from('orders')
         .insert({
-          customer_id:   user.id,
-          customer_name: profile?.full_name ?? '',
-          status:        'pending',
+          customer_id:     user.id,
+          customer_name:   profile?.full_name ?? '',
+          status:          'pending',
           subtotal,
-          delivery_fee:  deliveryFee,
+          delivery_fee:    deliveryFee,
           total,
-          address:       address.trim(),
-          landmark:      landmark.trim() || null,
-          notes:         notes.trim() || null,
-          reward_id:     selectedReward?.id ?? null,
+          address:         address.trim(),
+          landmark:        landmark.trim() || null,
+          notes:           notes.trim() || null,
+          reward_id:       selectedReward?.id ?? null,
+          payment_method:  paymentMethod,
+          payment_proof:   paymentProofUrl,
         })
         .select()
         .single()
 
       if (orderErr) throw new Error(orderErr.message)
 
-      // Insert all order items
+      // 3. Insert all order items
       const items = cartItems.map(({ product, quantity }) => ({
         order_id:   order.id,
         product_id: product.id,
@@ -94,7 +131,7 @@ export default function Checkout() {
       const { error: itemsErr } = await supabase.from('order_items').insert(items)
       if (itemsErr) throw new Error(itemsErr.message)
 
-      // Clear cart → toast → redirect
+      // 4. Clear cart → toast → redirect
       clearCart()
       toast.success('Order placed successfully!')
       navigate('/customer/orders')
@@ -191,21 +228,136 @@ export default function Checkout() {
               />
             </div>
 
-            {/* Payment method — COD only */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-3">
+            {/* Payment method */}
+            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 space-y-4">
               <h3 className="text-gray-700 font-bold text-sm flex items-center gap-2">
                 <MdPayment size={18} className="text-[#168AFF]" />
                 Payment Method
               </h3>
-              <div className="flex items-center gap-3 px-4 py-3.5 bg-[#168AFF]/5
-                border border-[#168AFF]/20 rounded-xl">
-                <MdPayment size={20} className="text-[#168AFF] shrink-0" />
-                <div className="flex-1">
-                  <p className="text-gray-800 font-bold text-sm">Cash on Delivery</p>
-                  <p className="text-gray-400 text-xs mt-0.5">Pay in cash upon delivery arrival</p>
-                </div>
-                <MdCheckCircle size={18} className="text-[#168AFF] shrink-0" />
+
+              {/* Options */}
+              <div className="grid grid-cols-2 gap-3">
+                {/* COD */}
+                <button
+                  type="button"
+                  onClick={() => { setPaymentMethod('cod'); setError(null) }}
+                  disabled={placing}
+                  className={`flex flex-col items-center gap-2 px-4 py-4 rounded-xl border-2
+                    transition text-center
+                    ${paymentMethod === 'cod'
+                      ? 'border-[#168AFF] bg-[#168AFF]/5'
+                      : 'border-gray-200 hover:border-gray-300'}`}>
+                  <MdPayment size={24} className={paymentMethod === 'cod' ? 'text-[#168AFF]' : 'text-gray-400'} />
+                  <div>
+                    <p className={`font-bold text-sm ${paymentMethod === 'cod' ? 'text-[#168AFF]' : 'text-gray-700'}`}>
+                      Cash on Delivery
+                    </p>
+                    <p className="text-gray-400 text-xs mt-0.5">Pay in cash upon arrival</p>
+                  </div>
+                  {paymentMethod === 'cod' && (
+                    <MdCheckCircle size={16} className="text-[#168AFF]" />
+                  )}
+                </button>
+
+                {/* GCash */}
+                <button
+                  type="button"
+                  onClick={() => { setPaymentMethod('gcash'); setError(null) }}
+                  disabled={placing}
+                  className={`flex flex-col items-center gap-2 px-4 py-4 rounded-xl border-2
+                    transition text-center
+                    ${paymentMethod === 'gcash'
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300'}`}>
+                  <MdSmartphone size={24} className={paymentMethod === 'gcash' ? 'text-blue-600' : 'text-gray-400'} />
+                  <div>
+                    <p className={`font-bold text-sm ${paymentMethod === 'gcash' ? 'text-blue-600' : 'text-gray-700'}`}>
+                      GCash
+                    </p>
+                    <p className="text-gray-400 text-xs mt-0.5">Pay via GCash transfer</p>
+                  </div>
+                  {paymentMethod === 'gcash' && (
+                    <MdCheckCircle size={16} className="text-blue-500" />
+                  )}
+                </button>
               </div>
+
+              {/* GCash details + proof upload */}
+              {paymentMethod === 'gcash' && (
+                <div className="space-y-4">
+                  {/* GCash send-to info */}
+                  <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3.5 space-y-1.5">
+                    <p className="text-blue-800 font-bold text-xs uppercase tracking-wide">
+                      Send Payment To
+                    </p>
+                    <p className="text-blue-700 font-black text-lg tracking-wider">
+                      {GCASH_NUMBER}
+                    </p>
+                    <p className="text-blue-600 font-semibold text-sm">{GCASH_NAME}</p>
+                    <p className="text-blue-500 text-xs mt-1">
+                      Amount: <strong className="text-blue-700">
+                        ₱{total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+                      </strong>
+                    </p>
+                    <p className="text-blue-400 text-[11px] mt-1 leading-relaxed">
+                      After sending, take a screenshot of the GCash confirmation and upload it below.
+                      Your order will be reviewed and confirmed by our team.
+                    </p>
+                  </div>
+
+                  {/* Proof upload */}
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-600 mb-1.5">
+                      GCash Payment Proof <span className="text-red-500">*</span>
+                    </label>
+                    <div
+                      onClick={() => !placing && proofRef.current?.click()}
+                      className={`relative w-full h-48 rounded-xl border-2 border-dashed
+                        flex items-center justify-center overflow-hidden cursor-pointer
+                        transition-colors group
+                        ${proofPreview
+                          ? 'border-transparent'
+                          : error && paymentMethod === 'gcash' && !proofPreview
+                            ? 'border-red-300 hover:border-red-400'
+                            : 'border-gray-200 hover:border-blue-400'}`}
+                    >
+                      {proofPreview ? (
+                        <>
+                          <img src={proofPreview} alt="Payment proof"
+                            className="w-full h-full object-contain p-2" />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30
+                            transition-colors flex items-center justify-center">
+                            <span className="text-white text-xs font-semibold opacity-0
+                              group-hover:opacity-100 flex items-center gap-1">
+                              <MdUpload size={14} /> Change
+                            </span>
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex flex-col items-center gap-2 text-gray-300 px-4 text-center">
+                          <MdImage size={32} />
+                          <span className="text-xs text-gray-500 font-medium">
+                            Upload GCash screenshot
+                          </span>
+                          <span className="text-[11px] text-gray-400 leading-relaxed">
+                            Take a screenshot of your <strong className="text-gray-500">GCash payment confirmation</strong> and upload it here
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    {proofPreview && (
+                      <button type="button"
+                        onClick={() => { setProofFile(null); setProofPreview(null) }}
+                        className="mt-1.5 text-xs text-red-500 hover:underline">
+                        Remove
+                      </button>
+                    )}
+                    <input ref={proofRef} type="file" accept="image/*"
+                      className="hidden" disabled={placing}
+                      onChange={handleProofChange} />
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -280,8 +432,16 @@ export default function Checkout() {
                   <span>Delivery Fee</span>
                   <span>
                     {deliveryFee === 0
-                      ? <span className="text-green-600 font-bold">FREE</span>
+                      ? <span className="text-green-600 font-bold">
+                          FREE{isMember && subtotal < 500 ? ' (member)' : ''}
+                        </span>
                       : <span>₱{deliveryFee.toLocaleString('en-PH', { minimumFractionDigits: 2 })}</span>}
+                  </span>
+                </div>
+                <div className="flex justify-between text-gray-500">
+                  <span>Payment</span>
+                  <span className={`font-semibold text-xs ${paymentMethod === 'gcash' ? 'text-blue-600' : 'text-gray-600'}`}>
+                    {paymentMethod === 'gcash' ? 'GCash' : 'Cash on Delivery'}
                   </span>
                 </div>
               </div>
@@ -294,6 +454,13 @@ export default function Checkout() {
                   ₱{total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
                 </span>
               </div>
+
+              {paymentMethod === 'gcash' && !proofPreview && (
+                <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200
+                  rounded-xl px-3 py-2 text-center font-medium">
+                  ⚠ Upload your GCash proof to place order
+                </p>
+              )}
 
               {/* Place Order */}
               <button

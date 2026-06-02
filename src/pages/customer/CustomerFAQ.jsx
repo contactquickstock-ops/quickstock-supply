@@ -7,7 +7,7 @@ const FAQS = [
   },
   {
     q: 'Is there a minimum order amount?',
-    a: 'There is no minimum order amount. However, orders below ₱500 incur a ₱25 delivery fee. Orders ₱500 and above enjoy FREE delivery — even without a membership.',
+    a: 'There is no minimum order amount. A ₱25 convenience fee applies to all non-member orders. Premium Members enjoy FREE delivery on orders ₱500 and above.',
   },
   {
     q: 'What payment methods are accepted?',

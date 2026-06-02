@@ -10,8 +10,8 @@ import { useCart } from '../../context/CartContext'
 import { useAuth } from '../../context/AuthContext'
 import { supabaseAdmin } from '../../services/supabaseAdmin'
 
-function calcFees(subtotal) {
-  const deliveryFee = subtotal >= 500 ? 0 : 25
+function calcFees(subtotal, isMember) {
+  const deliveryFee = (isMember && subtotal >= 500) ? 0 : 25
   const grandTotal  = subtotal + deliveryFee
   return { deliveryFee, grandTotal }
 }
@@ -142,8 +142,8 @@ function CartItem({ item, onRemove, onIncrease, onDecrease }) {
   )
 }
 
-function OrderSummary({ subtotal, itemCount, myPoints, rewards, selectedReward, onSelectReward, onCheckout, onContinue }) {
-  const { deliveryFee, grandTotal } = calcFees(subtotal)
+function OrderSummary({ subtotal, itemCount, isMember, myPoints, rewards, selectedReward, onSelectReward, onCheckout, onContinue }) {
+  const { deliveryFee, grandTotal } = calcFees(subtotal, isMember)
   const amountToFree = Math.max(0, 500 - subtotal)
   const progress     = Math.min(100, (subtotal / 500) * 100)
 
@@ -153,23 +153,32 @@ function OrderSummary({ subtotal, itemCount, myPoints, rewards, selectedReward, 
 
       <h3 className="text-gray-800 font-bold text-base">Order Summary</h3>
 
-      {/* Free delivery progress */}
-      {amountToFree > 0 ? (
-        <div className="bg-yellow-50 border border-yellow-100 rounded-xl px-4 py-3">
-          <p className="text-yellow-700 text-xs font-medium">
-            Add <span className="font-bold">
-              ₱{amountToFree.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
-            </span> more for free delivery!
-          </p>
-          <div className="mt-2 h-1.5 bg-yellow-100 rounded-full overflow-hidden">
-            <div className="h-full bg-[#168AFF] rounded-full transition-all duration-500"
-              style={{ width: `${progress}%` }} />
+      {/* Delivery fee notice */}
+      {isMember ? (
+        amountToFree > 0 ? (
+          <div className="bg-yellow-50 border border-yellow-100 rounded-xl px-4 py-3">
+            <p className="text-yellow-700 text-xs font-medium">
+              Add <span className="font-bold">
+                ₱{amountToFree.toLocaleString('en-PH', { minimumFractionDigits: 2 })}
+              </span> more for free delivery! (Premium benefit)
+            </p>
+            <div className="mt-2 h-1.5 bg-yellow-100 rounded-full overflow-hidden">
+              <div className="h-full bg-[#168AFF] rounded-full transition-all duration-500"
+                style={{ width: `${progress}%` }} />
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="bg-green-50 border border-green-100 rounded-xl px-4 py-3 flex items-center gap-2">
+            <MdCheckCircle size={16} className="text-green-500 shrink-0" />
+            <p className="text-green-700 text-xs font-semibold">Free delivery — Premium benefit applied!</p>
+          </div>
+        )
       ) : (
-        <div className="bg-green-50 border border-green-100 rounded-xl px-4 py-3 flex items-center gap-2">
-          <MdCheckCircle size={16} className="text-green-500 shrink-0" />
-          <p className="text-green-700 text-xs font-semibold">You qualify for free delivery!</p>
+        <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 flex items-center gap-2">
+          <MdLocalShipping size={16} className="text-[#168AFF] shrink-0" />
+          <p className="text-[#168AFF] text-xs font-medium leading-snug">
+            ₱25 convenience fee applies. Upgrade to <span className="font-bold">Premium</span> for free delivery on ₱500+ orders.
+          </p>
         </div>
       )}
 
@@ -289,7 +298,8 @@ function OrderSummary({ subtotal, itemCount, myPoints, rewards, selectedReward, 
 
 export default function Cart() {
   const { cartItems, removeFromCart, updateQty, clearCart, itemCount, totalAmount } = useCart()
-  const { user }    = useAuth()
+  const { user, profile } = useAuth()
+  const isMember = profile?.membership_status === 'active'
   const navigate    = useNavigate()
 
   const [myPoints,       setMyPoints]       = useState(0)
@@ -368,6 +378,7 @@ export default function Cart() {
             <OrderSummary
               subtotal={totalAmount}
               itemCount={itemCount}
+              isMember={isMember}
               myPoints={myPoints}
               rewards={rewards}
               selectedReward={selectedReward}

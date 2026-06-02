@@ -51,6 +51,7 @@ export default function AboutPage() {
               {[
                 'Wide selection of quality essential products',
                 'Fast same-day delivery within business hours (8:00 AM – 8:00 PM)',
+                'FREE delivery on ₱500+ orders for Premium Members',
                 'Rewards points on every purchase (For Premium Clients)',
                 '₱1,000 annual renewal to stay Premium and continue earning points',
               ].map(item => (
@@ -64,7 +65,7 @@ export default function AboutPage() {
               rounded-2xl px-4 py-3 mt-1">
               <MdLocalShipping size={20} className="text-[#168AFF] shrink-0" />
               <p className="text-[#168AFF] text-sm font-semibold leading-snug">
-                Convenience at its best
+                Premium Members: FREE delivery on ₱500+ orders
               </p>
             </div>
           </div>

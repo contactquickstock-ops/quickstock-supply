@@ -27,9 +27,9 @@ export default function PublicLayout({ children }) {
       {/* ── Announcement bar ── */}
       <div className="bg-[#168AFF] text-white text-center py-1.5 px-4 font-medium shrink-0">
         <span className="hidden sm:inline text-sm">
-          🚚 FREE delivery on orders ₱500 and above &nbsp;|&nbsp; Open Mon – Sun · 8:00 AM – 8:00 PM
+          🚚 FREE delivery on ₱500+ for Premium Members &nbsp;|&nbsp; Open Mon – Sun · 8:00 AM – 8:00 PM
         </span>
-        <span className="sm:hidden text-xs">🚚 Free delivery on ₱500+ &nbsp;·&nbsp; Mon–Sun 8AM–8PM</span>
+        <span className="sm:hidden text-xs">🚚 Free delivery ₱500+ (Premium) &nbsp;·&nbsp; Mon–Sun 8AM–8PM</span>
       </div>
 
       {/* ── Header ── */}
